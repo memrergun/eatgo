@@ -8,34 +8,31 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
   :root {
-    --cream: #F7F7F7;
-    --dark: #0F0F0F;
     --warm: #1D9BF0;
-    --muted: #536471;
-    --border: #EFF3F4;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
+  html, body {
+    height: 100%;
     font-family: 'DM Sans', sans-serif;
     background: #0f0f0f;
-    min-height: 100vh;
-    overflow-y: auto;
     color: white;
+    overflow: hidden;
   }
 
   .page-header {
-    position: sticky;
-    top: 0;
+    position: fixed;
+    top: 0; left: 0; right: 0;
     z-index: 100;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 20px 14px;
+    padding: 12px 20px;
     background: rgba(15,15,15,0.95);
     border-bottom: 1px solid rgba(255,255,255,0.08);
     backdrop-filter: blur(8px);
+    height: 64px;
   }
 
   .header-logo {
@@ -73,125 +70,30 @@
     font-weight: 500;
     padding: 8px 12px;
     border-radius: 10px;
-    transition: background 0.2s, color 0.2s;
+    transition: background 0.2s;
   }
 
   .header-nav a:hover {
     background: rgba(255,255,255,0.1);
-    color: white;
   }
 
-  .main-content {
-    padding: 24px 20px 32px;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
-  .map-section {
-    margin-top: 32px;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-  }
-
-  .map-section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.95);
-    padding: 14px 20px;
-    background: rgba(255,255,255,0.05);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-
-  .map-container {
+  #map {
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
-    height: 400px;
     background: #1a1a2e;
   }
 
-  .page-footer {
-    padding: 24px 20px 40px;
-    text-align: center;
-    color: rgba(255,255,255,0.5);
-    font-size: 13px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    margin-top: 16px;
+  .leaflet-popup-content {
+    margin: 12px 14px !important;
+    font-family: 'DM Sans', sans-serif;
   }
-
-  .page-footer a {
-    color: var(--warm);
-    text-decoration: none;
-  }
-
-  .venues-section {
-    width: 100%;
-    margin-bottom: 0;
-  }
-  .venues-section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.95);
-    margin-bottom: 16px;
-    text-align: left;
-  }
-  .venues-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-    padding: 0;
-  }
-  .venue-card {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 16px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .venue-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-  .venue-card .venue-image {
-    width: 100%;
-    height: 140px;
-    background-size: cover;
-    background-position: center;
-    background-color: #1a1a2e;
-    position: relative;
-  }
-  .venue-card .venue-info { padding: 12px 14px 14px; }
-  .venue-card .venue-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: white;
-    margin-bottom: 4px;
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .venue-card .venue-category {
-    font-size: 12px;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 8px;
-  }
-  .venue-card .venue-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  .venue-card .venue-rating { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 500; }
-  .venue-card .venue-price { font-size: 12px; color: rgba(255,255,255,0.5); }
-  .loading {
-    text-align: center;
-    color: rgba(255,255,255,0.6);
-    font-size: 14px;
-    padding: 24px;
-    grid-column: 1 / -1;
+  
+  .leaflet-popup-content-wrapper {
+    border-radius: 12px !important;
   }
 </style>
 </head>
@@ -204,140 +106,61 @@
     </a>
     <nav class="header-nav">
       <a href="arama.html">🔍 Ara</a>
-      <a href="anasayfa.html">Anasayfa</a>
     </nav>
   </header>
 
-  <main class="main-content">
-    <section class="venues-section">
-      <h2 class="venues-section-title">Öne Çıkan Mekanlar</h2>
-      <div id="venues-grid" class="venues-grid">
-        <div class="loading">🔄 Mekanlar yükleniyor...</div>
-      </div>
-    </section>
-
-    <section class="map-section">
-      <h3 class="map-section-title">Harita</h3>
-      <div id="map" class="map-container"></div>
-    </section>
-  </main>
-
-  <footer class="page-footer">
-    <a href="anasayfa.html">Keşfe devam et →</a> · Mekan Keşfet
-  </footer>
+  <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  
   <script>
-    // ÖNE ÇIKAN MEKANLARI YÜKLE
-    (async function loadFeaturedVenues() {
-      var grid = document.getElementById('venues-grid');
-      if (!grid) return;
-      
-      try {
-        var response = await fetch('./data/venues.json');
-        var data = await response.json();
-        var venues = data.venues || data;
-        
-        var featured = venues.filter(function(v) { return v.featured; });
-        
-        if (featured.length < 4) {
-          featured = venues.slice().sort(function(a, b) { 
-            var ra = (a.rating && a.rating.overall) || 0;
-            var rb = (b.rating && b.rating.overall) || 0;
-            return rb - ra;
-          }).slice(0, 4);
-        } else {
-          featured = featured.slice(0, 4);
-        }
-        
-        grid.innerHTML = '';
-        
-        featured.forEach(function(venue) {
-          var card = document.createElement('div');
-          card.className = 'venue-card';
-          card.onclick = function() {
-            window.location.href = 'venue.html?slug=' + encodeURIComponent(venue.slug || '');
-          };
-          
-          var imageUrl = '';
-          if (venue.media && venue.media.coverImage) {
-            imageUrl = venue.media.coverImage;
-          } else if (venue.media && venue.media.gallery && venue.media.gallery[0]) {
-            imageUrl = venue.media.gallery[0];
-          }
-          
-          var name = venue.name || 'İsimsiz Mekan';
-          var category = venue.category || 'Restoran';
-          var neighborhood = (venue.location && venue.location.neighborhood) || (venue.location && venue.location.city) || 'İstanbul';
-          var rating = ((venue.rating && venue.rating.overall) || 0).toFixed(1);
-          var reviewCount = (venue.rating && venue.rating.reviewCount) || 0;
-          var price = (venue.pricing && venue.pricing.range) || '₺₺';
-          
-          card.innerHTML = 
-            '<div class="venue-image" style="background-image:url(\'' + imageUrl + '\')"></div>' +
-            '<div class="venue-info">' +
-              '<h3 class="venue-name">' + name + '</h3>' +
-              '<p class="venue-category">' + category + ' • ' + neighborhood + '</p>' +
-              '<div class="venue-meta">' +
-                '<div class="venue-rating">⭐ ' + rating + ' <span style="opacity:0.6">(' + reviewCount + ')</span></div>' +
-                '<span class="venue-price">' + price + '</span>' +
-              '</div>' +
-            '</div>';
-          
-          grid.appendChild(card);
-        });
-        
-      } catch(err) {
-        console.error('Mekan yükleme hatası:', err);
-        grid.innerHTML = '<div class="loading">⚠️ Mekanlar yüklenemedi</div>';
-      }
-    })();
+    var map = L.map('map', { center: [40.99, 29.03], zoom: 13, zoomControl: true });
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap, &copy; CARTO'
+    }).addTo(map);
 
-    // HARİTAYI YÜKLE
-    (function loadMap() {
-      var mapEl = document.getElementById('map');
-      if (!mapEl) return;
-      
-      var map = L.map('map', { center: [40.99, 29.03], zoom: 13 });
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap, &copy; CARTO'
-      }).addTo(map);
-      
-      // Tüm mekanları haritaya ekle
-      fetch('./data/venues.json')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          var venues = data.venues || data;
-          var bounds = [];
+    fetch('./data/venues.json')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var venues = data.venues || data;
+        var bounds = [];
+
+        venues.forEach(function(v) {
+          var lat = v.location && v.location.coordinates && v.location.coordinates.lat;
+          var lng = v.location && v.location.coordinates && v.location.coordinates.lng;
+          if (!lat || !lng) return;
+
+          var rating = ((v.rating && v.rating.overall) || 0).toFixed(1);
+          var reviewCount = (v.rating && v.rating.reviewCount) || 0;
+          var slug = v.slug || '';
+          var name = v.name || 'İsimsiz';
+          var category = v.category || '';
+          var price = (v.pricing && v.pricing.range) || '';
+          var imageUrl = (v.media && v.media.coverImage) || '';
+
+          var popupContent = 
+            '<div style="min-width:220px;max-width:240px">' +
+              (imageUrl ? '<div style="width:100%;height:120px;background-image:url(\'' + imageUrl + '\');background-size:cover;background-position:center;border-radius:8px;margin-bottom:10px"></div>' : '') +
+              '<strong style="font-size:15px;display:block;margin-bottom:4px">' + name + '</strong>' +
+              '<div style="color:#666;font-size:12px;margin-bottom:6px">' + category + ' · ' + price + '</div>' +
+              '<div style="font-size:13px;margin-bottom:10px">⭐ ' + rating + ' <span style="color:#999">(' + reviewCount + ' yorum)</span></div>' +
+              '<a href="venue.html?slug=' + encodeURIComponent(slug) + '" style="display:block;text-align:center;background:#1D9BF0;color:white;padding:8px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none">Detayları Gör →</a>' +
+            '</div>';
+
+          L.marker([lat, lng])
+            .addTo(map)
+            .bindPopup(popupContent, { maxWidth: 240 });
           
-          venues.forEach(function(v) {
-            var lat = v.location && v.location.coordinates && v.location.coordinates.lat;
-            var lng = v.location && v.location.coordinates && v.location.coordinates.lng;
-            if (!lat || !lng) return;
-            
-            var rating = ((v.rating && v.rating.overall) || 0).toFixed(1);
-            var slug = v.slug || '';
-            
-            var popupContent = 
-              '<div style="min-width:160px">' +
-                '<strong style="font-size:14px">' + v.name + '</strong><br>' +
-                '<span style="color:#666;font-size:12px">⭐ ' + rating + '</span><br>' +
-                '<a href="venue.html?slug=' + encodeURIComponent(slug) + '" style="color:#1D9BF0;font-size:12px;text-decoration:none">Detaya git →</a>' +
-              '</div>';
-            
-            L.marker([lat, lng]).addTo(map).bindPopup(popupContent);
-            bounds.push([lat, lng]);
-          });
-          
-          if (bounds.length > 0) {
-            map.fitBounds(bounds, { padding: [40, 40] });
-          }
-        })
-        .catch(function(err) {
-          console.error('Harita yükleme hatası:', err);
+          bounds.push([lat, lng]);
         });
-    })();
+
+        if (bounds.length > 0) {
+          map.fitBounds(bounds, { padding: [60, 60] });
+        }
+      })
+      .catch(function(err) {
+        console.error('Harita yükleme hatası:', err);
+      });
   </script>
 </body>
 </html>
