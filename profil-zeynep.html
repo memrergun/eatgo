@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zeynep Arslan — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F7F7F7;--dark:#0F0F0F;--warm:#1D9BF0;--muted:#536471;--border:#EFF3F4;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cream);color:var(--dark);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:90px;}
+.header{position:sticky;top:0;z-index:50;background:white;border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:12px;height:52px;}
+.back-btn{width:36px;height:36px;border-radius:50%;background:var(--cream);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.more-btn{width:36px;height:36px;border-radius:50%;background:var(--cream);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.handle-title{flex:1;font-size:15px;font-weight:700;text-align:center;}
+.cover{height:120px;background:linear-gradient(135deg,#0a1628,#1a1f2e,#0d2040);position:relative;}
+.profile-section{padding:0 16px 16px;background:white;border-bottom:1px solid var(--border);}
+.avatar-row{display:flex;align-items:flex-end;justify-content:space-between;margin-top:-38px;margin-bottom:12px;}
+.avatar{width:76px;height:76px;border-radius:50%;border:4px solid white;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:white;background:linear-gradient(135deg,#111520,#1a2030);}
+.action-btns{display:flex;gap:8px;}
+.btn-msg{height:36px;padding:0 16px;border-radius:20px;border:1.5px solid var(--border);background:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-follow{height:36px;padding:0 20px;border-radius:20px;border:none;background:var(--dark);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s;}
+.btn-follow.following{background:white;color:var(--dark);border:1.5px solid var(--border);}
+.full-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;margin-bottom:2px;}
+.handle{font-size:13px;color:var(--muted);margin-bottom:8px;}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.bio{font-size:14px;line-height:1.6;color:var(--dark);margin-bottom:10px;}
+.meta{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-bottom:10px;}
+.venue-link{display:inline-flex;align-items:center;gap:6px;background:#F0FFF4;border:1px solid #BBF7D0;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:#16A34A;cursor:pointer;text-decoration:none;}
+.stats-row{display:flex;border-top:1px solid var(--border);padding-top:14px;}
+.stat{flex:1;text-align:center;}
+.stat-num{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;}
+.stat-label{font-size:11px;color:var(--muted);}
+.tabs{display:flex;background:white;border-bottom:1px solid var(--border);position:sticky;top:52px;z-index:40;}
+.tab{flex:1;height:44px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;}
+.tab.active{color:var(--dark);border-bottom-color:var(--dark);}
+.panel{padding:16px;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:white;border-top:1px solid var(--border);display:flex;padding:8px 0 24px;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;color:var(--muted);cursor:pointer;}
+.nav-item span:first-child{font-size:22px;}
+#toast{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--dark);color:white;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <div class="handle-title">@zeyneparslan</div>
+  <button class="more-btn">⋯</button>
+</div>
+
+<div class="cover"></div>
+
+<div class="profile-section">
+  <div class="avatar-row">
+    <div class="avatar">Z</div>
+    <div class="action-btns">
+      <button class="btn-msg" onclick="window.location.href='mesajlar.html?to=zeyneparslan'">💬 Mesaj</button>
+      <button class="btn-follow" id="followBtn" onclick="toggleFollow()">Takip Et</button>
+    </div>
+  </div>
+
+  <div class="full-name">Zeynep Arslan</div>
+  <div class="handle">@zeyneparslan</div>
+
+  <div class="badges">
+    <span class="badge" style="background:#F0FFF4;color:#16A34A;border:1px solid #BBF7D0;">🏪 İşletme Sahibi</span>
+    <span class="badge" style="background:#FFF0F0;color:#E74C3C;">🌅 Brunch Uzmanı</span>
+  </div>
+
+  <div class="bio">Brekkie Breakfast Club'un kurucusu. Sabah kahvaltısını bir ritüele dönüştürmek için buradayız 🥐</div>
+
+  <div class="meta">
+    <span>📍 Moda, Kadıköy</span>
+    <span>📅 Mart 2020 üye</span>
+    <span>🌐 brekkieclub.com</span>
+  </div>
+
+  <a class="venue-link" href="mekan.html?name=Brekkie&score=4.7&emoji=🥐&hood=Moda">
+    🏪 Brekkie Breakfast Club · Sahibi
+  </a>
+
+  <div class="stats-row" style="margin-top:14px;">
+    <div class="stat"><div class="stat-num">512</div><div class="stat-label">Takip</div></div>
+    <div class="stat"><div class="stat-num">3.8K</div><div class="stat-label">Takipçi</div></div>
+    <div class="stat"><div class="stat-num">124</div><div class="stat-label">Yorum</div></div>
+    <div class="stat"><div class="stat-num">28.6K</div><div class="stat-label">Beğeni</div></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showPanel('yorumlar',this)">Yorumlar</div>
+  <div class="tab" onclick="showPanel('mekan',this)">🏪 Mekan</div>
+</div>
+
+<div id="panel-yorumlar" class="panel">
+  
+    <div style="background:white;border-radius:16px;padding:14px;margin-bottom:10px;border:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:44px;height:44px;border-radius:10px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:22px;">🥐</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:2px;">Brekkie Breakfast Club</div>
+          <div style="font-size:11px;color:var(--muted);">İşletme yorumu</div>
+        </div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;">5.0</div>
+      </div>
+      <p style="font-size:13px;line-height:1.6;color:var(--dark);">Croissant tarifleri için Paris'ten özel un getirtiyoruz. Detaylar önemli.</p>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;color:var(--muted);">
+        <span>🏪 İşletme sahibinin yorumu</span>
+      </div>
+    </div>
+    <div style="background:white;border-radius:16px;padding:14px;margin-bottom:10px;border:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:44px;height:44px;border-radius:10px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:22px;">🍳</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:2px;">Brekkie Breakfast Club</div>
+          <div style="font-size:11px;color:var(--muted);">İşletme yorumu</div>
+        </div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;">4.9</div>
+      </div>
+      <p style="font-size:13px;line-height:1.6;color:var(--dark);">Eggs Benedict sosumuz 2 yıldır aynı tarife sadık. Vazgeçilmez.</p>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;color:var(--muted);">
+        <span>🏪 İşletme sahibinin yorumu</span>
+      </div>
+    </div>
+    <div style="background:white;border-radius:16px;padding:14px;margin-bottom:10px;border:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:44px;height:44px;border-radius:10px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:22px;">🫐</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:2px;">Brekkie Breakfast Club</div>
+          <div style="font-size:11px;color:var(--muted);">İşletme yorumu</div>
+        </div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;">4.8</div>
+      </div>
+      <p style="font-size:13px;line-height:1.6;color:var(--dark);">Sezonluk berry'lerle yeni granola bowlımızı denediniz mi?</p>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;color:var(--muted);">
+        <span>🏪 İşletme sahibinin yorumu</span>
+      </div>
+    </div>
+</div>
+
+<div id="panel-mekan" class="panel" style="display:none;">
+  <div style="background:white;border-radius:16px;overflow:hidden;border:1px solid var(--border);cursor:pointer;" onclick="window.location.href='mekan.html?name=Brekkie&score=4.7&emoji=🥐&hood=Moda'">
+    <div style="height:120px;background:linear-gradient(135deg,#0a1628,#1a1f2e);display:flex;align-items:center;justify-content:center;font-size:60px;">
+      🥐
+    </div>
+    <div style="padding:14px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#16A34A;margin-bottom:4px;">✓ Doğrulanmış İşletme</div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:4px;">Brekkie Breakfast Club</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Moda, Kadıköy · Sahibi tarafından yönetilmektedir</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:13px;font-weight:600;">Mekan sayfasına git →</span>
+        <span style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;">5.0</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-item" onclick="window.location.href='anasayfa.html'"><span>🗺️</span><span>Keşfet</span></div>
+  <div class="nav-item" onclick="window.location.href='arama.html'"><span>🔍</span><span>Ara</span></div>
+  <div class="nav-item" onclick="window.location.href='bildirimler.html'"><span>🔔</span><span>Bildirimler</span></div>
+  <div class="nav-item" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+function showPanel(id, el) {
+  document.querySelectorAll('[id^="panel-"]').forEach(function(p){ p.style.display='none'; });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('panel-'+id).style.display='block';
+  el.classList.add('active');
+}
+function toggleFollow() {
+  var btn = document.getElementById('followBtn');
+  var f = btn.classList.contains('following');
+  btn.classList.toggle('following', !f);
+  btn.textContent = f ? 'Takip Et' : 'Takip Ediliyor';
+  showToast(f ? 'Takipten çıkıldı' : '✓ Takip edildi!');
+}
+var toastTimer;
+function showToast(msg) { var t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.style.display='none'; },2200); }
+</script>
+</body>
+</html>

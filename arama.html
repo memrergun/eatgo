@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ara — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F7F7;
+    --dark: #0F0F0F;
+    --warm: #1D9BF0;
+    --muted: #536471;
+    --border: #EFF3F4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 90px;
+  }
+
+  /* HEADER */
+  .header {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--cream);
+    padding: 52px 16px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .search-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .search-box {
+    flex: 1;
+    display: flex; align-items: center; gap: 10px;
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 0 14px;
+    height: 46px;
+    transition: border-color 0.2s;
+  }
+
+  .search-box:focus-within {
+    border-color: var(--dark);
+  }
+
+  .search-icon { font-size: 16px; flex-shrink: 0; }
+
+  .search-input {
+    flex: 1; border: none; outline: none;
+    font-size: 15px; font-family: 'DM Sans', sans-serif;
+    background: transparent; color: var(--dark);
+  }
+
+  .search-input::placeholder { color: var(--muted); }
+
+  .clear-btn {
+    font-size: 14px; color: var(--muted);
+    cursor: pointer; padding: 4px;
+    display: none;
+  }
+
+  .clear-btn.visible { display: block; }
+
+  .cancel-btn {
+    font-size: 14px; font-weight: 500;
+    color: var(--warm); cursor: pointer;
+    white-space: nowrap; padding: 4px;
+  }
+
+  /* KATEGORİ */
+  .section { padding: 20px 16px 0; }
+
+  .section-title {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 12px;
+  }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .cat-item {
+    background: white;
+    border-radius: 16px;
+    padding: 16px 10px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    transition: all 0.2s;
+  }
+
+  .cat-item:hover { border-color: var(--dark); transform: translateY(-1px); }
+
+  .cat-emoji { font-size: 28px; }
+  .cat-label { font-size: 12px; font-weight: 500; color: var(--dark); }
+
+  /* TREND ARAMALAR */
+  .trend-list { margin-bottom: 24px; }
+
+  .trend-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .trend-item:last-child { border-bottom: none; }
+
+  .trend-icon {
+    width: 40px; height: 40px;
+    background: white; border-radius: 12px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+
+  .trend-info { flex: 1; }
+  .trend-name { font-size: 14px; font-weight: 500; margin-bottom: 1px; }
+  .trend-sub { font-size: 12px; color: var(--muted); }
+  .trend-arrow { font-size: 16px; color: var(--muted); }
+
+  /* SONUÇLAR */
+  .results { display: none; }
+  .results.visible { display: block; }
+
+  .result-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .result-item:hover { background: white; }
+
+  .result-thumb {
+    width: 52px; height: 52px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+
+  .result-info { flex: 1; min-width: 0; }
+  .result-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .result-sub { font-size: 12px; color: var(--muted); }
+
+  .result-score {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-weight: 700;
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  .result-score-sub { font-size: 10px; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+
+  /* BOŞ DURUM */
+  .empty-state {
+    display: none;
+    flex-direction: column; align-items: center;
+    padding: 60px 32px;
+    text-align: center;
+  }
+
+  .empty-state.visible { display: flex; }
+  .empty-emoji { font-size: 48px; margin-bottom: 16px; }
+  .empty-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .empty-sub { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* ALT NAV */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 100; background: white;
+    border-top: 1px solid var(--border);
+    display: flex; padding: 8px 0 24px;
+  }
+
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 500; color: var(--muted); cursor: pointer;
+  }
+
+  .nav-item.active { color: var(--dark); }
+  .nav-item span:first-child { font-size: 22px; }
+
+  .divider { height: 8px; background: var(--border); opacity: 0.5; margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="search-row">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="searchInput" type="text" placeholder="Mekan, kategori veya semt ara..." autofocus oninput="handleSearch(this.value)">
+      <span class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</span>
+    </div>
+    <span class="cancel-btn" onclick="window.location.href='anasayfa.html'">Geri</span>
+  </div>
+</div>
+
+<!-- KEŞFET DURUMU (arama yokken) -->
+<div id="defaultState">
+
+  <div class="section">
+    <div class="section-title">Kategoriler</div>
+    <div class="cat-grid">
+      <div class="cat-item" onclick="searchFor('Kahve')">
+        <span class="cat-emoji">☕</span>
+        <span class="cat-label">Kahve</span>
+      </div>
+      <div class="cat-item" onclick="searchFor('Burger')">
+        <span class="cat-emoji">🍔</span>
+        <span class="cat-label">Burger</span>
+      </div>
+      <div class="cat-item" onclick="searchFor('Pizza')">
+        <span class="cat-emoji">🍕</span>
+        <span class="cat-label">Pizza</span>
+      </div>
+      <div class="cat-item" onclick="searchFor('Asya')">
+        <span class="cat-emoji">🍜</span>
+        <span class="cat-label">Asya</span>
+      </div>
+      <div class="cat-item" onclick="searchFor('Sağlıklı')">
+        <span class="cat-emoji">🥗</span>
+        <span class="cat-label">Sağlıklı</span>
+      </div>
+      <div class="cat-item" onclick="searchFor('Tatlı')">
+        <span class="cat-emoji">🍰</span>
+        <span class="cat-label">Tatlı</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Trend Aramalar</div>
+    <div class="trend-list">
+      <div class="trend-item" onclick="searchFor('Kadıköy burgerleri')">
+        <div class="trend-icon">🔥</div>
+        <div class="trend-info">
+          <div class="trend-name">Kadıköy burgerleri</div>
+          <div class="trend-sub">847 arama · Bu hafta</div>
+        </div>
+        <span class="trend-arrow">↗</span>
+      </div>
+      <div class="trend-item" onclick="searchFor('Moda kahvaltı')">
+        <div class="trend-icon">🔥</div>
+        <div class="trend-info">
+          <div class="trend-name">Moda kahvaltı</div>
+          <div class="trend-sub">612 arama · Bu hafta</div>
+        </div>
+        <span class="trend-arrow">↗</span>
+      </div>
+      <div class="trend-item" onclick="searchFor('Smash burger')">
+        <div class="trend-icon">📈</div>
+        <div class="trend-info">
+          <div class="trend-name">Smash burger</div>
+          <div class="trend-sub">524 arama · Bu hafta</div>
+        </div>
+        <span class="trend-arrow">↗</span>
+      </div>
+      <div class="trend-item" onclick="searchFor('Vegan Kadıköy')">
+        <div class="trend-icon">📈</div>
+        <div class="trend-info">
+          <div class="trend-name">Vegan Kadıköy</div>
+          <div class="trend-sub">381 arama · Bu hafta</div>
+        </div>
+        <span class="trend-arrow">↗</span>
+      </div>
+      <div class="trend-item" onclick="searchFor('Specialty coffee')">
+        <div class="trend-icon">☕</div>
+        <div class="trend-info">
+          <div class="trend-name">Specialty coffee</div>
+          <div class="trend-sub">298 arama · Bu hafta</div>
+        </div>
+        <span class="trend-arrow">↗</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SONUÇLAR -->
+<div class="results" id="resultsState">
+  <div class="result-item" onclick="window.location.href='white-burger.html'">
+    <div class="result-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">🍔</div>
+    <div class="result-info">
+      <div class="result-name">White Burger</div>
+      <div class="result-sub">Kadıköy · Smash Burger · 120m</div>
+    </div>
+    <div class="result-score">4.4<div class="result-score-sub">★ Google</div></div>
+  </div>
+  <div class="result-item">
+    <div class="result-thumb" style="background:linear-gradient(135deg,#120a1a,#1e1030);">🍔</div>
+    <div class="result-info">
+      <div class="result-name">Burger Lab</div>
+      <div class="result-sub">Moda · Gourmet Burger · 340m</div>
+    </div>
+    <div class="result-score">4.6<div class="result-score-sub">★ Google</div></div>
+  </div>
+  <div class="result-item">
+    <div class="result-thumb" style="background:linear-gradient(135deg,#0f1117,#3d2d08);">🍟</div>
+    <div class="result-info">
+      <div class="result-name">Smash Bros</div>
+      <div class="result-sub">Moda · Double Smash · 610m</div>
+    </div>
+    <div class="result-score">4.1<div class="result-score-sub">★ Google</div></div>
+  </div>
+  <div class="result-item">
+    <div class="result-thumb" style="background:linear-gradient(135deg,#0a1f28,#0d2a3c);">🥗</div>
+    <div class="result-info">
+      <div class="result-name">Green Smash</div>
+      <div class="result-sub">Kadıköy · Vegan Burger · 480m</div>
+    </div>
+    <div class="result-score">4.3<div class="result-score-sub">★ Google</div></div>
+  </div>
+  <div class="result-item">
+    <div class="result-thumb" style="background:linear-gradient(135deg,#120a1a,#1e1030);">🍔</div>
+    <div class="result-info">
+      <div class="result-name">Usta Burger</div>
+      <div class="result-sub">Moda · Klasik Burger · 720m</div>
+    </div>
+    <div class="result-score">4.0<div class="result-score-sub">★ Google</div></div>
+  </div>
+</div>
+
+<!-- BOŞ DURUM -->
+<div class="empty-state" id="emptyState">
+  <div class="empty-emoji">🔍</div>
+  <div class="empty-title">Sonuç bulunamadı</div>
+  <div class="empty-sub">Farklı bir kelime dene ya da kategorilere göz at.</div>
+</div>
+
+<!-- ALT NAV -->
+<div class="bottom-nav">
+  <div class="nav-item" onclick="window.location.href='anasayfa.html'"><span>🗺️</span><span>Keşfet</span></div>
+  <div class="nav-item active"><span>🔍</span><span>Ara</span></div>
+  <div class="nav-item" onclick="window.location.href='blog.html'"><span>📰</span><span>Blog</span></div>
+  <div class="nav-item" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
+</div>
+
+<script>
+  function handleSearch(val) {
+    var clearBtn = document.getElementById('clearBtn');
+    var defaultState = document.getElementById('defaultState');
+    var resultsState = document.getElementById('resultsState');
+    var emptyState = document.getElementById('emptyState');
+
+    if (val.length > 0) {
+      clearBtn.classList.add('visible');
+      defaultState.style.display = 'none';
+      // Basit demo: her aramada sonuçları göster
+      resultsState.classList.add('visible');
+      emptyState.classList.remove('visible');
+    } else {
+      clearBtn.classList.remove('visible');
+      defaultState.style.display = 'block';
+      resultsState.classList.remove('visible');
+      emptyState.classList.remove('visible');
+    }
+  }
+
+  function clearSearch() {
+    var input = document.getElementById('searchInput');
+    input.value = '';
+    handleSearch('');
+    input.focus();
+  }
+
+  function searchFor(term) {
+    window.location.href = 'arama-sonuc.html?q=' + encodeURIComponent(term);
+  }
+</script>
+
+<script>
+// Trending eklentisi
+(function(){
+  var trending = document.getElementById('trending-venues');
+  if(!trending) return;
+  var venues = [
+    {e:'🥖',n:'Zapata Bakery',s:'4.8',h:'Caferağa',u:'mekan.html?name=Zapata+Bakery&score=4.8&emoji=🥖&hood=Caferağa'},
+    {e:'🍕',n:'Il Pellicano',s:'4.8',h:'Moda',u:'mekan.html?name=Il+Pellicano&score=4.8&emoji=🍕&hood=Moda'},
+    {e:'🥗',n:'Veganarsist',s:'4.8',h:'Osmanağa',u:'mekan.html?name=Veganarsist&score=4.8&emoji=🥗&hood=Osmanağa'},
+  ];
+  trending.innerHTML = venues.map(function(v){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #EFF3F4;cursor:pointer;" onclick="window.location.href=''+v.u+''">'+
+      '<div style="width:40px;height:40px;background:#F7F7F7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">'+v.e+'</div>'+
+      '<div style="flex:1;"><div style="font-size:13px;font-weight:700;">'+v.n+'</div><div style="font-size:11px;color:#536471;">'+v.h+' · ★'+v.s+'</div></div>'+
+      '<div style="font-size:14px;color:#536471;">›</div></div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

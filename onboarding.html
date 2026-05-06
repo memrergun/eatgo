@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F7F7;
+    --dark: #0F0F0F;
+    --warm: #1D9BF0;
+    --muted: #536471;
+    --border: #EFF3F4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0f0f0f;
+    height: 100vh;
+    overflow: hidden;
+    color: white;
+  }
+
+  /* ── SLIDES ── */
+  .slides {
+    display: flex;
+    width: 400%;
+    height: 100vh;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .slide {
+    width: 25%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* ── SLIDE 1 — HOŞ GELDİN ── */
+  .slide-1 {
+    background: linear-gradient(160deg, #0f0f0f, #1a1a2e, #0a0a0a);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 32px;
+  }
+
+  .slide-1-bg {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 220px; opacity: 0.08;
+    pointer-events: none;
+  }
+
+  .logo-wrap {
+    margin-bottom: 32px;
+  }
+
+  .logo-icon {
+    width: 80px; height: 80px;
+    background: var(--warm);
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    margin: 0 auto 16px;
+    box-shadow: 0 8px 32px rgba(29,155,240,0.25);
+  }
+
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 900;
+    color: white;
+  }
+
+  .slide-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px; font-weight: 900;
+    line-height: 1.15; margin-bottom: 16px;
+    color: white;
+  }
+
+  .slide-headline em {
+    font-style: italic;
+    color: var(--warm);
+  }
+
+  .slide-desc {
+    font-size: 15px; line-height: 1.7;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 40px;
+  }
+
+  /* ── SLIDE 2 — KONUM ── */
+  .slide-2 {
+    background: linear-gradient(160deg, #0a0f1a, #111827, #050810);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 32px;
+  }
+
+  .slide-2-bg {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 220px; opacity: 0.08;
+    pointer-events: none;
+  }
+
+  .location-illustration {
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 52px;
+    margin: 0 auto 32px;
+    border: 2px solid rgba(255,255,255,0.15);
+    box-shadow: 0 0 0 16px rgba(255,255,255,0.04), 0 0 0 32px rgba(255,255,255,0.02);
+  }
+
+  /* ── SLIDE 3 — İLGİ ALANLARI ── */
+  .slide-3 {
+    background: linear-gradient(160deg, #050810, #0a1628, #030508);
+    padding: 60px 24px 40px;
+    align-items: center;
+  }
+
+  .slide-3-bg {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 220px; opacity: 0.06;
+    pointer-events: none;
+  }
+
+  .interest-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    margin-top: 24px;
+  }
+
+  .interest-item {
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 16px 8px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .interest-item.selected {
+    background: var(--warm);
+    border-color: var(--warm);
+    box-shadow: 0 4px 16px rgba(29,155,240,0.25);
+  }
+
+  .interest-emoji { font-size: 28px; }
+
+  .interest-label {
+    font-size: 12px; font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.3;
+  }
+
+  /* ── SLIDE 4 — SEGMENT ── */
+  .slide-4 {
+    background: linear-gradient(160deg, #0a0a14, #141428, #060608);
+    padding: 60px 24px 40px;
+    align-items: center;
+  }
+
+  .slide-4-bg {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 220px; opacity: 0.06;
+    pointer-events: none;
+  }
+
+  .segment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: 24px;
+  }
+
+  .segment-card {
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 18px 20px;
+    display: flex; align-items: center; gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .segment-card.selected {
+    background: rgba(29,155,240,.1);
+    border-color: var(--warm);
+  }
+
+  .segment-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+
+  .segment-info { flex: 1; }
+
+  .segment-name {
+    font-size: 15px; font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  .segment-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.4;
+  }
+
+  .segment-check {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .segment-card.selected .segment-check {
+    background: var(--warm);
+    border-color: var(--warm);
+  }
+
+  /* ── ORTAK ELEMENTLER ── */
+  .slide-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 900;
+    line-height: 1.2; margin-bottom: 10px;
+    color: white; text-align: center;
+  }
+
+  .slide-sub {
+    font-size: 14px; line-height: 1.6;
+    color: rgba(255,255,255,0.6);
+    text-align: center; margin-bottom: 4px;
+  }
+
+  /* ── BOTTOM BAR ── */
+  .bottom-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 16px 24px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+  }
+
+  /* PROGRESS DOTS */
+  .dots {
+    display: flex; justify-content: center; gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.25);
+    transition: all 0.3s;
+  }
+
+  .dot.active {
+    width: 20px;
+    background: var(--warm);
+  }
+
+  /* BUTONLAR */
+  .btn-primary {
+    width: 100%;
+    height: 52px;
+    background: var(--warm);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 15px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(29,155,240,0.25);
+  }
+
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-skip {
+    width: 100%;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.45);
+    font-size: 13px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+
+  .btn-skip:hover { color: rgba(255,255,255,0.7); }
+
+  /* Konum butonu özel */
+  .btn-location {
+    width: 100%;
+    height: 52px;
+    background: white;
+    color: var(--dark);
+    border: none;
+    border-radius: 16px;
+    font-size: 15px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.2s;
+  }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- SLIDE 1 — HOŞ GELDİN -->
+  <div class="slide slide-1">
+    <div class="slide-1-bg">🍔</div>
+    <div class="logo-wrap">
+      <div class="logo-icon">🗺️</div>
+      <div class="logo-text">Mekan Keşfet</div>
+    </div>
+    <h1 class="slide-headline">
+      Doğru mekânı<br><em>bulmak artık</em><br>çok kolay
+    </h1>
+    <p class="slide-desc">Gurme yorumları, influencer önerileri ve mahalle müdavimlerinin sesi — tek bir yerde.</p>
+  </div>
+
+  <!-- SLIDE 2 — KONUM -->
+  <div class="slide slide-2">
+    <div class="slide-2-bg">📍</div>
+    <div class="location-illustration">📍</div>
+    <h2 class="slide-title">Çevreni keşfet</h2>
+    <p class="slide-sub">Konumuna en yakın mekanları gösterebilmemiz için izin ver.</p>
+  </div>
+
+  <!-- SLIDE 3 — İLGİ ALANLARI -->
+  <div class="slide slide-3">
+    <div class="slide-3-bg">☕</div>
+    <h2 class="slide-title">Ne yemek istersin?</h2>
+    <p class="slide-sub">Sana özel öneriler sunalım.</p>
+    <div class="interest-grid">
+      <div class="interest-item" onclick="toggleInterest(this)">
+        <span class="interest-emoji">🍔</span>
+        <span class="interest-label">Burger</span>
+      </div>
+      <div class="interest-item" onclick="toggleInterest(this)">
+        <span class="interest-emoji">☕</span>
+        <span class="interest-label">Kahve</span>
+      </div>
+      <div class="interest-item" onclick="toggleInterest(this)">
+        <span class="interest-emoji">🍕</span>
+        <span class="interest-label">Pizza</span>
+      </div>
+      <div class="interest-item" onclick="toggleInterest(this)">
+        <span class="interest-emoji">🌮</span>
+        <span class="interest-label">Fast Food</span>
+      </div>
+      <div class="interest-item" onclick="toggleInterest(this)">
+        <span class="interest-emoji">🍜</span>
+        <span class="interest-label">Asya</span>
+      </div>
+      <div class="interest-item" onclick="toggleInterest(this)">
+        <span class="interest-emoji">🥗</span>
+        <span class="interest-label">Sağlıklı</span>
+      </div>
+      <div class="interest-item" onclick="toggleInterest(this)">
+        <span class="interest-emoji">🍰</span>
+        <span class="interest-label">Tatlı</span>
+      </div>
+      <div class="interest-item" onclick="toggleInterest(this)">
+        <span class="interest-emoji">🍣</span>
+        <span class="interest-label">Sushi</span>
+      </div>
+      <div class="interest-item" onclick="toggleInterest(this)">
+        <span class="interest-emoji">🌮</span>
+        <span class="interest-label">Çiğköfte</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 — SEGMENT -->
+  <div class="slide slide-4">
+    <div class="slide-4-bg">⭐</div>
+    <h2 class="slide-title">Kime güvenirsin?</h2>
+    <p class="slide-sub">Sana en uygun yorumları öne çıkaralım.</p>
+    <div class="segment-options">
+      <div class="segment-card" onclick="selectSegment(this)">
+        <div class="segment-icon">🍽️</div>
+        <div class="segment-info">
+          <div class="segment-name">Gurme & Uzman</div>
+          <div class="segment-desc">Yemek yazarları ve uzman editörlerin görüşleri</div>
+        </div>
+        <div class="segment-check"></div>
+      </div>
+      <div class="segment-card" onclick="selectSegment(this)">
+        <div class="segment-icon">📱</div>
+        <div class="segment-info">
+          <div class="segment-name">Influencer</div>
+          <div class="segment-desc">Food blogger ve sosyal medya içerik üreticileri</div>
+        </div>
+        <div class="segment-check"></div>
+      </div>
+      <div class="segment-card" onclick="selectSegment(this)">
+        <div class="segment-icon">📍</div>
+        <div class="segment-info">
+          <div class="segment-name">Mahalle Müdavimi</div>
+          <div class="segment-desc">O semti en iyi bilen yerel kullanıcılar</div>
+        </div>
+        <div class="segment-check"></div>
+      </div>
+      <div class="segment-card" onclick="selectSegment(this)">
+        <div class="segment-icon">✨</div>
+        <div class="segment-info">
+          <div class="segment-name">Hepsi — Karma</div>
+          <div class="segment-desc">Tüm segmentleri dengeli şekilde gör</div>
+        </div>
+        <div class="segment-check">✓</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar" id="bottomBar">
+  <div class="dots">
+    <div class="dot active" id="dot0"></div>
+    <div class="dot" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+    <div class="dot" id="dot3"></div>
+  </div>
+
+  <!-- Slide 1 butonları -->
+  <div id="btns-0">
+    <button class="btn-primary" onclick="nextSlide()">Başlayalım →</button>
+  </div>
+
+  <!-- Slide 2 butonları -->
+  <div id="btns-1" style="display:none;">
+    <button class="btn-location" onclick="nextSlide()">📍 Konumuma İzin Ver</button>
+    <button class="btn-skip" onclick="nextSlide()">Şimdi değil, atla</button>
+  </div>
+
+  <!-- Slide 3 butonları -->
+  <div id="btns-2" style="display:none;">
+    <button class="btn-primary" onclick="nextSlide()">Devam Et →</button>
+    <button class="btn-skip" onclick="nextSlide()">Atla</button>
+  </div>
+
+  <!-- Slide 4 butonları -->
+  <div id="btns-3" style="display:none;">
+    <button class="btn-primary" onclick="finish()">Keşfe Başla 🗺️</button>
+    <button class="btn-skip" onclick="finish()">Atla</button>
+  </div>
+</div>
+
+<script>
+  var current = 0;
+
+  function nextSlide() {
+    if (current < 3) {
+      current++;
+      updateSlide();
+    }
+  }
+
+  function updateSlide() {
+    // Slides kaydır
+    document.getElementById('slides').style.transform = 'translateX(-' + (current * 25) + '%)';
+
+    // Dots güncelle
+    for (var i = 0; i < 4; i++) {
+      document.getElementById('dot' + i).classList.toggle('active', i === current);
+    }
+
+    // Butonları güncelle
+    for (var i = 0; i < 4; i++) {
+      document.getElementById('btns-' + i).style.display = i === current ? 'block' : 'none';
+    }
+  }
+
+  function toggleInterest(el) {
+    el.classList.toggle('selected');
+  }
+
+  function selectSegment(el) {
+    // Son kart (hepsi) hariç tek seçim
+    document.querySelectorAll('.segment-card').forEach(function(c) {
+      c.classList.remove('selected');
+      c.querySelector('.segment-check').textContent = '';
+    });
+    el.classList.add('selected');
+    el.querySelector('.segment-check').textContent = '✓';
+  }
+
+  function finish() {
+    window.location.href = 'anasayfa.html';
+  }
+
+  // Swipe desteği
+  var startX = 0;
+  document.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; });
+  document.addEventListener('touchend', function(e) {
+    var diff = startX - e.changedTouches[0].clientX;
+    if (diff > 50 && current < 3) { current++; updateSlide(); }
+    if (diff < -50 && current > 0) { current--; updateSlide(); }
+  });
+</script>
+
+</body>
+</html>

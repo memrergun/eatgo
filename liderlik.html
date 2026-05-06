@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liderlik Tablosu — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F7F7F7;--dark:#0F0F0F;--warm:#1D9BF0;--muted:#536471;--border:#EFF3F4;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cream);color:var(--dark);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:90px;}
+
+/* HEADER */
+.header{background:white;border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:12px;height:52px;position:sticky;top:0;z-index:50;}
+.back-btn{width:36px;height:36px;border-radius:50%;background:var(--cream);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.header-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;flex:1;}
+.period-btn{font-size:12px;font-weight:600;color:var(--warm);cursor:pointer;padding:6px 12px;border:1px solid var(--warm);border-radius:20px;background:white;}
+
+/* HERO BANNER */
+.hero-banner{background:linear-gradient(135deg,#0a1628,#1a1a2e,#16213e);padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden;}
+.hero-bg-emoji{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:120px;opacity:.06;}
+.hero-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:white;margin-bottom:6px;position:relative;}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:18px;position:relative;}
+.period-pills{display:flex;gap:8px;justify-content:center;position:relative;}
+.period-pill{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);transition:all .18s;}
+.period-pill.active{background:white;color:var(--dark);border-color:white;}
+
+/* TOP 3 PODİUM */
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:0;padding:24px 16px 0;background:white;margin-bottom:2px;}
+.podium-item{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer;}
+.podium-item:nth-child(1){order:2;} /* 1. orta */
+.podium-item:nth-child(2){order:1;} /* 2. sol */
+.podium-item:nth-child(3){order:3;} /* 3. sağ */
+
+.podium-av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:white;border:3px solid white;position:relative;margin-bottom:8px;}
+.podium-item:nth-child(1) .podium-av{width:72px;height:72px;font-size:26px;}
+.podium-item:nth-child(2) .podium-av{width:60px;height:60px;}
+.podium-item:nth-child(3) .podium-av{width:56px;height:56px;}
+
+.podium-rank{position:absolute;bottom:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;}
+.rank-1{background:linear-gradient(135deg,#FFD700,#FFA500);}
+.rank-2{background:linear-gradient(135deg,#C0C0C0,#A0A0A0);}
+.rank-3{background:linear-gradient(135deg,#CD7F32,#A0522D);}
+
+.podium-name{font-size:12px;font-weight:700;text-align:center;margin-bottom:2px;max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.podium-handle{font-size:10px;color:var(--muted);margin-bottom:6px;}
+.podium-score{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;margin-bottom:4px;}
+.podium-base{width:100%;display:flex;align-items:flex-end;justify-content:center;padding:8px 4px 0;}
+.podium-block{width:80%;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.podium-item:nth-child(1) .podium-block{height:72px;background:linear-gradient(to bottom,#1D9BF0,#0A66C2);}
+.podium-item:nth-child(2) .podium-block{height:52px;background:linear-gradient(to bottom,#536471,#374151);}
+.podium-item:nth-child(3) .podium-block{height:40px;background:linear-gradient(to bottom,#CD7F32,#A0522D);}
+
+/* SEKME */
+.seg-bar{display:flex;background:white;border-bottom:1px solid var(--border);margin-bottom:2px;}
+.seg-tab{flex:1;height:42px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;}
+.seg-tab.active{color:var(--dark);border-bottom-color:var(--dark);}
+
+/* LİDERLİK SATIRI */
+.leader-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:white;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.leader-row:active{background:var(--cream);}
+.leader-row.me{background:#F0F8FF;border-left:3px solid var(--warm);}
+.rank-num{width:28px;text-align:center;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--muted);flex-shrink:0;}
+.rank-num.top{color:var(--dark);}
+.rank-change{width:16px;text-align:center;font-size:11px;flex-shrink:0;}
+.rank-up{color:#16A34A;}
+.rank-down{color:#E74C3C;}
+.rank-same{color:var(--muted);}
+.leader-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:white;flex-shrink:0;}
+.leader-info{flex:1;min-width:0;}
+.leader-name{font-size:14px;font-weight:700;margin-bottom:2px;display:flex;align-items:center;gap:6px;}
+.leader-handle{font-size:12px;color:var(--muted);margin-bottom:4px;}
+.leader-badges{display:flex;gap:4px;}
+.lbadge{font-size:10px;padding:1px 6px;border-radius:8px;font-weight:600;}
+.lbadge.gurme{background:#EBF5FF;color:#0A66C2;}
+.lbadge.influencer{background:#F0FFF4;color:#16A34A;}
+.lbadge.mudavim{background:#FFF7E6;color:#B45309;}
+.leader-right{text-align:right;flex-shrink:0;}
+.leader-points{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;}
+.leader-points-sub{font-size:10px;color:var(--muted);}
+.me-tag{font-size:10px;font-weight:700;background:var(--warm);color:white;padding:1px 7px;border-radius:8px;}
+
+/* BEN'İN DURUMU — sticky bottom card */
+.my-rank-card{position:sticky;bottom:80px;left:16px;right:16px;margin:0 16px;background:white;border-radius:16px;padding:14px 16px;box-shadow:0 4px 24px rgba(0,0,0,.12);border:1px solid var(--border);display:flex;align-items:center;gap:12px;z-index:10;}
+.my-rank-left{flex:1;}
+.my-rank-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
+.my-rank-num{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;}
+.my-rank-sub{font-size:12px;color:var(--muted);}
+.my-progress{flex:1;}
+.progress-label{font-size:11px;color:var(--muted);margin-bottom:5px;display:flex;justify-content:space-between;}
+.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--warm);border-radius:3px;transition:width 1s ease;}
+.my-rank-points{text-align:right;flex-shrink:0;}
+.my-pts-num{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+.my-pts-sub{font-size:10px;color:var(--muted);}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:white;border-top:1px solid var(--border);display:flex;padding:8px 0 24px;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;color:var(--muted);cursor:pointer;}
+.nav-item span:first-child{font-size:22px;}
+
+#toast{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--dark);color:white;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <div class="header-title">🏆 Liderlik Tablosu</div>
+  <div class="period-btn" onclick="cyclePeriod()">Bu Ay ▾</div>
+</div>
+
+<!-- HERO -->
+<div class="hero-banner">
+  <div class="hero-bg-emoji">🏆</div>
+  <div class="hero-title">En İyi Gurme Yazarlar</div>
+  <div class="hero-sub">Kadıköy'ün en etkili yemek yorumcuları</div>
+  <div class="period-pills">
+    <div class="period-pill active" id="pill-hafta" onclick="setPeriod('hafta',this)">Bu Hafta</div>
+    <div class="period-pill" id="pill-ay" onclick="setPeriod('ay',this)">Bu Ay</div>
+    <div class="period-pill" id="pill-yil" onclick="setPeriod('yil',this)">Bu Yıl</div>
+    <div class="period-pill" id="pill-tum" onclick="setPeriod('tum',this)">Tüm Zamanlar</div>
+  </div>
+</div>
+
+<!-- PODİUM TOP 3 -->
+<div class="podium" id="podium">
+  <!-- 1. sıra (ortada görünecek, order:2) -->
+  <div class="podium-item" onclick="window.location.href='kullanici-profil.html?name=Yemek+Gezgini&handle=yemekgezgini'">
+    <div class="podium-av" style="background:linear-gradient(135deg,#0a1628,#1a1f2e);">Y
+      <div class="podium-rank rank-1">1</div>
+    </div>
+    <div class="podium-name">Yemek Gezgini</div>
+    <div class="podium-handle">@yemekgezgini</div>
+    <div class="podium-score">9.840 puan</div>
+    <div class="podium-base"><div class="podium-block">🥇</div></div>
+  </div>
+
+  <!-- 2. sıra (solda) -->
+  <div class="podium-item" onclick="window.location.href='kullanici-profil.html?name=Lezzet+Duragi&handle=lezzetduragi'">
+    <div class="podium-av" style="background:linear-gradient(135deg,#111520,#1a2030);">L
+      <div class="podium-rank rank-2">2</div>
+    </div>
+    <div class="podium-name">Lezzet Durağı</div>
+    <div class="podium-handle">@lezzetduragi</div>
+    <div class="podium-score">8.220 puan</div>
+    <div class="podium-base"><div class="podium-block">🥈</div></div>
+  </div>
+
+  <!-- 3. sıra (sağda) -->
+  <div class="podium-item" onclick="window.location.href='profil.html'">
+    <div class="podium-av" style="background:linear-gradient(135deg,#1a1a2e,#16213e);overflow:hidden;">
+      <img src="" id="podium3img" style="width:100%;height:100%;object-fit:cover;display:none;">
+      <span id="podium3letter">E</span>
+      <div class="podium-rank rank-3">3</div>
+    </div>
+    <div class="podium-name">Emre Ergün</div>
+    <div class="podium-handle">@emreergun</div>
+    <div class="podium-score">7.650 puan</div>
+    <div class="podium-base"><div class="podium-block">🥉</div></div>
+  </div>
+</div>
+
+<!-- SEGMENT TABS -->
+<div class="seg-bar">
+  <div class="seg-tab active" onclick="setSegment('gurme',this)">🍽️ Gurme</div>
+  <div class="seg-tab" onclick="setSegment('influencer',this)">📱 Influencer</div>
+  <div class="seg-tab" onclick="setSegment('mudavim',this)">📍 Müdavim</div>
+</div>
+
+<!-- SIRALI LİSTE -->
+<div id="leaderList">
+
+  <div class="leader-row" onclick="window.location.href='kullanici-profil.html?name=Yemek+Gezgini&handle=yemekgezgini'">
+    <div class="rank-num top">1</div>
+    <div class="rank-change rank-same">—</div>
+    <div class="leader-av" style="background:linear-gradient(135deg,#0a1628,#1a1f2e);">Y</div>
+    <div class="leader-info">
+      <div class="leader-name">Yemek Gezgini <span class="lbadge influencer">📱</span> <span style="font-size:10px;background:#D1FAE5;color:#065F46;padding:1px 6px;border-radius:10px;font-weight:700;">▲2</span></div>
+      <div class="leader-handle">@yemekgezgini · 48.2K takipçi</div>
+      <div class="leader-badges"><span class="lbadge gurme">🍽️ Gurme</span><span class="lbadge influencer">📱 Influencer</span></div>
+    </div>
+    <div class="leader-right">
+      <div class="leader-points">9.840</div>
+      <div class="leader-points-sub">puan</div>
+    </div>
+  </div>
+
+  <div class="leader-row" onclick="window.location.href='kullanici-profil.html'">
+    <div class="rank-num top">2</div>
+    <div class="rank-change rank-up">↑2</div>
+    <div class="leader-av" style="background:linear-gradient(135deg,#111520,#1a2030);">L</div>
+    <div class="leader-info">
+      <div class="leader-name">Lezzet Durağı</div>
+      <div class="leader-handle">@lezzetduragi · 31.5K takipçi</div>
+      <div class="leader-badges"><span class="lbadge influencer">📱 Influencer</span></div>
+    </div>
+    <div class="leader-right">
+      <div class="leader-points">8.220</div>
+      <div class="leader-points-sub">puan</div>
+    </div>
+  </div>
+
+  <div class="leader-row me" onclick="window.location.href='profil.html'">
+    <div class="rank-num top">3</div>
+    <div class="rank-change rank-up">↑1</div>
+    <div class="leader-av" style="background:linear-gradient(135deg,#1a1a2e,#16213e);overflow:hidden;">E</div>
+    <div class="leader-info">
+      <div class="leader-name">Emre Ergün <span class="me-tag">Sen</span> <span style="font-size:10px;background:#D1FAE5;color:#065F46;padding:1px 6px;border-radius:10px;font-weight:700;">▲1</span></div>
+      <div class="leader-handle">@emreergun · 3.2K takipçi</div>
+      <div class="leader-badges"><span class="lbadge gurme">🍽️ Gurme Editörü</span></div>
+    </div>
+    <div class="leader-right">
+      <div class="leader-points">7.650</div>
+      <div class="leader-points-sub">puan</div>
+    </div>
+  </div>
+
+  <div class="leader-row" onclick="window.location.href='kullanici-profil.html'">
+    <div class="rank-num">4</div>
+    <div class="rank-change rank-down">↓1</div>
+    <div class="leader-av" style="background:linear-gradient(135deg,#0f1117,#1a1f2e);">M</div>
+    <div class="leader-info">
+      <div class="leader-name">Meral H.</div>
+      <div class="leader-handle">@meral_kadikoy · 8.4K takipçi</div>
+      <div class="leader-badges"><span class="lbadge mudavim">📍 Müdavim</span></div>
+    </div>
+    <div class="leader-right">
+      <div class="leader-points">6.890</div>
+      <div class="leader-points-sub">puan</div>
+    </div>
+  </div>
+
+  <div class="leader-row" onclick="window.location.href='kullanici-profil.html?name=Ahmet+Gourmet&handle=ahmet_gourmet'">
+    <div class="rank-num">5</div>
+    <div class="rank-change rank-up">↑3</div>
+    <div class="leader-av" style="background:linear-gradient(135deg,#080d18,#0d1a2e);">A</div>
+    <div class="leader-info">
+      <div class="leader-name">Ahmet Gourmet</div>
+      <div class="leader-handle">@ahmet_gourmet · 5.1K takipçi</div>
+      <div class="leader-badges"><span class="lbadge gurme">🍽️ Gurme</span></div>
+    </div>
+    <div class="leader-right">
+      <div class="leader-points">5.430</div>
+      <div class="leader-points-sub">puan</div>
+    </div>
+  </div>
+
+  <div class="leader-row" onclick="window.location.href='kullanici-profil.html'">
+    <div class="rank-num">6</div>
+    <div class="rank-change rank-same">—</div>
+    <div class="leader-av" style="background:linear-gradient(135deg,#120a1a,#1e1030);">B</div>
+    <div class="leader-info">
+      <div class="leader-name">Burger Baba</div>
+      <div class="leader-handle">@burgerbaba · 12.4K takipçi</div>
+      <div class="leader-badges"><span class="lbadge influencer">📱 Influencer</span></div>
+    </div>
+    <div class="leader-right">
+      <div class="leader-points">4.980</div>
+      <div class="leader-points-sub">puan</div>
+    </div>
+  </div>
+
+  <div class="leader-row" onclick="window.location.href='kullanici-profil.html'">
+    <div class="rank-num">7</div>
+    <div class="rank-change rank-down">↓2</div>
+    <div class="leader-av" style="background:linear-gradient(135deg,#0a1f28,#0d2a3c);">S</div>
+    <div class="leader-info">
+      <div class="leader-name">Smash Queen</div>
+      <div class="leader-handle">@smashqueen · 6.8K takipçi</div>
+      <div class="leader-badges"><span class="lbadge gurme">🍽️ Gurme</span></div>
+    </div>
+    <div class="leader-right">
+      <div class="leader-points">4.210</div>
+      <div class="leader-points-sub">puan</div>
+    </div>
+  </div>
+
+  <div class="leader-row" onclick="window.location.href='kullanici-profil.html'">
+    <div class="rank-num">8</div>
+    <div class="rank-change rank-up">↑1</div>
+    <div class="leader-av" style="background:linear-gradient(135deg,#0a1628,#16213e);">C</div>
+    <div class="leader-info">
+      <div class="leader-name">Cansu Tatli</div>
+      <div class="leader-handle">@cansutatli · 3.9K takipçi</div>
+      <div class="leader-badges"><span class="lbadge mudavim">📍 Müdavim</span></div>
+    </div>
+    <div class="leader-right">
+      <div class="leader-points">3.760</div>
+      <div class="leader-points-sub">puan</div>
+    </div>
+  </div>
+
+  <div class="leader-row" onclick="window.location.href='kullanici-profil.html'">
+    <div class="rank-num">9</div>
+    <div class="rank-change rank-same">—</div>
+    <div class="leader-av" style="background:linear-gradient(135deg,#111520,#0f1117);">F</div>
+    <div class="leader-info">
+      <div class="leader-name">Food Explorer</div>
+      <div class="leader-handle">@food_explorer · 2.1K takipçi</div>
+      <div class="leader-badges"><span class="lbadge gurme">🍽️ Gurme</span><span class="lbadge mudavim">📍 Müdavim</span></div>
+    </div>
+    <div class="leader-right">
+      <div class="leader-points">3.140</div>
+      <div class="leader-points-sub">puan</div>
+    </div>
+  </div>
+
+  <div class="leader-row" onclick="window.location.href='kullanici-profil.html'">
+    <div class="rank-num">10</div>
+    <div class="rank-change rank-up">↑4</div>
+    <div class="leader-av" style="background:linear-gradient(135deg,#1a1f2e,#0d1a2e);">K</div>
+    <div class="leader-info">
+      <div class="leader-name">Kebap King</div>
+      <div class="leader-handle">@kebapking · 1.8K takipçi</div>
+      <div class="leader-badges"><span class="lbadge mudavim">📍 Müdavim</span></div>
+    </div>
+    <div class="leader-right">
+      <div class="leader-points">2.890</div>
+      <div class="leader-points-sub">puan</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BENİM SIRA KARTI — sticky -->
+<div class="my-rank-card">
+  <div class="my-rank-left">
+    <div class="my-rank-label">Senin sıran</div>
+    <div class="my-rank-num">#3</div>
+    <div class="my-rank-sub">↑1 bu hafta</div>
+  </div>
+  <div class="my-progress">
+    <div class="progress-label">
+      <span>7.650 puan</span>
+      <span style="color:var(--warm);">+190 puan → #2</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width:93%;"></div>
+    </div>
+  </div>
+  <div class="my-rank-points">
+    <div class="my-pts-num">7.650</div>
+    <div class="my-pts-sub">puan</div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item" onclick="window.location.href='anasayfa.html'"><span>🗺️</span><span>Keşfet</span></div>
+  <div class="nav-item" onclick="window.location.href='arama.html'"><span>🔍</span><span>Ara</span></div>
+  <div class="nav-item" onclick="window.location.href='bildirimler.html'"><span>🔔</span><span>Bildirimler</span></div>
+  <div class="nav-item" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var periods = ['Bu Hafta','Bu Ay','Bu Yıl','Tüm Zamanlar'];
+var curPeriod = 0;
+
+function cyclePeriod(){
+  curPeriod = (curPeriod+1)%periods.length;
+  document.querySelector('.period-btn').textContent = periods[curPeriod] + ' ▾';
+}
+
+function setPeriod(p, el){
+  document.querySelectorAll('.period-pill').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  showToast(el.textContent + ' görünümü');
+}
+
+function setSegment(seg, el){
+  document.querySelectorAll('.seg-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  showToast(el.textContent + ' sıralaması');
+}
+
+var toastTimer;
+function showToast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.style.display='none'; },2200); }
+
+// Progress bar animasyonu
+setTimeout(function(){
+  var fill = document.querySelector('.progress-fill');
+  if(fill){ fill.style.width='0'; setTimeout(function(){ fill.style.width='93%'; },100); }
+},300);
+</script>
+</body>
+</html>

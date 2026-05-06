@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F7F7F7;--dark:#0F0F0F;--warm:#1D9BF0;--muted:#536471;--border:#EFF3F4;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cream);color:var(--dark);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:90px;}
+
+/* HEADER */
+.header{position:sticky;top:0;z-index:50;background:white;border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:12px;height:52px;}
+.back-btn{width:36px;height:36px;border-radius:50%;background:var(--cream);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.header-handle{font-size:15px;font-weight:700;flex:1;}
+.header-more{width:36px;height:36px;border-radius:50%;background:var(--cream);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;}
+
+/* COVER */
+.cover{height:120px;position:relative;background:linear-gradient(135deg,#0a1628,#0d1f3c);overflow:hidden;}
+.cover-emoji{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:80px;opacity:.12;}
+.avatar-wrap{position:absolute;bottom:-40px;left:16px;}
+.avatar{width:80px;height:80px;border-radius:50%;background:var(--warm);border:4px solid white;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:white;overflow:hidden;}
+
+/* PROFIL BİLGİ */
+.profile-info{padding:50px 16px 16px;background:white;border-bottom:1px solid var(--border);}
+.action-row{display:flex;gap:8px;justify-content:flex-end;margin-bottom:12px;}
+
+/* Takip et butonu */
+.btn-follow{height:36px;padding:0 20px;background:var(--dark);color:white;border:1.5px solid var(--dark);border-radius:20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btn-follow.following{background:white;color:var(--dark);border-color:var(--border);}
+.btn-follow.following:hover{border-color:#E74C3C;color:#E74C3C;}
+.btn-msg{height:36px;padding:0 16px;background:white;color:var(--dark);border:1.5px solid var(--border);border-radius:20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;}
+.btn-more{width:36px;height:36px;background:white;border:1.5px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;}
+
+.profile-name{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;margin-bottom:2px;}
+.profile-handle{font-size:14px;color:var(--muted);margin-bottom:10px;}
+
+/* Rozetler */
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge.influencer{background:#F0FFF4;color:#16A34A;}
+.badge.gurme{background:#EBF5FF;color:#0A66C2;}
+.badge.mudavim{background:#FFF7E6;color:#B45309;}
+
+.profile-bio{font-size:14px;line-height:1.6;color:#374151;margin-bottom:10px;}
+.profile-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:12px;}
+
+/* Müşterek takip */
+.mutual-follow{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:0;}
+.mutual-avatars{display:flex;}
+.mutual-av{width:20px;height:20px;border-radius:50%;border:1.5px solid white;margin-right:-6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;}
+
+/* İSTATİSTİKLER */
+.stats-row{display:flex;background:white;border-bottom:1px solid var(--border);}
+.stat-item{flex:1;padding:14px 0;display:flex;flex-direction:column;align-items:center;gap:2px;border-right:1px solid var(--border);cursor:pointer;}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+.stat-label{font-size:11px;color:var(--muted);font-weight:500;}
+
+/* TABS */
+.profile-tabs{display:flex;background:white;border-bottom:1px solid var(--border);position:sticky;top:52px;z-index:40;}
+.ptab{flex:1;padding:13px 0;text-align:center;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;}
+.ptab.active{color:var(--dark);border-bottom-color:var(--dark);}
+
+/* PANEL */
+.panel{display:none;padding:16px;}
+.panel.active{display:block;}
+
+/* YORUM KARTLARI */
+.review-card{background:white;border-radius:16px;padding:14px;margin-bottom:10px;border:1px solid var(--border);cursor:pointer;transition:box-shadow .15s;}
+.review-card:active{box-shadow:0 2px 12px rgba(0,0,0,.08);}
+.rc-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.rc-venue-thumb{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.rc-venue-name{font-size:13px;font-weight:700;margin-bottom:1px;}
+.rc-venue-sub{font-size:11px;color:var(--muted);}
+.rc-date{margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap;}
+.rc-seg{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;margin-bottom:8px;}
+.rc-seg.influencer{background:#F0FFF4;color:#16A34A;}
+.rc-seg.gurme{background:#EBF5FF;color:#0A66C2;}
+.rc-text{font-size:13px;line-height:1.6;color:#374151;margin-bottom:10px;}
+.rc-footer{display:flex;align-items:center;justify-content:space-between;}
+.rc-likes{font-size:12px;color:var(--muted);}
+.rc-score{font-size:14px;font-weight:700;display:flex;align-items:center;gap:3px;}
+.rc-score span{color:#F5A623;}
+
+/* MEKAN SATIRLARI */
+.venue-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.venue-row:last-child{border-bottom:none;}
+.vr-thumb{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.vr-info{flex:1;min-width:0;}
+.vr-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.vr-sub{font-size:12px;color:var(--muted);margin-bottom:5px;}
+.vr-pills{display:flex;gap:5px;}
+.vpill{font-size:10px;padding:2px 7px;background:var(--cream);border-radius:8px;color:var(--muted);font-weight:500;}
+.vr-score{text-align:right;flex-shrink:0;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;}
+.vr-score-sub{font-size:10px;color:var(--muted);font-family:'DM Sans',sans-serif;}
+
+/* VİDEO GRID */
+.video-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;margin:0 -16px;}
+.vg-item{aspect-ratio:9/16;position:relative;display:flex;align-items:center;justify-content:center;font-size:32px;cursor:pointer;overflow:hidden;}
+.vg-overlay{position:absolute;inset:0;background:rgba(0,0,0,.15);display:flex;align-items:flex-end;padding:6px;}
+.vg-seg{font-size:9px;font-weight:700;background:rgba(0,0,0,.6);color:white;padding:2px 6px;border-radius:6px;}
+.vg-play{position:absolute;width:28px;height:28px;background:rgba(255,255,255,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;padding-left:2px;}
+.vg-likes{position:absolute;top:6px;right:6px;font-size:10px;font-weight:700;color:white;background:rgba(0,0,0,.5);padding:2px 6px;border-radius:8px;}
+
+/* KOLEKSİYON GRID */
+.collection-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.coll-card{border-radius:16px;overflow:hidden;background:white;border:1px solid var(--border);cursor:pointer;}
+.coll-thumb{height:100px;display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;}
+.coll-count{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.6);color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;}
+.coll-body{padding:10px 12px 12px;}
+.coll-name{font-size:13px;font-weight:700;margin-bottom:3px;}
+.coll-sub{font-size:11px;color:var(--muted);}
+
+/* MORE MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;backdrop-filter:blur(3px);}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:white;border-radius:24px 24px 0 0;padding:20px 0 48px;width:100%;animation:slideUp .28s ease;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+.modal-item{display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;font-size:15px;font-weight:500;transition:background .15s;}
+.modal-item:active{background:var(--cream);}
+.modal-item.danger{color:#E74C3C;}
+.modal-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.modal-divider{height:1px;background:var(--border);margin:4px 0;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:white;border-top:1px solid var(--border);display:flex;padding:8px 0 24px;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;color:var(--muted);cursor:pointer;}
+.nav-item span:first-child{font-size:22px;}
+
+/* Toast */
+#toast{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--dark);color:white;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <div class="header-handle" id="headerHandle">@yemekgezgini</div>
+  <button class="header-more" onclick="openModal()">⋯</button>
+</div>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-emoji">📱☕🍔</div>
+  <div class="avatar-wrap">
+    <div class="avatar" id="userAvatar" style="background:linear-gradient(135deg,#0a1628,#1a1f2e);font-size:28px;">Y</div>
+  </div>
+</div>
+
+<!-- PROFİL BİLGİ -->
+<div class="profile-info">
+
+  <!-- Aksiyon butonları — sağa yaslanmış -->
+  <div class="action-row">
+    <button class="btn-msg" onclick="sendMessage()">💬 Mesaj</button>
+    <button class="btn-follow" id="followBtn" onclick="toggleFollow()">Takip Et</button>
+  </div>
+
+  <div class="profile-name" id="userName">Yemek Gezgini</div>
+  <div class="profile-handle" id="userHandle">@yemekgezgini · İstanbul</div>
+
+  <div class="badges" id="userBadges">
+    <span class="badge influencer">📱 Influencer</span>
+    <span class="badge gurme">🍽️ Gurme Editörü</span>
+      <span class="badge" style="background:#F0FFF4;color:#16A34A;border:1px solid #BBF7D0;">🏪 İşletme Sahibi</span>
+  </div>
+
+  <p class="profile-bio" id="userBio">
+    İstanbul'un gizli köşelerini keşfediyorum. Food blogger, kahve bağımlısı. 📍 Kadıköy & Beyoğlu
+  </p>
+
+  <div class="profile-meta">
+    <span>📍 İstanbul</span>
+    <span>📅 Mart 2022'den beri</span>
+    <span>🔗 yemekgezgini.com</span>
+  </div>
+
+  <!-- Müşterek takipçiler -->
+  <div class="mutual-follow">
+    <div class="mutual-avatars">
+      <div class="mutual-av" style="background:#1a1a2e;">M</div>
+      <div class="mutual-av" style="background:#0a1628;">A</div>
+      <div class="mutual-av" style="background:#16213e;">K</div>
+    </div>
+    <span>meral_kadikoy, ahmet_gourmet ve 14 kişi takip ediyor</span>
+  </div>
+
+</div>
+
+<!-- İSTATİSTİKLER -->
+<div class="stats-row">
+  <div class="stat-item" onclick="showToast('Takip edilenler')">
+    <div class="stat-num">312</div>
+    <div class="stat-label">Takip</div>
+  </div>
+  <div class="stat-item" onclick="showToast('Takipçiler')">
+    <div class="stat-num">48.2K</div>
+    <div class="stat-label">Takipçi</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">892</div>
+    <div class="stat-label">Yorum</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">2.1M</div>
+    <div class="stat-label">Beğeni</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="profile-tabs">
+  <div class="ptab active" onclick="showPanel('yorumlar',this)">Yorumlar</div>
+  <div class="ptab" onclick="showPanel('videolar',this)">Videolar</div>
+  <div class="ptab" onclick="showPanel('mekanlar',this)">Mekanlar</div>
+  <div class="ptab" onclick="showPanel('koleksiyonlar',this)">Koleksiyonlar</div>
+</div>
+
+<!-- PANEL: YORUMLAR -->
+<div class="panel active" id="panel-yorumlar">
+
+  <div class="review-card" onclick="window.location.href='white-burger.html'">
+    <div class="rc-top">
+      <div class="rc-venue-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">🍔</div>
+      <div>
+        <div class="rc-venue-name">White Burger</div>
+        <div class="rc-venue-sub">Kadıköy · Burger</div>
+      </div>
+      <div class="rc-date">3 gün önce</div>
+    </div>
+    <span class="rc-seg influencer">📱 Influencer</span>
+    <p class="rc-text">Kadıköy'ün en iyi smash burger'ını bulduk 🔥 Double smash menü kesinlikle denenmeli. Fiyat/performans şampiyonu! Smash tekniği mükemmel uygulanmış.</p>
+    <div class="rc-footer">
+      <span class="rc-likes">❤️ 2.4K · 💬 84</span>
+      <div class="rc-score"><span>★</span> 4.8</div>
+    </div>
+  </div>
+
+  <div class="review-card" onclick="window.location.href='mekan.html'">
+    <div class="rc-top">
+      <div class="rc-venue-thumb" style="background:linear-gradient(135deg,#0f1117,#1a1f2e);">☕</div>
+      <div>
+        <div class="rc-venue-name">Story Coffee Roasters</div>
+        <div class="rc-venue-sub">Moda · Specialty Coffee</div>
+      </div>
+      <div class="rc-date">1 hafta önce</div>
+    </div>
+    <span class="rc-seg influencer">📱 Influencer</span>
+    <p class="rc-text">Bahçesi harika, filter kahveleri mükemmel. Cold brew için özellikle geliyorum. İstanbul'un en iyi single origin kafesi bence!</p>
+    <div class="rc-footer">
+      <span class="rc-likes">❤️ 1.1K · 💬 47</span>
+      <div class="rc-score"><span>★</span> 4.9</div>
+    </div>
+  </div>
+
+  <div class="review-card">
+    <div class="rc-top">
+      <div class="rc-venue-thumb" style="background:linear-gradient(135deg,#120a1a,#1e1030);">🍕</div>
+      <div>
+        <div class="rc-venue-name">Il Pellicano</div>
+        <div class="rc-venue-sub">Moda · Napoli Pizza</div>
+      </div>
+      <div class="rc-date">2 hafta önce</div>
+    </div>
+    <span class="rc-seg gurme">🍽️ Gurme</span>
+    <p class="rc-text">Napoliten usulü pizza deneyimi için şehrin en iyisi. Hamur hafif, malzemeler taze. Margherita'yı şiddetle tavsiye ederim.</p>
+    <div class="rc-footer">
+      <span class="rc-likes">❤️ 876 · 💬 31</span>
+      <div class="rc-score"><span>★</span> 4.7</div>
+    </div>
+  </div>
+
+  <div class="review-card">
+    <div class="rc-top">
+      <div class="rc-venue-thumb" style="background:linear-gradient(135deg,#080d18,#0d1a2e);">🥗</div>
+      <div>
+        <div class="rc-venue-name">Veganarsist</div>
+        <div class="rc-venue-sub">Osmanağa · Vegan</div>
+      </div>
+      <div class="rc-date">1 ay önce</div>
+    </div>
+    <span class="rc-seg influencer">📱 Influencer</span>
+    <p class="rc-text">Vegan olmayan biri olarak itiraf etmeliyim ki, bu köfte gerçekten lezzetliydi. Et yiyenler de denemelidir!</p>
+    <div class="rc-footer">
+      <span class="rc-likes">❤️ 543 · 💬 22</span>
+      <div class="rc-score"><span>★</span> 4.6</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PANEL: VİDEOLAR -->
+<div class="panel" id="panel-videolar">
+  <div class="video-grid">
+    <div class="vg-item" style="background:linear-gradient(135deg,#1a1a2e,#16213e);" onclick="showToast('Video oynatılıyor…')">
+      🍔<div class="vg-play">▶</div>
+      <div class="vg-overlay"><span class="vg-seg">📱 White Burger</span></div>
+      <div class="vg-likes">❤️ 2.4K</div>
+    </div>
+    <div class="vg-item" style="background:linear-gradient(135deg,#0f1117,#1a1f2e);" onclick="showToast('Video oynatılıyor…')">
+      ☕<div class="vg-play">▶</div>
+      <div class="vg-overlay"><span class="vg-seg">📱 Story Coffee</span></div>
+      <div class="vg-likes">❤️ 1.1K</div>
+    </div>
+    <div class="vg-item" style="background:linear-gradient(135deg,#120a1a,#1e1030);" onclick="showToast('Video oynatılıyor…')">
+      🍕<div class="vg-play">▶</div>
+      <div class="vg-overlay"><span class="vg-seg">📱 Il Pellicano</span></div>
+      <div class="vg-likes">❤️ 876</div>
+    </div>
+    <div class="vg-item" style="background:linear-gradient(135deg,#080d18,#0d1a2e);" onclick="showToast('Video oynatılıyor…')">
+      🥗<div class="vg-play">▶</div>
+      <div class="vg-overlay"><span class="vg-seg">📱 Veganarsist</span></div>
+      <div class="vg-likes">❤️ 543</div>
+    </div>
+    <div class="vg-item" style="background:linear-gradient(135deg,#0a1628,#0d1f3c);" onclick="showToast('Video oynatılıyor…')">
+      🥐<div class="vg-play">▶</div>
+      <div class="vg-overlay"><span class="vg-seg">📱 Brekkie</span></div>
+      <div class="vg-likes">❤️ 1.8K</div>
+    </div>
+    <div class="vg-item" style="background:linear-gradient(135deg,#111520,#1a2030);" onclick="showToast('Video oynatılıyor…')">
+      🍜<div class="vg-play">▶</div>
+      <div class="vg-overlay"><span class="vg-seg">📱 Noodle House</span></div>
+      <div class="vg-likes">❤️ 692</div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: MEKANLAR -->
+<div class="panel" id="panel-mekanlar">
+
+  <div class="venue-row" onclick="window.location.href='white-burger.html'">
+    <div class="vr-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">🍔</div>
+    <div class="vr-info">
+      <div class="vr-name">White Burger</div>
+      <div class="vr-sub">Kadıköy · Smash Burger</div>
+      <div class="vr-pills"><span class="vpill">📱 Influencer yorumu</span><span class="vpill">🔥 Trend</span></div>
+    </div>
+    <div class="vr-score">4.8<div class="vr-score-sub">★ puan</div></div>
+  </div>
+
+  <div class="venue-row" onclick="window.location.href='mekan.html'">
+    <div class="vr-thumb" style="background:linear-gradient(135deg,#0f1117,#1a1f2e);">☕</div>
+    <div class="vr-info">
+      <div class="vr-name">Story Coffee Roasters</div>
+      <div class="vr-sub">Moda · Specialty Coffee</div>
+      <div class="vr-pills"><span class="vpill">📱 Influencer yorumu</span></div>
+    </div>
+    <div class="vr-score">4.9<div class="vr-score-sub">★ puan</div></div>
+  </div>
+
+  <div class="venue-row">
+    <div class="vr-thumb" style="background:linear-gradient(135deg,#120a1a,#1e1030);">🍕</div>
+    <div class="vr-info">
+      <div class="vr-name">Il Pellicano</div>
+      <div class="vr-sub">Moda · Napoli Pizza</div>
+      <div class="vr-pills"><span class="vpill">🍽️ Gurme yorumu</span></div>
+    </div>
+    <div class="vr-score">4.7<div class="vr-score-sub">★ puan</div></div>
+  </div>
+
+  <div class="venue-row">
+    <div class="vr-thumb" style="background:linear-gradient(135deg,#0a1628,#0d1f3c);">🥐</div>
+    <div class="vr-info">
+      <div class="vr-name">Brekkie</div>
+      <div class="vr-sub">Yoğurtçu Parkı · Kahvaltı</div>
+      <div class="vr-pills"><span class="vpill">📱 Influencer yorumu</span></div>
+    </div>
+    <div class="vr-score">4.7<div class="vr-score-sub">★ puan</div></div>
+  </div>
+
+</div>
+
+<!-- PANEL: KOLEKSİYONLAR -->
+<div class="panel" id="panel-koleksiyonlar">
+  <div class="collection-grid">
+
+    <div class="coll-card">
+      <div class="coll-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">
+        🍔<div class="coll-count">12 mekan</div>
+      </div>
+      <div class="coll-body">
+        <div class="coll-name">İstanbul'un En İyi Burgerleri</div>
+        <div class="coll-sub">📱 Influencer seçimi</div>
+      </div>
+    </div>
+
+    <div class="coll-card">
+      <div class="coll-thumb" style="background:linear-gradient(135deg,#0f1117,#1a1f2e);">
+        ☕<div class="coll-count">8 mekan</div>
+      </div>
+      <div class="coll-body">
+        <div class="coll-name">Sabah Kahvesi Rotaları</div>
+        <div class="coll-sub">📱 Influencer seçimi</div>
+      </div>
+    </div>
+
+    <div class="coll-card">
+      <div class="coll-thumb" style="background:linear-gradient(135deg,#080d18,#0d1a2e);">
+        🌙<div class="coll-count">6 mekan</div>
+      </div>
+      <div class="coll-body">
+        <div class="coll-name">Gece Gezmesi Rotası</div>
+        <div class="coll-sub">📍 Kadıköy & Beyoğlu</div>
+      </div>
+    </div>
+
+    <div class="coll-card">
+      <div class="coll-thumb" style="background:linear-gradient(135deg,#0a1628,#0d1f3c);">
+        🥐<div class="coll-count">9 mekan</div>
+      </div>
+      <div class="coll-body">
+        <div class="coll-name">Hafta Sonu Brunch Spotu</div>
+        <div class="coll-sub">📱 Influencer seçimi</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  <!-- FAVORİ MEKANLAR -->
+  <div style="padding:0 16px 16px;">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#536471;margin-bottom:10px;">📍 Favori Mekanları</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:12px;padding:10px 12px;border:1px solid #EFF3F4;cursor:pointer;" onclick="window.location.href='white-burger.html'">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#1a1a2e,#16213e);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🍔</div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:700;">White Burger</div><div style="font-size:11px;color:#536471;">Kadıköy · Smash Burger · ★4.4</div></div>
+        <div style="font-size:14px;color:#536471;">›</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:12px;padding:10px 12px;border:1px solid #EFF3F4;cursor:pointer;" onclick="window.location.href='mekan.html?name=Story+Coffee+Roasters&score=4.7&emoji=☕&hood=Moda'">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#0f1117,#1a1f2e);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">☕</div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Story Coffee Roasters</div><div style="font-size:11px;color:#536471;">Moda · Specialty Coffee · ★4.7</div></div>
+        <div style="font-size:14px;color:#536471;">›</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:12px;padding:10px 12px;border:1px solid #EFF3F4;cursor:pointer;" onclick="window.location.href='mekan.html?name=Brekkie&score=4.7&emoji=🥐&hood=Moda'">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#111520,#1a2030);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🥐</div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Brekkie Breakfast Club</div><div style="font-size:11px;color:#536471;">Moda · Brunch · ★4.7</div></div>
+        <div style="font-size:14px;color:#536471;">›</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:12px;padding:10px 12px;border:1px solid #EFF3F4;cursor:pointer;" onclick="window.location.href='mekan.html?name=Veganarsist&score=4.8&emoji=🥗&hood=Osmanağa'">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#0a1117,#0f1f2e);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🥗</div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Veganarsist</div><div style="font-size:11px;color:#536471;">Osmanağa · Vegan · ★4.8</div></div>
+        <div style="font-size:14px;color:#536471;">›</div>
+      </div>
+    </div>
+  </div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item" onclick="window.location.href='anasayfa.html'"><span>🗺️</span><span>Keşfet</span></div>
+  <div class="nav-item" onclick="window.location.href='arama.html'"><span>🔍</span><span>Ara</span></div>
+  <div class="nav-item" onclick="window.location.href='bildirimler.html'" style="position:relative;"><span>🔔</span><span>Bildirimler</span></div>
+  <div class="nav-item" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
+</div>
+
+<!-- MORE MODAL -->
+<div class="modal-overlay" id="moreModal" onclick="closeModal()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-item" onclick="closeModal(); showToast('Bağlantı kopyalandı!')">
+      <div class="modal-icon" style="background:#EBF5FF;">🔗</div>
+      Profil bağlantısını kopyala
+    </div>
+    <div class="modal-item" onclick="closeModal(); showToast('Kullanıcı bildirimi gönderildi')">
+      <div class="modal-icon" style="background:#FFF7E6;">🚩</div>
+      Bu profili bildir
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-item danger" onclick="closeModal(); blockUser()">
+      <div class="modal-icon" style="background:#FFEBEE;">🚫</div>
+      Engelle
+    </div>
+    <div class="modal-item" onclick="closeModal()">
+      <div class="modal-icon" style="background:var(--cream);">✕</div>
+      İptal
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var isFollowing = false;
+var isBlocked = false;
+
+// URL'den kullanıcı verisi oku
+(function(){
+  var p = new URLSearchParams(window.location.search);
+  if (p.get('name'))   document.getElementById('userName').textContent = p.get('name');
+  if (p.get('handle')) { document.getElementById('userHandle').textContent = '@' + p.get('handle') + ' · İstanbul'; document.getElementById('headerHandle').textContent = '@' + p.get('handle'); }
+  if (p.get('bio'))    document.getElementById('userBio').textContent = p.get('bio');
+  if (p.get('emoji'))  document.getElementById('userAvatar').textContent = p.get('emoji');
+})();
+
+// Panel geçişi
+function showPanel(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  el.classList.add('active');
+}
+
+// Takip et / bırak
+function toggleFollow() {
+  isFollowing = !isFollowing;
+  var btn = document.getElementById('followBtn');
+  btn.textContent = isFollowing ? 'Takip Ediliyor' : 'Takip Et';
+  btn.classList.toggle('following', isFollowing);
+  showToast(isFollowing ? '✓ Takip edildi!' : 'Takipten çıkıldı');
+}
+
+// Mesaj gönder
+function sendMessage() {
+  window.location.href = 'mesajlar.html?to=yemekgezgini';
+}
+
+// More modal
+function openModal() { document.getElementById('moreModal').classList.add('open'); }
+function closeModal() { document.getElementById('moreModal').classList.remove('open'); }
+
+// Engelle
+function blockUser() {
+  isBlocked = true;
+  showToast('Kullanıcı engellendi');
+  setTimeout(function(){ history.back(); }, 1500);
+}
+
+// Toast
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.display = 'none'; }, 2200);
+}
+</script>
+</body>
+</html>

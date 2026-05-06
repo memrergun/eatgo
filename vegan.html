@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kadıköy'de Vegan Ne Yenir? — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --cream:#F5F0E8; --dark:#1A1612; --warm:#C8834A; --muted:#8C7B6B; --border:#E8E0D5; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--cream); color:var(--dark); font-family:'DM Sans',sans-serif; padding-bottom:90px; }
+  .header { position:sticky; top:0; z-index:50; background:var(--cream); border-bottom:1px solid var(--border); padding:14px 16px 10px; display:flex; align-items:center; gap:12px; }
+  .back-btn { width:36px; height:36px; border-radius:10px; background:white; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; flex-shrink:0; }
+  .header-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; }
+  .cover { position:relative; height:280px; overflow:hidden; background:linear-gradient(160deg,#080d18,#0d1a2e,#061206); display:flex; align-items:center; justify-content:center; }
+  .cover-emoji { font-size:80px; opacity:0.3; position:absolute; }
+  .cover-content { position:relative; z-index:2; padding:24px; text-align:center; color:white; }
+  .cover-tag { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.6); margin-bottom:10px; }
+  .cover-title { font-family:'Playfair Display',serif; font-size:26px; font-weight:900; line-height:1.2; margin-bottom:10px; }
+  .cover-desc { font-size:13px; color:rgba(255,255,255,0.75); line-height:1.6; max-width:280px; margin:0 auto 14px; }
+  .cover-meta { display:flex; align-items:center; justify-content:center; gap:12px; font-size:11px; color:rgba(255,255,255,0.5); }
+  .section { padding:20px 16px 0; }
+  .section-title { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+  .venue-item { display:flex; align-items:flex-start; gap:12px; padding:14px 0; border-bottom:1px solid var(--border); cursor:pointer; }
+  .venue-item:last-child { border-bottom:none; }
+  .venue-num { font-family:'Playfair Display',serif; font-size:22px; font-weight:900; color:var(--border); width:28px; flex-shrink:0; line-height:1; }
+  .venue-thumb { width:72px; height:72px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
+  .venue-info { flex:1; min-width:0; }
+  .venue-name { font-size:15px; font-weight:700; margin-bottom:3px; }
+  .venue-type { font-size:12px; color:#3a7a3a; font-weight:500; margin-bottom:4px; }
+  .venue-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+  .venue-tags { display:flex; gap:6px; margin-top:7px; flex-wrap:wrap; }
+  .vtag { font-size:10px; font-weight:600; padding:3px 8px; border-radius:20px; background:white; border:1px solid var(--border); color:var(--muted); }
+  .vtag.g { background:#f0f7f0; border-color:#c8e0c8; color:#3a7a3a; }
+  .vtag.i { background:#f5f0f7; border-color:#d8c8e0; color:#6a3a7a; }
+  .vtag.m { background:#fff5f0; border-color:#e8d0c8; color:#7a3a20; }
+  .divider { height:8px; background:var(--border); opacity:0.4; margin:8px 0; }
+  .video-section { padding:20px 16px 0; }
+  .video-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .video-card { border-radius:16px; overflow:hidden; cursor:pointer; position:relative; aspect-ratio:9/14; display:flex; align-items:flex-end; }
+  .video-bg { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:42px; }
+  .video-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%); }
+  .video-content { position:relative; z-index:2; padding:12px; width:100%; }
+  .video-play { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.2); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; font-size:10px; margin-bottom:6px; }
+  .video-venue { color:white; font-size:12px; font-weight:700; margin-bottom:2px; }
+  .video-meta { color:rgba(255,255,255,0.6); font-size:10px; }
+  .video-seg { position:absolute; top:10px; right:10px; font-size:9px; font-weight:600; padding:3px 7px; border-radius:20px; backdrop-filter:blur(8px); }
+  .bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:100; background:white; border-top:1px solid var(--border); display:flex; padding:8px 0 24px; }
+  .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; font-weight:500; color:var(--muted); cursor:pointer; }
+  .nav-item.active { color:var(--dark); }
+  .nav-item span:first-child { font-size:22px; }
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:200; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal-close { position:absolute; top:20px; right:20px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.2); border:none; color:white; font-size:18px; cursor:pointer; }
+  .modal-inner { color:white; text-align:center; padding:24px; }
+  .modal-emoji { font-size:64px; margin-bottom:16px; }
+  .modal-title { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; margin-bottom:8px; }
+  .modal-sub { font-size:13px; color:rgba(255,255,255,0.6); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="back-btn" onclick="window.location.href='blog.html'">←</div>
+  <div class="header-title">Kadıköy'de Vegan Ne Yenir?</div>
+</div>
+
+<div class="cover">
+  <div class="cover-emoji">🥗</div>
+  <div class="cover-content">
+    <div class="cover-tag">🥗 Vegan Rehberi · Kadıköy</div>
+    <h1 class="cover-title">Kadıköy'de Vegan Ne Yenir?</h1>
+    <p class="cover-desc">Etinden kasabına, kahvaltısından akşam yemeğine — Kadıköy'ün en iyi vegan adresleri.</p>
+    <div class="cover-meta">
+      <span>✍️ Mekan Keşfet Editörü</span>
+      <span>·</span>
+      <span>6.2K okuma</span>
+      <span>·</span>
+      <span>Ocak 2026</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">🌱 Editör Seçimi — 5 Mekan</div>
+
+  <div class="venue-item">
+    <div class="venue-num">1</div>
+    <div class="venue-thumb" style="background:linear-gradient(135deg,#0a1117,#0f1f2e);">🥦</div>
+    <div class="venue-info">
+      <div class="venue-name">Veganarsist</div>
+      <div class="venue-type">Tamamen Vegan & Glutensiz</div>
+      <div class="venue-desc">Koruyucu madde kullanmadan hazırlanan anne eli değmiş tarifler. Soya kıymalı çi börekten vegan menemene geniş bir menü. Serpme kahvaltıları özellikle sevileniyor.</div>
+      <div class="venue-tags">
+        <span class="vtag g">🍽️ Gurme</span>
+        <span class="vtag m">📍 Müdavim</span>
+        <span class="vtag">4.8 ★</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="venue-item">
+    <div class="venue-num">2</div>
+    <div class="venue-thumb" style="background:linear-gradient(135deg,#0f1117,#3a2a10);">🧆</div>
+    <div class="venue-info">
+      <div class="venue-name">Limonita Club</div>
+      <div class="venue-type">Vegan Kasap · Türkiye'nin İlki</div>
+      <div class="venue-desc">Türkiye'nin ilk vegan kasabı. Falafel pizza, soya kıymalı pide, vegan big mac burger menünün yıldızları. Hem restoran hem kasap olarak hizmet veriyor.</div>
+      <div class="venue-tags">
+        <span class="vtag m">📍 Müdavim</span>
+        <span class="vtag">4.6 ★</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="venue-item">
+    <div class="venue-num">3</div>
+    <div class="venue-thumb" style="background:linear-gradient(135deg,#0a0a1a,#1a1a3d);">🌯</div>
+    <div class="venue-info">
+      <div class="venue-name">Rulo Lezzetler</div>
+      <div class="venue-type">Vejetaryen & Vegan Dürüm</div>
+      <div class="venue-desc">Sebze köftesi ve falafeli ile meşhur. İki büfeden sıcak ya da soğuk meze ve yemekleri seçip dürüm olarak yiyebilirsin. Kadıköy'ün en köklü vegan adresi.</div>
+      <div class="venue-tags">
+        <span class="vtag m">📍 Müdavim</span>
+        <span class="vtag g">🍽️ Gurme</span>
+        <span class="vtag">4.5 ★</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="venue-item">
+    <div class="venue-num">4</div>
+    <div class="venue-thumb" style="background:linear-gradient(135deg,#1a0a0a,#3d1a1a);">🍔</div>
+    <div class="venue-info">
+      <div class="venue-name">Vatka Coffee & Vegan Goods</div>
+      <div class="venue-type">Vegan Burger · Hem Vegan Hem Değil</div>
+      <div class="venue-desc">Burger, dürüm, kokoreç, sucuğun vegan versiyonları. "Navegan" yani vegan olmayan seçenekler de var. Brownie ve havuçlu kek tatlı favorileri arasında.</div>
+      <div class="venue-tags">
+        <span class="vtag i">📱 Influencer</span>
+        <span class="vtag">4.4 ★</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="venue-item">
+    <div class="venue-num">5</div>
+    <div class="venue-thumb" style="background:linear-gradient(135deg,#0a1a08,#1a3d14);">🌸</div>
+    <div class="venue-info">
+      <div class="venue-name">Sisters & Harvest</div>
+      <div class="venue-type">Vegan Pastane · Çiçekçi</div>
+      <div class="venue-desc">Moda'da pastane ve çiçekçiyi bir araya getiren özgün mekan. En sevilen tatlıların sıfır vegan versiyonları burada. İsteğe özel vegan pasta siparişi de alıyorlar.</div>
+      <div class="venue-tags">
+        <span class="vtag i">📱 Influencer</span>
+        <span class="vtag m">📍 Müdavim</span>
+        <span class="vtag">4.7 ★</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="video-section">
+  <div class="section-title">🎬 Videolar</div>
+  <div class="video-grid">
+    <div class="video-card" onclick="openVid(0)">
+      <div class="video-bg" style="background:linear-gradient(135deg,#0a1117,#0f1f2e);">🥦</div>
+      <div class="video-overlay"></div>
+      <div class="video-seg" style="background:rgba(58,122,58,0.8);color:white;">🍽️ Gurme</div>
+      <div class="video-content">
+        <div class="video-play">▶</div>
+        <div class="video-venue">Veganarsist</div>
+        <div class="video-meta">@vegankadikoy · 4.1K</div>
+      </div>
+    </div>
+    <div class="video-card" onclick="openVid(1)">
+      <div class="video-bg" style="background:linear-gradient(135deg,#0f1117,#3a2a10);">🧆</div>
+      <div class="video-overlay"></div>
+      <div class="video-seg" style="background:rgba(106,58,122,0.8);color:white;">📱 TikTok</div>
+      <div class="video-content">
+        <div class="video-play">▶</div>
+        <div class="video-venue">Limonita Club</div>
+        <div class="video-meta">@istanbul_vegan · 7.2K</div>
+      </div>
+    </div>
+    <div class="video-card" onclick="openVid(2)">
+      <div class="video-bg" style="background:linear-gradient(135deg,#0a1a08,#1a3d14);">🌸</div>
+      <div class="video-overlay"></div>
+      <div class="video-seg" style="background:rgba(106,58,122,0.8);color:white;">📱 Instagram</div>
+      <div class="video-content">
+        <div class="video-play">▶</div>
+        <div class="video-venue">Sisters & Harvest</div>
+        <div class="video-meta">@modafoodie · 3.8K</div>
+      </div>
+    </div>
+    <div class="video-card" onclick="openVid(3)">
+      <div class="video-bg" style="background:linear-gradient(135deg,#1a0a0a,#3d1a1a);">🍔</div>
+      <div class="video-overlay"></div>
+      <div class="video-seg" style="background:rgba(122,58,32,0.8);color:white;">📍 Mahalle</div>
+      <div class="video-content">
+        <div class="video-play">▶</div>
+        <div class="video-venue">Vatka Burger</div>
+        <div class="video-meta">@kadikoyluler · 2.9K</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-item" onclick="window.location.href='anasayfa.html'"><span>🗺️</span><span>Keşfet</span></div>
+  <div class="nav-item" onclick="window.location.href='arama.html'"><span>🔍</span><span>Ara</span></div>
+  <div class="nav-item active" onclick="window.location.href='blog.html'"><span>📰</span><span>Blog</span></div>
+  <div class="nav-item" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
+</div>
+
+<div class="modal-overlay" id="vidModal" onclick="closeVid()">
+  <button class="modal-close">✕</button>
+  <div class="modal-inner" id="vidContent"></div>
+</div>
+
+<script>
+const vids = [
+  { emoji:'🥦', title:'Veganarsist', sub:'Tamamen vegan Türk mutfağı · 5:20' },
+  { emoji:'🧆', title:'Limonita Club', sub:'Türkiye\'nin ilk vegan kasabı · 3:45' },
+  { emoji:'🌸', title:'Sisters & Harvest', sub:'Vegan pastane keşfi · 2:30' },
+  { emoji:'🍔', title:'Vatka Burger', sub:'Vegan burger tadimi · 4:10' },
+];
+function openVid(i) {
+  document.getElementById('vidContent').innerHTML = '<div class="modal-emoji">' + vids[i].emoji + '</div><div class="modal-title">' + vids[i].title + '</div><div class="modal-sub">' + vids[i].sub + '</div>';
+  document.getElementById('vidModal').classList.add('open');
+}
+function closeVid() { document.getElementById('vidModal').classList.remove('open'); }
+</script>
+</body>
+</html>

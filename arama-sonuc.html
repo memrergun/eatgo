@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arama Sonuçları — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F7F7F7;--dark:#0F0F0F;--warm:#1D9BF0;--muted:#536471;--border:#EFF3F4;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cream);color:var(--dark);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:90px;}
+
+/* HEADER */
+.header{position:sticky;top:0;z-index:50;background:white;border-bottom:1px solid var(--border);padding:12px 16px;}
+.search-row{display:flex;align-items:center;gap:10px;margin-bottom:0;}
+.back-btn{width:36px;height:36px;border-radius:50%;background:var(--cream);border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.search-box{flex:1;display:flex;align-items:center;gap:8px;background:var(--cream);border:1.5px solid var(--border);border-radius:12px;padding:0 12px;height:42px;}
+.search-box:focus-within{border-color:var(--dark);}
+.search-input{flex:1;border:none;outline:none;font-size:14px;font-family:'DM Sans',sans-serif;background:transparent;color:var(--dark);}
+.search-input::placeholder{color:var(--muted);}
+.clear-x{font-size:14px;color:var(--muted);cursor:pointer;padding:2px 4px;}
+
+/* FİLTRE BARI */
+.filter-bar{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:12px 16px;border-bottom:1px solid var(--border);background:white;}
+.filter-bar::-webkit-scrollbar{display:none;}
+.filter-chip{display:flex;align-items:center;gap:5px;white-space:nowrap;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--muted);transition:all .18s;flex-shrink:0;}
+.filter-chip.active{background:var(--dark);color:white;border-color:var(--dark);}
+.filter-chip.has-value{background:#EBF5FF;color:var(--warm);border-color:var(--warm);}
+
+/* SONUÇ BAŞLIĞI */
+.result-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px;}
+.result-count{font-size:13px;color:var(--muted);}
+.result-count strong{color:var(--dark);font-weight:700;}
+.sort-btn{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--dark);cursor:pointer;padding:6px 12px;border-radius:20px;background:white;border:1px solid var(--border);}
+
+/* SEKME — Liste / Harita */
+.view-tabs{display:flex;gap:0;padding:0 16px 12px;}
+.view-tab{flex:1;height:36px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--muted);transition:all .18s;}
+.view-tab:first-child{border-radius:10px 0 0 10px;border-right:none;}
+.view-tab:last-child{border-radius:0 10px 10px 0;}
+.view-tab.active{background:var(--dark);color:white;border-color:var(--dark);}
+
+/* SONUÇ KARTI */
+.result-card{background:white;border-radius:16px;margin:0 16px 10px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:box-shadow .15s;}
+.result-card:active{box-shadow:0 4px 20px rgba(0,0,0,.1);}
+.result-card-inner{display:flex;gap:12px;padding:14px;}
+.result-thumb{width:72px;height:72px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;}
+.result-body{flex:1;min-width:0;}
+.result-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:3px;}
+.result-sub{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.result-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+.rpill{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:600;}
+.rpill.gurme{background:#EBF5FF;color:#0A66C2;}
+.rpill.influencer{background:#F0FFF4;color:#16A34A;}
+.rpill.mudavim{background:#FFF7E6;color:#B45309;}
+.rpill.trend{background:#FFF0F0;color:#E74C3C;}
+.result-footer{display:flex;align-items:center;justify-content:space-between;}
+.result-meta{font-size:12px;color:var(--muted);}
+.result-score{display:flex;align-items:center;gap:4px;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;}
+.result-score-star{color:#F5A623;font-size:14px;}
+.result-score-sub{font-size:10px;color:var(--muted);font-family:'DM Sans',sans-serif;margin-left:2px;}
+
+/* KULLANICI KARTI */
+.user-card{background:white;border-radius:16px;margin:0 16px 10px;padding:14px;display:flex;align-items:center;gap:12px;border:1px solid var(--border);cursor:pointer;}
+.user-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:white;flex-shrink:0;}
+.user-body{flex:1;min-width:0;}
+.user-name{font-size:15px;font-weight:700;margin-bottom:2px;}
+.user-handle{font-size:12px;color:var(--muted);margin-bottom:5px;}
+.user-badges{display:flex;gap:5px;}
+.ubadge{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:600;}
+.ubadge.influencer{background:#F0FFF4;color:#16A34A;}
+.ubadge.gurme{background:#EBF5FF;color:#0A66C2;}
+.follow-btn-sm{height:32px;padding:0 16px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid var(--border);background:white;color:var(--dark);cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;transition:all .18s;}
+.follow-btn-sm.following{background:var(--dark);color:white;border-color:var(--dark);}
+
+/* FİLTRE DRAWER */
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;backdrop-filter:blur(3px);}
+.drawer-overlay.open{display:block;}
+.drawer-sheet{position:fixed;bottom:0;left:0;right:0;z-index:201;background:white;border-radius:24px 24px 0 0;padding:20px 20px 44px;transform:translateY(100%);transition:transform .32s cubic-bezier(.25,.8,.25,1);max-height:85vh;overflow-y:auto;}
+.drawer-sheet.open{transform:translateY(0);}
+.drawer-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;}
+.drawer-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:18px;}
+.filter-section{margin-bottom:20px;}
+.filter-sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px;}
+.filter-opts{display:flex;flex-wrap:wrap;gap:8px;}
+.filter-opt{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;background:white;transition:all .18s;}
+.filter-opt.active{background:var(--dark);color:white;border-color:var(--dark);}
+.drawer-actions{display:flex;gap:8px;margin-top:8px;}
+.btn-reset{flex:1;height:46px;background:white;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted);}
+.btn-apply{flex:2;height:46px;background:var(--dark);color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+
+/* SIRALAMA DRAWER */
+.sort-opt{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;font-size:15px;font-weight:500;}
+.sort-opt:last-child{border-bottom:none;}
+.sort-opt .check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;}
+.sort-opt.active .check{background:var(--dark);border-color:var(--dark);color:white;}
+
+/* BOŞ DURUM */
+.empty-state{text-align:center;padding:60px 32px;}
+.empty-icon{font-size:48px;margin-bottom:16px;}
+.empty-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:8px;}
+.empty-sub{font-size:14px;color:var(--muted);line-height:1.6;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:white;border-top:1px solid var(--border);display:flex;padding:8px 0 24px;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;color:var(--muted);cursor:pointer;}
+.nav-item.active{color:var(--dark);}
+.nav-item span:first-child{font-size:22px;}
+
+.verified-dot{width:8px;height:8px;background:#16A34A;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;}
+#toast{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--dark);color:white;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="search-row">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <div class="search-box">
+      <span style="font-size:15px;">🔍</span>
+      <input class="search-input" id="searchInput" type="text" value="smash burger" oninput="handleSearch(this.value)" autocomplete="off">
+      <span class="clear-x" onclick="clearSearch()">✕</span>
+    </div>
+  </div>
+</div>
+
+<!-- FİLTRE BARI -->
+<div class="filter-bar">
+  <div class="filter-chip active" onclick="setType('tumu',this)">Tümü</div>
+  <div class="filter-chip" onclick="setType('mekan',this)">📍 Mekan</div>
+  <div class="filter-chip" onclick="setType('kullanici',this)">👤 Kullanıcı</div>
+  <div class="filter-chip has-value" onclick="openFilter()">🎯 Segment ▾</div>
+  <div class="filter-chip" onclick="openFilter()">💰 Fiyat ▾</div>
+  <div class="filter-chip" onclick="openFilter()">⭐ Puan ▾</div>
+  <div class="filter-chip" onclick="openFilter()">📍 Mesafe ▾</div>
+</div>
+
+<!-- SONUÇ BAŞLIĞI -->
+<div class="result-header">
+  <div class="result-count"><strong id="resultCount">23</strong> sonuç bulundu</div>
+  <div class="sort-btn" onclick="openSort()">↕ Sırala</div>
+</div>
+
+<!-- LİSTE / HARİTA SEKMESİ -->
+<div class="view-tabs">
+  <div class="view-tab active" id="tab-liste" onclick="setView('liste')">☰ Liste</div>
+  <div class="view-tab" id="tab-harita" onclick="window.location.href='anasayfa.html'">🗺️ Haritada Gör</div>
+</div>
+
+<!-- SONUÇLAR — MEKANLAR (JS ile doldurulur) -->
+<div id="results-mekan"></div>
+
+<!-- SONUÇLAR — KULLANICILAR -->
+<div id="results-kullanici" style="display:none;">
+
+  <div class="user-card" onclick="window.location.href='kullanici-profil.html'">
+    <div class="user-av" style="background:linear-gradient(135deg,#0a1628,#1a1f2e);">Y</div>
+    <div class="user-body">
+      <div class="user-name">Yemek Gezgini</div>
+      <div class="user-handle">@yemekgezgini · 48.2K takipçi</div>
+      <div class="user-badges">
+        <span class="ubadge influencer">📱 Influencer</span>
+        <span class="ubadge gurme">🍽️ Gurme</span>
+      </div>
+    </div>
+    <button class="follow-btn-sm" onclick="toggleFollowUser(this,event)">Takip Et</button>
+  </div>
+
+  <div class="user-card" onclick="window.location.href='kullanici-profil.html?name=Burger+Baba&handle=burgerbaba'">
+    <div class="user-av" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">B</div>
+    <div class="user-body">
+      <div class="user-name">Burger Baba</div>
+      <div class="user-handle">@burgerbaba · 12.4K takipçi</div>
+      <div class="user-badges">
+        <span class="ubadge influencer">📱 Influencer</span>
+      </div>
+    </div>
+    <button class="follow-btn-sm" onclick="toggleFollowUser(this,event)">Takip Et</button>
+  </div>
+
+  <div class="user-card" onclick="window.location.href='kullanici-profil.html?name=Smash+Queen&handle=smashqueen'">
+    <div class="user-av" style="background:linear-gradient(135deg,#120a1a,#1e1030);">S</div>
+    <div class="user-body">
+      <div class="user-name">Smash Queen</div>
+      <div class="user-handle">@smashqueen · 6.8K takipçi</div>
+      <div class="user-badges">
+        <span class="ubadge gurme">🍽️ Gurme</span>
+      </div>
+    </div>
+    <button class="follow-btn-sm following" onclick="toggleFollowUser(this,event)">Takip Ediliyor</button>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item" onclick="window.location.href='anasayfa.html'"><span>🗺️</span><span>Keşfet</span></div>
+  <div class="nav-item active"><span>🔍</span><span>Ara</span></div>
+  <div class="nav-item" onclick="window.location.href='bildirimler.html'" style="position:relative;"><span>🔔</span><span>Bildirimler</span></div>
+  <div class="nav-item" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
+</div>
+
+<!-- FİLTRE DRAWER -->
+<div class="drawer-overlay" id="filterOverlay" onclick="closeFilter()"></div>
+<div class="drawer-sheet" id="filterSheet">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title">Filtrele</div>
+
+  <div class="filter-section">
+    <div class="filter-sec-label">Segment</div>
+    <div class="filter-opts">
+      <div class="filter-opt active" onclick="this.classList.toggle('active')">🍽️ Gurme</div>
+      <div class="filter-opt active" onclick="this.classList.toggle('active')">📱 Influencer</div>
+      <div class="filter-opt" onclick="this.classList.toggle('active')">📍 Müdavim</div>
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-sec-label">Kategori</div>
+    <div class="filter-opts">
+      <div class="filter-opt" onclick="this.classList.toggle('active')">🍔 Burger</div>
+      <div class="filter-opt" onclick="this.classList.toggle('active')">☕ Kahve</div>
+      <div class="filter-opt" onclick="this.classList.toggle('active')">🥗 Vegan</div>
+      <div class="filter-opt" onclick="this.classList.toggle('active')">🌅 Kahvaltı</div>
+      <div class="filter-opt" onclick="this.classList.toggle('active')">🍕 Pizza</div>
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-sec-label">Minimum Puan</div>
+    <div class="filter-opts">
+      <div class="filter-opt" onclick="selectOne(this)">4.0+</div>
+      <div class="filter-opt active" onclick="selectOne(this)">4.3+</div>
+      <div class="filter-opt" onclick="selectOne(this)">4.5+</div>
+      <div class="filter-opt" onclick="selectOne(this)">4.7+</div>
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-sec-label">Mesafe</div>
+    <div class="filter-opts">
+      <div class="filter-opt" onclick="selectOne(this)">500m</div>
+      <div class="filter-opt active" onclick="selectOne(this)">1km</div>
+      <div class="filter-opt" onclick="selectOne(this)">2km</div>
+      <div class="filter-opt" onclick="selectOne(this)">5km+</div>
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-sec-label">Fiyat Aralığı</div>
+    <div class="filter-opts">
+      <div class="filter-opt" onclick="this.classList.toggle('active')">₺ Uygun</div>
+      <div class="filter-opt active" onclick="this.classList.toggle('active')">₺₺ Orta</div>
+      <div class="filter-opt" onclick="this.classList.toggle('active')">₺₺₺ Premium</div>
+    </div>
+  </div>
+
+  <div class="drawer-actions">
+    <button class="btn-reset" onclick="resetFilters()">Sıfırla</button>
+    <button class="btn-apply" onclick="applyFilters()">Uygula (23 sonuç)</button>
+  </div>
+</div>
+
+<!-- SIRALAMA DRAWER -->
+<div class="drawer-overlay" id="sortOverlay" onclick="closeSort()"></div>
+<div class="drawer-sheet" id="sortSheet">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title">Sıralama</div>
+  <div class="sort-opt active" onclick="setSort(this,'mesafe')">
+    <span>📍 Mesafeye göre (yakın → uzak)</span>
+    <div class="check">✓</div>
+  </div>
+  <div class="sort-opt" onclick="setSort(this,'puan')">
+    <span>⭐ Puana göre (yüksek → düşük)</span>
+    <div class="check"></div>
+  </div>
+  <div class="sort-opt" onclick="setSort(this,'yorum')">
+    <span>💬 Yorum sayısına göre</span>
+    <div class="check"></div>
+  </div>
+  <div class="sort-opt" onclick="setSort(this,'trend')">
+    <span>🔥 Trend (bu hafta popüler)</span>
+    <div class="check"></div>
+  </div>
+  <div class="sort-opt" onclick="setSort(this,'gurme')">
+    <span>🍽️ Gurme puanına göre</span>
+    <div class="check"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// MEKAN VERİTABANI — her kategori ayrı mekanlar
+// ══════════════════════════════════════════════
+var VENUES = {
+  burger: [
+    { name:'White Burger',       sub:'Kadıköy · Smash Burger · 120m',     bg:'linear-gradient(135deg,#1a1a2e,#16213e)', emoji:'🍔', pills:['gurme','influencer','trend'], reviews:312, score:'4.4', url:'white-burger.html' },
+    { name:'Ember Smash',        sub:'Moda · Double Smash · 340m',         bg:'linear-gradient(135deg,#2d1000,#0f0f0f)', emoji:'🍔', pills:['gurme','trend'],              reviews:218, score:'4.6', url:'mekan.html?name=Ember+Smash&score=4.6&emoji=🍔&hood=Moda' },
+    { name:'Burger Lab',         sub:'Kadıköy · Gourmet Burger · 480m',    bg:'linear-gradient(135deg,#0a1628,#0d1f3c)', emoji:'🍔', pills:['mudavim'],                     reviews:145, score:'4.5', url:'mekan.html?name=Burger+Lab&score=4.5&emoji=🍔&hood=Kadıköy' },
+    { name:'Usta Burger',        sub:'Yeldeğirmeni · Klasik Burger · 620m',bg:'linear-gradient(135deg,#120a1a,#1e1030)', emoji:'🍔', pills:['mudavim'],                     reviews:89,  score:'4.0', url:'mekan.html?name=Usta+Burger&score=4.0&emoji=🍔&hood=Yeldeğirmeni' },
+    { name:'Smash Bros',         sub:'Moda · Double Smash · 610m',         bg:'linear-gradient(135deg,#0f1117,#111520)', emoji:'🍟', pills:['influencer'],                  reviews:98,  score:'4.1', url:'mekan.html?name=Smash+Bros&score=4.1&emoji=🍔&hood=Moda' },
+    { name:'Green Smash',        sub:'Kadıköy · Vegan Burger · 480m',      bg:'linear-gradient(135deg,#0a1f28,#0d2a3c)', emoji:'🥗', pills:['mudavim','influencer'],       reviews:201, score:'4.3', url:'mekan.html?name=Green+Smash&score=4.3&emoji=🥗&hood=Kadıköy' },
+  ],
+  kahve: [
+    { name:'Story Coffee Roasters', sub:'Moda · Specialty Coffee · 210m',     bg:'linear-gradient(135deg,#0f1117,#1a1f2e)', emoji:'☕', pills:['gurme'],            reviews:534, score:'4.7', url:'mekan.html?name=Story+Coffee+Roasters&score=4.7&emoji=☕&hood=Moda' },
+    { name:"Walter's Coffee",       sub:'Moda · Konsept Kafe · 390m',          bg:'linear-gradient(135deg,#080d18,#1a2d1a)', emoji:'🧪', pills:['influencer','trend'],reviews:721, score:'4.5', url:'mekan.html?name=Walters+Coffee&score=4.5&emoji=☕&hood=Moda' },
+    { name:'Altkat Coffee',         sub:'Moda · 3. Dalga Kahve · 160m',        bg:'linear-gradient(135deg,#1a0a08,#2d1a14)', emoji:'🌿', pills:['mudavim'],         reviews:408, score:'4.6', url:'mekan.html?name=Altkat+Coffee&score=4.6&emoji=☕&hood=Moda' },
+    { name:'Norm Coffee',           sub:'Kadıköy · Filter & Espresso · 280m',  bg:'linear-gradient(135deg,#0a1117,#111820)', emoji:'☕', pills:['gurme'],            reviews:312, score:'4.5', url:'mekan.html?name=Norm+Coffee&score=4.5&emoji=☕&hood=Kadıköy' },
+    { name:'Kronotrop',             sub:'Moda · Üçüncü Nesil Kahve · 450m',    bg:'linear-gradient(135deg,#0d1a2e,#16213e)', emoji:'☕', pills:['gurme','influencer'],reviews:489, score:'4.6', url:'mekan.html?name=Kronotrop&score=4.6&emoji=☕&hood=Moda' },
+    { name:'MOC Coffee Roasters',   sub:'Caferağa · Micro Roastery · 530m',    bg:'linear-gradient(135deg,#1a1008,#2d1a0a)', emoji:'☕', pills:['gurme'],            reviews:167, score:'4.4', url:'mekan.html?name=MOC+Coffee&score=4.4&emoji=☕&hood=Caferağa' },
+  ],
+  kahvalti: [
+    { name:'Brekkie Breakfast Club', sub:'Moda · Brunch · 230m',              bg:'linear-gradient(135deg,#111520,#1a2030)', emoji:'🥐', pills:['influencer'],        reviews:612, score:'4.7', url:'mekan.html?name=Brekkie&score=4.7&emoji=🥐&hood=Moda' },
+    { name:'Munchies Moda',          sub:'Moda · Pancake & Waffle · 410m',    bg:'linear-gradient(135deg,#0f1117,#1a1f2e)', emoji:'🥞', pills:['mudavim'],          reviews:477, score:'4.6', url:'mekan.html?name=Munchies+Moda&score=4.6&emoji=🥞&hood=Moda' },
+    { name:'Zapata Bakery',          sub:'Caferağa · Ekmek & Kahvaltı · 560m',bg:'linear-gradient(135deg,#1a1a08,#3d3010)', emoji:'🍞', pills:['gurme'],            reviews:341, score:'4.8', url:'mekan.html?name=Zapata+Bakery&score=4.8&emoji=🥐&hood=Caferağa' },
+    { name:'Orjin Kahvaltı',         sub:'Yeldeğirmeni · Serpme Kahvaltı · 320m',bg:'linear-gradient(135deg,#1a0e06,#2d1a08)',emoji:'🫖', pills:['mudavim'],       reviews:298, score:'4.5', url:'mekan.html?name=Orjin+Kahvaltı&score=4.5&emoji=🫖&hood=Yeldeğirmeni' },
+    { name:'Sunday Brunch',          sub:'Moda · Eggs & Coffee · 180m',       bg:'linear-gradient(135deg,#080d18,#0a1628)', emoji:'🍳', pills:['influencer','trend'],reviews:523, score:'4.6', url:'mekan.html?name=Sunday+Brunch&score=4.6&emoji=🍳&hood=Moda' },
+    { name:'Lemon Tree',             sub:'Kadıköy · Hafif Kahvaltı · 490m',   bg:'linear-gradient(135deg,#1a1a08,#2d2d10)', emoji:'🍋', pills:['mudavim'],          reviews:134, score:'4.3', url:'mekan.html?name=Lemon+Tree&score=4.3&emoji=🍋&hood=Kadıköy' },
+  ],
+  vegan: [
+    { name:'Veganarsist',    sub:'Osmanağa · Vegan Mutfak · 450m',     bg:'linear-gradient(135deg,#0a1117,#0f1f2e)', emoji:'🥗', pills:['gurme'],            reviews:389, score:'4.8', url:'mekan.html?name=Veganarsist&score=4.8&emoji=🥗&hood=Osmanağa' },
+    { name:'Limonita Club',  sub:'Caferağa · Vegan Kasap · 520m',      bg:'linear-gradient(135deg,#0f1117,#3a2a10)', emoji:'🧆', pills:['mudavim'],          reviews:264, score:'4.6', url:'mekan.html?name=Limonita+Club&score=4.6&emoji=🥗&hood=Caferağa' },
+    { name:'Rulo Lezzetler', sub:'Caferağa · Vegan Dürüm · 300m',      bg:'linear-gradient(135deg,#0a0a1a,#1a1a3d)', emoji:'🌯', pills:['mudavim'],          reviews:192, score:'4.5', url:'mekan.html?name=Rulo+Lezzetler&score=4.5&emoji=🥗&hood=Caferağa' },
+    { name:'Bi Nefes',       sub:'Moda · Plant Based · 280m',          bg:'linear-gradient(135deg,#081a10,#0a2d14)', emoji:'🌱', pills:['gurme','trend'],    reviews:178, score:'4.6', url:'mekan.html?name=Bi+Nefes&score=4.6&emoji=🌱&hood=Moda' },
+    { name:'Yeşil Tabak',    sub:'Yeldeğirmeni · Raw Vegan · 610m',    bg:'linear-gradient(135deg,#0a1a0a,#102010)', emoji:'🥦', pills:['gurme'],            reviews:143, score:'4.4', url:'mekan.html?name=Yeşil+Tabak&score=4.4&emoji=🥦&hood=Yeldeğirmeni' },
+  ],
+  pizza: [
+    { name:'Il Pellicano',        sub:'Moda · Napoli Pizza · 320m',        bg:'linear-gradient(135deg,#1a0808,#2d1010)', emoji:'🍕', pills:['gurme','trend'],    reviews:412, score:'4.8', url:'mekan.html?name=Il+Pellicano&score=4.8&emoji=🍕&hood=Moda' },
+    { name:'The Artisan Craft',   sub:'Moda · Artisan Pizza · 270m',       bg:'linear-gradient(135deg,#120a1a,#1e1030)', emoji:'🍕', pills:['gurme'],            reviews:321, score:'4.7', url:'mekan.html?name=The+Artisan+Craft&score=4.7&emoji=🍕&hood=Moda' },
+    { name:'Fornello Pizzeria',   sub:'Kadıköy · Odun Fırını · 490m',      bg:'linear-gradient(135deg,#1a0e06,#2a1a0a)', emoji:'🍕', pills:['mudavim'],          reviews:284, score:'4.6', url:'mekan.html?name=Fornello+Pizzeria&score=4.6&emoji=🍕&hood=Kadıköy' },
+    { name:'Pizza Locale',        sub:'Yeldeğirmeni · Roman Style · 580m', bg:'linear-gradient(135deg,#0a1628,#0d1f3c)', emoji:'🍕', pills:['influencer'],        reviews:156, score:'4.4', url:'mekan.html?name=Pizza+Locale&score=4.4&emoji=🍕&hood=Yeldeğirmeni' },
+    { name:'Slice & Dice',        sub:'Kadıköy · NY Style · 410m',         bg:'linear-gradient(135deg,#1a1a08,#2d2a10)', emoji:'🍕', pills:['trend'],             reviews:201, score:'4.3', url:'mekan.html?name=Slice+%26+Dice&score=4.3&emoji=🍕&hood=Kadıköy' },
+  ],
+};
+
+// Kullanıcılar (aramadan bağımsız)
+var USERS = [
+  { name:'Yemek Gezgini',  handle:'@yemekgezgini · 48.2K takipçi', av:'Y', bg:'linear-gradient(135deg,#0a1628,#1a1f2e)', badges:['influencer','gurme'],  url:'kullanici-profil.html', following:false },
+  { name:'Meral H.',       handle:'@meral_kadikoy · 8.4K takipçi', av:'M', bg:'linear-gradient(135deg,#0f1117,#1a1f2e)', badges:['mudavim'],              url:'kullanici-profil.html', following:false },
+  { name:'Ahmet Gourmet',  handle:'@ahmet_gourmet · 5.1K takipçi', av:'A', bg:'linear-gradient(135deg,#0a1f28,#0d2a3c)', badges:['gurme'],                url:'kullanici-profil.html', following:true  },
+];
+
+// Doğrulanmış mekanlar (sahipleri tarafından yönetilen)
+var VERIFIED = ['White Burger','Story Coffee Roasters','Brekkie Breakfast Club','Il Pellicano','Veganarsist'];
+
+// Anahtar kelime → kategori eşleştirme
+var KEYWORD_MAP = {
+  burger:   ['burger','smash','köfte','hamburger','patty'],
+  kahve:    ['kahve','coffee','espresso','latte','capuccino','cold brew','filtre','specialty'],
+  kahvalti: ['kahvaltı','brunch','breakfast','serpme','gözleme','börek','waffle','pancake','omlet'],
+  vegan:    ['vegan','vejetaryen','plant','yeşil','tofu','raw'],
+  pizza:    ['pizza','pizzeria','napoli','fırın'],
+};
+
+function detectCategory(q) {
+  if (!q) return null;
+  var lower = q.toLowerCase();
+  for (var cat in KEYWORD_MAP) {
+    if (KEYWORD_MAP[cat].some(function(k){ return lower.indexOf(k) >= 0; })) return cat;
+  }
+  return null;
+}
+
+// ── RENDER ──
+var pillLabels = { gurme:'🍽️ Gurme', influencer:'📱 Influencer', mudavim:'📍 Müdavim', trend:'🔥 Trend' };
+
+function renderVenues(list) {
+  return list.map(function(v){
+    var pills = v.pills.map(function(p){ return '<span class="rpill '+p+'">'+pillLabels[p]+'</span>'; }).join('');
+    return '<div class="result-card" onclick="window.location.href=\''+v.url+'\'">' +
+      '<div class="result-card-inner">' +
+        '<div class="result-thumb" style="background:'+v.bg+';">'+v.emoji+'</div>' +
+        '<div class="result-body">' +
+          '<div class="result-name">'+(VERIFIED.indexOf(v.name)>=0?'<span class="verified-dot"></span>':'')+v.name+'</div>' +
+          '<div class="result-sub">'+v.sub+'</div>' +
+          '<div class="result-pills">'+pills+'</div>' +
+          '<div class="result-footer">' +
+            '<span class="result-meta">'+v.reviews+' yorum</span>' +
+            '<div class="result-score"><span class="result-score-star">★</span>'+v.score+'<span class="result-score-sub">Google</span></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderUsers(list) {
+  return list.map(function(u, i){
+    var badges = u.badges.map(function(b){
+      return '<span class="ubadge '+b+'">'+pillLabels[b]+'</span>';
+    }).join('');
+    return '<div class="user-card" onclick="window.location.href=\''+u.url+'\'">' +
+      '<div class="user-av" style="background:'+u.bg+';">'+u.av+'</div>' +
+      '<div class="user-body">' +
+        '<div class="user-name">'+u.name+'</div>' +
+        '<div class="user-handle">'+u.handle+'</div>' +
+        '<div class="user-badges">'+badges+'</div>' +
+      '</div>' +
+      '<button class="follow-btn-sm'+(u.following?' following':'')+'" onclick="toggleFollowUser(this,event,'+i+')">'+
+        (u.following?'Takip Ediliyor':'Takip Et')+
+      '</button>' +
+    '</div>';
+  }).join('');
+}
+
+function updateResults(q) {
+  var cat = detectCategory(q);
+  var list = cat ? VENUES[cat] : [].concat(VENUES.burger, VENUES.kahve, VENUES.kahvalti, VENUES.vegan, VENUES.pizza);
+
+  document.getElementById('results-mekan').innerHTML = renderVenues(list);
+  document.getElementById('results-kullanici').innerHTML = renderUsers(USERS);
+
+  var total = list.length + USERS.length;
+  document.getElementById('resultCount').textContent = currentType==='kullanici' ? USERS.length : currentType==='mekan' ? list.length : total;
+}
+
+// ── STATE ──
+var currentType = 'tumu';
+
+function setType(type, el) {
+  currentType = type;
+  document.querySelectorAll('.filter-bar .filter-chip').forEach(function(c){
+    if(['Tümü','📍 Mekan','👤 Kullanıcı'].some(function(t){ return c.textContent.trim().startsWith(t.split(' ')[0]); }))
+      c.classList.remove('active');
+  });
+  el.classList.add('active');
+  document.getElementById('results-mekan').style.display    = (type==='tumu'||type==='mekan') ? 'block':'none';
+  document.getElementById('results-kullanici').style.display = (type==='tumu'||type==='kullanici') ? 'block':'none';
+  // sayacı güncelle
+  var q = document.getElementById('searchInput').value;
+  var cat = detectCategory(q);
+  var mCount = (cat ? VENUES[cat] : Object.values(VENUES).flat()).length;
+  document.getElementById('resultCount').textContent = type==='kullanici' ? USERS.length : type==='mekan' ? mCount : mCount+USERS.length;
+}
+
+function handleSearch(val){ document.getElementById('searchInput').value=val; }
+function clearSearch(){ document.getElementById('searchInput').value=''; document.getElementById('searchInput').focus(); }
+function setView(v){ document.getElementById('tab-liste').classList.toggle('active',v==='liste'); document.getElementById('tab-harita').classList.toggle('active',v==='harita'); }
+function openFilter(){ document.getElementById('filterOverlay').classList.add('open'); document.getElementById('filterSheet').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeFilter(){ document.getElementById('filterOverlay').classList.remove('open'); document.getElementById('filterSheet').classList.remove('open'); document.body.style.overflow=''; }
+function openSort(){ document.getElementById('sortOverlay').classList.add('open'); document.getElementById('sortSheet').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeSort(){ document.getElementById('sortOverlay').classList.remove('open'); document.getElementById('sortSheet').classList.remove('open'); document.body.style.overflow=''; }
+function selectOne(el){ el.parentElement.querySelectorAll('.filter-opt').forEach(function(o){o.classList.remove('active');}); el.classList.add('active'); }
+function setSort(el,type){ document.querySelectorAll('.sort-opt').forEach(function(o){o.classList.remove('active');o.querySelector('.check').textContent='';}); el.classList.add('active'); el.querySelector('.check').textContent='✓'; setTimeout(closeSort,300); showToast('Sıralama güncellendi'); }
+function resetFilters(){ document.querySelectorAll('.filter-opt.active').forEach(function(o){o.classList.remove('active');}); }
+function applyFilters(){ closeFilter(); showToast('Filtreler uygulandı'); }
+function toggleFollowUser(btn,e,i){ e.stopPropagation(); var f=btn.classList.contains('following'); btn.classList.toggle('following',!f); btn.textContent=f?'Takip Et':'Takip Ediliyor'; USERS[i].following=!f; showToast(f?'Takipten çıkıldı':'✓ Takip edildi!'); }
+
+var toastTimer;
+function showToast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.style.display='none';},2200); }
+
+// ── INIT ──
+(function(){
+  var q = new URLSearchParams(window.location.search).get('q') || '';
+  if(q) document.getElementById('searchInput').value = q;
+  updateResults(q);
+
+  // Canlı arama
+  document.getElementById('searchInput').addEventListener('input', function(){
+    updateResults(this.value);
+  });
+})();
+</script>
+</body>
+</html>

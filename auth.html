@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Giriş Yap — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F5F0E8;--dark:#1A1612;--warm:#C8834A;--muted:#8C7B6B;--border:#E8E0D5;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);min-height:100vh;color:white;}
+.cover{position:relative;height:36vh;min-height:210px;background:linear-gradient(160deg,#0f0f0f,#1a1a2e,#050505);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px 36px;overflow:hidden;}
+.cover-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:260px;opacity:.07;pointer-events:none;user-select:none;}
+.logo-icon{width:68px;height:68px;background:var(--warm);border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 12px;box-shadow:0 8px 32px rgba(29,155,240,.2);position:relative;z-index:1;}
+.logo-text{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;color:white;margin-bottom:6px;position:relative;z-index:1;}
+.cover-tagline{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;position:relative;z-index:1;}
+.card{background:var(--cream);border-radius:28px 28px 0 0;padding:28px 20px 60px;margin-top:-22px;position:relative;z-index:10;}
+.tab-row{display:flex;background:white;border-radius:14px;padding:4px;margin-bottom:22px;border:1px solid var(--border);}
+.tab-btn{flex:1;height:38px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;background:none;color:var(--muted);}
+.tab-btn.active{background:var(--dark);color:white;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+.method-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+.method-btn{height:52px;border-radius:14px;border:1.5px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--dark);cursor:pointer;transition:all .18s;padding:0 12px;}
+.method-btn:active{background:var(--cream);transform:scale(.97);}
+.method-btn.selected{border-color:var(--dark);background:var(--dark);color:white;}
+.method-icon{width:20px;height:20px;flex-shrink:0;font-size:18px;}
+.divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:11px;font-weight:500;margin-bottom:18px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.form-group{margin-bottom:12px;}
+.form-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block;}
+.input-wrap{position:relative;}
+.form-input{width:100%;height:48px;border:1.5px solid var(--border);border-radius:12px;padding:0 14px;font-size:15px;font-family:'DM Sans',sans-serif;color:var(--dark);background:white;outline:none;transition:border-color .2s;}
+.form-input:focus{border-color:var(--warm);}
+.form-input.error{border-color:#E74C3C;}
+.input-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:17px;color:var(--muted);user-select:none;}
+.form-error{font-size:11px;color:#E74C3C;margin-top:4px;padding-left:2px;display:none;}
+.phone-row{display:flex;gap:8px;}
+.country-select{width:90px;flex-shrink:0;height:48px;border-radius:12px;border:1.5px solid var(--border);background:white;color:var(--dark);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:0 8px;outline:none;cursor:pointer;transition:border-color .2s;}
+.country-select:focus{border-color:var(--warm);}
+.otp-row{display:flex;gap:8px;margin-bottom:12px;}
+.otp-input{flex:1;height:54px;border:1.5px solid var(--border);border-radius:12px;text-align:center;font-size:22px;font-weight:700;font-family:'DM Sans',sans-serif;color:var(--dark);background:white;outline:none;transition:border-color .2s;}
+.otp-input:focus{border-color:var(--warm);}
+.otp-timer{font-size:12px;color:var(--muted);text-align:center;margin-bottom:14px;}
+.otp-resend{color:var(--warm);font-weight:600;cursor:pointer;}
+.name-row{display:flex;gap:10px;}
+.name-row .form-group{flex:1;}
+.strength-bars{display:flex;gap:4px;margin:4px 0 0;}
+.sbar{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background .3s;}
+.kvk-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;cursor:pointer;}
+.kvk-check{width:20px;height:20px;flex-shrink:0;border-radius:6px;border:1.5px solid var(--border);background:white;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .18s;}
+.kvk-check.checked{background:var(--dark);border-color:var(--dark);color:white;}
+.kvk-text{font-size:12px;color:var(--muted);line-height:1.5;flex:1;}
+.kvk-link{color:var(--warm);font-weight:600;cursor:pointer;}
+.btn-main{width:100%;height:52px;background:var(--dark);color:white;border:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;}
+.btn-main:active{transform:scale(.98);}
+.btn-main.loading{background:var(--muted);pointer-events:none;}
+.btn-main.warm{background:var(--warm);box-shadow:0 4px 16px rgba(29,155,240,.25);}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.switch-link{text-align:center;font-size:13px;color:var(--muted);}
+.switch-link span{color:var(--warm);font-weight:600;cursor:pointer;}
+.forgot-link{font-size:13px;color:var(--warm);font-weight:600;cursor:pointer;text-align:right;display:block;margin:-4px 0 16px;}
+.hidden{display:none!important;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:white;border-radius:24px 24px 0 0;padding:20px 20px 48px;width:100%;animation:slideUp .28s ease;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--dark);margin-bottom:6px;}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6;}
+.modal-btn{width:100%;height:48px;border-radius:14px;border:none;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px;}
+.modal-btn:last-child{margin-bottom:0;}
+.modal-btn.primary{background:var(--dark);color:white;}
+.modal-btn.cancel{background:var(--cream);color:var(--dark);border:1px solid var(--border);}
+#toast{display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--dark);color:white;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-bg">🗺️</div>
+  <div class="logo-icon">🗺️</div>
+  <div class="logo-text">Mekan Keşfet</div>
+  <div class="cover-tagline">Gurme yorumları, influencer önerileri<br>ve mahalle müdavimlerinin sesi</div>
+</div>
+
+<div class="card">
+
+  <div class="tab-row">
+    <button class="tab-btn active" id="tab-giris" onclick="switchTab('giris')">Giriş Yap</button>
+    <button class="tab-btn"        id="tab-kayit" onclick="switchTab('kayit')">Kayıt Ol</button>
+  </div>
+
+  <!-- ══ GİRİŞ FORMU ══ -->
+  <div id="form-giris">
+
+    <div class="method-grid">
+      <button class="method-btn" id="mg-google" onclick="socialGo('google','giris')">
+        <svg class="method-icon" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Google
+      </button>
+      <button class="method-btn" id="mg-apple" onclick="socialGo('apple','giris')">
+        <svg class="method-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.42c1.39.07 2.36.74 3.17.8 1.21-.24 2.38-.93 3.6-.84 1.52.12 2.66.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.65 3.97zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+        Apple
+      </button>
+      <button class="method-btn" id="mg-email" onclick="selectMethod('giris','email')">
+        <span class="method-icon">✉️</span> E-posta
+      </button>
+      <button class="method-btn" id="mg-phone" onclick="selectMethod('giris','phone')">
+        <span class="method-icon">📱</span> Telefon
+      </button>
+    </div>
+
+    <!-- E-posta giriş -->
+    <div id="giris-email-fields" class="hidden">
+      <div class="divider">e-posta ile giriş</div>
+      <div class="form-group">
+        <label class="form-label">E-posta</label>
+        <input class="form-input" type="email" id="ge-email" placeholder="ornek@mail.com" oninput="clearErr('ge-email')">
+        <div class="form-error" id="err-ge-email">Geçerli bir e-posta girin.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Şifre</label>
+        <div class="input-wrap">
+          <input class="form-input" type="password" id="ge-sifre" placeholder="••••••••" style="padding-right:46px" oninput="clearErr('ge-sifre')">
+          <div class="input-toggle" onclick="togglePass('ge-sifre',this)">👁</div>
+        </div>
+        <div class="form-error" id="err-ge-sifre">Şifre en az 6 karakter olmalı.</div>
+      </div>
+      <a class="forgot-link" onclick="openModal('reset')">Şifremi unuttum?</a>
+      <button class="btn-main" onclick="doLogin()">
+        <span id="bge-txt">Giriş Yap</span><div class="spinner" id="bge-spin"></div>
+      </button>
+    </div>
+
+    <!-- Telefon giriş -->
+    <div id="giris-phone-fields" class="hidden">
+      <div class="divider">SMS ile giriş</div>
+      <div class="form-group">
+        <label class="form-label">Telefon Numarası</label>
+        <div class="phone-row">
+          <select class="country-select">
+            <option>🇹🇷 +90</option><option>🇺🇸 +1</option><option>🇬🇧 +44</option><option>🇩🇪 +49</option>
+          </select>
+          <input class="form-input" type="tel" id="gp-phone" placeholder="5__ ___ ____" oninput="clearErr('gp-phone')">
+        </div>
+        <div class="form-error" id="err-gp-phone">Geçerli bir numara girin.</div>
+      </div>
+      <div id="giris-otp" class="hidden">
+        <label class="form-label" style="margin-bottom:8px;display:block;">Doğrulama Kodu</label>
+        <div class="otp-row">
+          <input class="otp-input" type="text" maxlength="1" oninput="otpFwd(this,0,'go')">
+          <input class="otp-input" type="text" maxlength="1" oninput="otpFwd(this,1,'go')">
+          <input class="otp-input" type="text" maxlength="1" oninput="otpFwd(this,2,'go')">
+          <input class="otp-input" type="text" maxlength="1" oninput="otpFwd(this,3,'go')">
+          <input class="otp-input" type="text" maxlength="1" oninput="otpFwd(this,4,'go')">
+          <input class="otp-input" type="text" maxlength="1" oninput="otpFwd(this,5,'go')">
+        </div>
+        <div class="otp-timer" id="go-timer">Kod gönderildi · <span id="go-cd">0:59</span></div>
+        <div class="otp-timer" id="go-resend" style="display:none">Gelmedi mi? <span class="otp-resend" onclick="resend('go')">Tekrar gönder</span></div>
+      </div>
+      <button class="btn-main" id="btn-gp" onclick="handleSms('giris')">
+        <span id="bgp-txt">SMS Gönder</span><div class="spinner" id="bgp-spin"></div>
+      </button>
+    </div>
+
+    <div class="switch-link" style="margin-top:4px">Hesabın yok mu? <span onclick="switchTab('kayit')">Kayıt ol</span></div>
+  </div>
+
+  <!-- ══ KAYIT FORMU ══ -->
+  <div id="form-kayit" class="hidden">
+
+    <div class="method-grid">
+      <button class="method-btn" id="mk-google" onclick="socialGo('google','kayit')">
+        <svg class="method-icon" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Google
+      </button>
+      <button class="method-btn" id="mk-apple" onclick="socialGo('apple','kayit')">
+        <svg class="method-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.42c1.39.07 2.36.74 3.17.8 1.21-.24 2.38-.93 3.6-.84 1.52.12 2.66.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.65 3.97z"/><path d="M12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+        Apple
+      </button>
+      <button class="method-btn" id="mk-email" onclick="selectMethod('kayit','email')">
+        <span class="method-icon">✉️</span> E-posta
+      </button>
+      <button class="method-btn" id="mk-phone" onclick="selectMethod('kayit','phone')">
+        <span class="method-icon">📱</span> Telefon
+      </button>
+    </div>
+
+    <!-- E-posta kayıt -->
+    <div id="kayit-email-fields" class="hidden">
+      <div class="divider">e-posta ile kayıt</div>
+      <div class="name-row">
+        <div class="form-group">
+          <label class="form-label">Ad</label>
+          <input class="form-input" type="text" id="ke-ad" placeholder="Ahmet" oninput="clearErr('ke-ad')">
+          <div class="form-error" id="err-ke-ad">Adınızı girin.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Soyad</label>
+          <input class="form-input" type="text" id="ke-soyad" placeholder="Öz" oninput="clearErr('ke-soyad')">
+          <div class="form-error" id="err-ke-soyad">Soyadınızı girin.</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-posta</label>
+        <input class="form-input" type="email" id="ke-email" placeholder="ornek@mail.com" oninput="clearErr('ke-email')">
+        <div class="form-error" id="err-ke-email">Geçerli bir e-posta girin.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Şifre</label>
+        <div class="input-wrap">
+          <input class="form-input" type="password" id="ke-sifre" placeholder="En az 8 karakter" style="padding-right:46px" oninput="checkStrength();clearErr('ke-sifre')">
+          <div class="input-toggle" onclick="togglePass('ke-sifre',this)">👁</div>
+        </div>
+        <div class="strength-bars"><div class="sbar" id="s1"></div><div class="sbar" id="s2"></div><div class="sbar" id="s3"></div></div>
+        <div class="form-error" id="err-ke-sifre">Şifre en az 8 karakter olmalı.</div>
+      </div>
+      <div class="kvk-row" onclick="toggleKvk('e')">
+        <div class="kvk-check" id="kvk-e"></div>
+        <div class="kvk-text"><span class="kvk-link" onclick="event.stopPropagation();openModal('kvk')">Kullanım Koşulları</span>'nı ve <span class="kvk-link" onclick="event.stopPropagation();openModal('gizlilik')">Gizlilik Politikası</span>'nı okudum, kabul ediyorum.</div>
+      </div>
+      <button class="btn-main warm" onclick="doRegister()">
+        <span id="bke-txt">Hesap Oluştur →</span><div class="spinner" id="bke-spin"></div>
+      </button>
+    </div>
+
+    <!-- Telefon kayıt -->
+    <div id="kayit-phone-fields" class="hidden">
+      <div class="divider">telefon ile kayıt</div>
+      <div class="name-row">
+        <div class="form-group">
+          <label class="form-label">Ad</label>
+          <input class="form-input" type="text" id="kp-ad" placeholder="Ahmet" oninput="clearErr('kp-ad')">
+          <div class="form-error" id="err-kp-ad">Adınızı girin.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Soyad</label>
+          <input class="form-input" type="text" id="kp-soyad" placeholder="Öz" oninput="clearErr('kp-soyad')">
+          <div class="form-error" id="err-kp-soyad">Soyadınızı girin.</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefon Numarası</label>
+        <div class="phone-row">
+          <select class="country-select">
+            <option>🇹🇷 +90</option><option>🇺🇸 +1</option><option>🇬🇧 +44</option><option>🇩🇪 +49</option>
+          </select>
+          <input class="form-input" type="tel" id="kp-phone" placeholder="5__ ___ ____" oninput="clearErr('kp-phone')">
+        </div>
+        <div class="form-error" id="err-kp-phone">Geçerli bir numara girin.</div>
+      </div>
+      <div id="kayit-otp" class="hidden">
+        <label class="form-label" style="margin-bottom:8px;display:block;">Doğrulama Kodu</label>
+        <div class="otp-row">
+          <input class="otp-input" type="text" maxlength="1" oninput="otpFwd(this,0,'ko')">
+          <input class="otp-input" type="text" maxlength="1" oninput="otpFwd(this,1,'ko')">
+          <input class="otp-input" type="text" maxlength="1" oninput="otpFwd(this,2,'ko')">
+          <input class="otp-input" type="text" maxlength="1" oninput="otpFwd(this,3,'ko')">
+          <input class="otp-input" type="text" maxlength="1" oninput="otpFwd(this,4,'ko')">
+          <input class="otp-input" type="text" maxlength="1" oninput="otpFwd(this,5,'ko')">
+        </div>
+        <div class="otp-timer" id="ko-timer">Kod gönderildi · <span id="ko-cd">0:59</span></div>
+        <div class="otp-timer" id="ko-resend" style="display:none">Gelmedi mi? <span class="otp-resend" onclick="resend('ko')">Tekrar gönder</span></div>
+      </div>
+      <div class="kvk-row" onclick="toggleKvk('p')">
+        <div class="kvk-check" id="kvk-p"></div>
+        <div class="kvk-text"><span class="kvk-link" onclick="event.stopPropagation();openModal('kvk')">Kullanım Koşulları</span>'nı ve <span class="kvk-link" onclick="event.stopPropagation();openModal('gizlilik')">Gizlilik Politikası</span>'nı okudum, kabul ediyorum.</div>
+      </div>
+      <button class="btn-main warm" id="btn-kp" onclick="handleSms('kayit')">
+        <span id="bkp-txt">SMS Gönder</span><div class="spinner" id="bkp-spin"></div>
+      </button>
+    </div>
+
+    <div class="switch-link" style="margin-top:4px">Zaten hesabın var mı? <span onclick="switchTab('giris')">Giriş yap</span></div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<div class="modal-overlay" id="modal-reset" onclick="closeModals()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Şifremi Unuttum</div>
+    <div class="modal-sub">E-posta adresini gir, sıfırlama bağlantısı gönderelim.</div>
+    <input class="form-input" type="email" placeholder="ornek@mail.com" style="margin-bottom:16px">
+    <button class="modal-btn primary" onclick="closeModals();showToast('✓ Sıfırlama bağlantısı gönderildi!')">Bağlantı Gönder</button>
+    <button class="modal-btn cancel" onclick="closeModals()">İptal</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-kvk" onclick="closeModals()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Kullanım Koşulları</div>
+    <div class="modal-sub" style="max-height:42vh;overflow-y:auto;font-size:13px;line-height:1.7">Mekan Keşfet hizmetini kullanarak bu koşulları kabul etmiş sayılırsınız. Platformumuz yalnızca kişisel, ticari olmayan amaçlarla kullanılabilir. Yorum ve içerikleriniz topluluk standartlarımıza uygun olmalıdır. Yanıltıcı, spam veya zararlı içerik paylaşımı hesabın askıya alınmasına yol açabilir.</div>
+    <button class="modal-btn primary" onclick="closeModals()">Anladım</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-gizlilik" onclick="closeModals()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Gizlilik Politikası</div>
+    <div class="modal-sub" style="max-height:42vh;overflow-y:auto;font-size:13px;line-height:1.7">Kişisel verileriniz KVKK kapsamında korunmaktadır. Konum bilginiz yalnızca yakınındaki mekanları göstermek için kullanılır, üçüncü taraflarla paylaşılmaz. Telefon numaranız yalnızca kimlik doğrulama için kullanılır. Hesabınızı istediğiniz zaman silebilirsiniz.</div>
+    <button class="modal-btn primary" onclick="closeModals()">Anladım</button>
+  </div>
+</div>
+
+<script>
+var kvk={e:false,p:false};
+var smsState={giris:false,kayit:false};
+var timers={};
+
+function switchTab(t){
+  ['giris','kayit'].forEach(function(x){
+    document.getElementById('form-'+x).classList.toggle('hidden',x!==t);
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+  });
+}
+
+function selectMethod(form,m){
+  var prefix=form==='giris'?'mg':'mk';
+  ['google','apple','email','phone'].forEach(function(x){
+    document.getElementById(prefix+'-'+x).classList.toggle('selected',x===m);
+  });
+  var ef=form+'-email-fields', pf=form+'-phone-fields';
+  document.getElementById(ef).classList.toggle('hidden',m!=='email');
+  document.getElementById(pf).classList.toggle('hidden',m!=='phone');
+}
+
+function socialGo(provider,mode){
+  showToast((provider==='google'?'Google':'Apple')+' ile '+(mode==='giris'?'giriş':'kayıt')+' yapılıyor…');
+  setTimeout(function(){window.location.href=mode==='giris'?'anasayfa.html':'index.html';},1400);
+}
+
+function togglePass(id,btn){
+  var inp=document.getElementById(id);
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='password'?'👁':'🙈';
+}
+
+function checkStrength(){
+  var v=document.getElementById('ke-sifre').value;
+  var sc=(v.length>=8?1:0)+(/[A-Z]/.test(v)?1:0)+(/[0-9]/.test(v)?1:0);
+  var c=['#E74C3C','#F39C12','#27AE60'];
+  for(var i=1;i<=3;i++) document.getElementById('s'+i).style.background=i<=sc?c[sc-1]:'var(--border)';
+}
+
+function toggleKvk(k){
+  kvk[k]=!kvk[k];
+  var el=document.getElementById('kvk-'+k);
+  el.classList.toggle('checked',kvk[k]);
+  el.textContent=kvk[k]?'✓':'';
+}
+
+function clearErr(id){
+  var inp=document.getElementById(id);
+  if(inp)inp.classList.remove('error');
+  var e=document.getElementById('err-'+id);
+  if(e)e.style.display='none';
+}
+
+function showErr(id,msg){
+  var inp=document.getElementById(id);
+  if(inp)inp.classList.add('error');
+  var e=document.getElementById('err-'+id);
+  if(e){if(msg)e.textContent=msg;e.style.display='block';}
+  return false;
+}
+
+function doLogin(){
+  var em=document.getElementById('ge-email').value.trim();
+  var pw=document.getElementById('ge-sifre').value;
+  var ok=true;
+  if(!em||!em.includes('@'))ok=showErr('ge-email');
+  if(!pw||pw.length<6)ok=showErr('ge-sifre','Şifre en az 6 karakter olmalı.');
+  if(!ok)return;
+  setLoad('bge',true);
+  setTimeout(function(){window.location.href='anasayfa.html';},1500);
+}
+
+function doRegister(){
+  var ad=document.getElementById('ke-ad').value.trim();
+  var so=document.getElementById('ke-soyad').value.trim();
+  var em=document.getElementById('ke-email').value.trim();
+  var pw=document.getElementById('ke-sifre').value;
+  var ok=true;
+  if(!ad)ok=showErr('ke-ad');
+  if(!so)ok=showErr('ke-soyad');
+  if(!em||!em.includes('@'))ok=showErr('ke-email');
+  if(!pw||pw.length<8)ok=showErr('ke-sifre','Şifre en az 8 karakter olmalı.');
+  if(!kvk.e){showToast('Lütfen koşulları kabul edin.');ok=false;}
+  if(!ok)return;
+  setLoad('bke',true);
+  setTimeout(function(){window.location.href='index.html';},1500);
+}
+
+function handleSms(mode){
+  var isKayit=mode==='kayit';
+  var phoneId=isKayit?'kp-phone':'gp-phone';
+  var phone=document.getElementById(phoneId).value.trim();
+  var otpBlock=mode===('kayit')?'kayit-otp':'giris-otp';
+  var prefix=isKayit?'bkp':'bgp';
+  var otpKey=isKayit?'ko':'go';
+
+  if(isKayit){
+    var ad=document.getElementById('kp-ad').value.trim();
+    var so=document.getElementById('kp-soyad').value.trim();
+    var ok=true;
+    if(!ad)ok=showErr('kp-ad');
+    if(!so)ok=showErr('kp-soyad');
+    if(!phone||phone.length<10)ok=showErr('kp-phone');
+    if(!kvk.p){showToast('Lütfen koşulları kabul edin.');ok=false;}
+    if(!ok)return;
+  } else {
+    if(!phone||phone.length<10){showErr('gp-phone');return;}
+  }
+
+  if(!smsState[mode]){
+    setLoad(prefix,true);
+    setTimeout(function(){
+      setLoad(prefix,false);
+      document.getElementById(otpBlock).classList.remove('hidden');
+      document.getElementById(prefix+'-txt').textContent='Doğrula →';
+      smsState[mode]=true;
+      startTimer(otpKey);
+      document.querySelector('#'+otpBlock+' .otp-input').focus();
+      showToast('✓ SMS gönderildi!');
+    },1200);
+  } else {
+    var inputs=document.querySelectorAll('#'+otpBlock+' .otp-input');
+    var code='';
+    inputs.forEach(function(i){code+=i.value;});
+    if(code.length<6){showToast('6 haneli kodu tam girin.');return;}
+    setLoad(prefix,true);
+    setTimeout(function(){window.location.href=isKayit?'index.html':'anasayfa.html';},1300);
+  }
+}
+
+function otpFwd(el,idx,key){
+  var inputs=document.querySelectorAll('#'+
+    (key==='go'?'giris-otp':'kayit-otp')+' .otp-input');
+  if(el.value&&idx<5)inputs[idx+1].focus();
+}
+
+function startTimer(key){
+  var sec=59;
+  clearInterval(timers[key]);
+  document.getElementById(key+'-timer').style.display='block';
+  document.getElementById(key+'-resend').style.display='none';
+  timers[key]=setInterval(function(){
+    sec--;
+    document.getElementById(key+'-cd').textContent='0:'+(sec<10?'0':'')+sec;
+    if(sec<=0){
+      clearInterval(timers[key]);
+      document.getElementById(key+'-timer').style.display='none';
+      document.getElementById(key+'-resend').style.display='block';
+    }
+  },1000);
+}
+
+function resend(key){
+  showToast('Kod tekrar gönderildi.');
+  startTimer(key);
+}
+
+function setLoad(prefix,on){
+  var txt=document.getElementById(prefix+'-txt');
+  var spin=document.getElementById(prefix+'-spin');
+  if(txt)txt.style.display=on?'none':'inline';
+  if(spin)spin.style.display=on?'block':'none';
+}
+
+function openModal(id){document.getElementById('modal-'+id).classList.add('open');}
+function closeModals(){document.querySelectorAll('.modal-overlay').forEach(function(m){m.classList.remove('open');});}
+
+var toastTimer;
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.style.display='none';},2400);
+}
+</script>
+</body>
+</html>

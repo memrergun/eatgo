@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bildirimler — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F7F7F7;--dark:#0F0F0F;--warm:#1D9BF0;--muted:#536471;--border:#EFF3F4;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cream);color:var(--dark);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:88px;}
+
+/* ── HEADER ── */
+.header{position:sticky;top:0;z-index:100;background:white;border-bottom:1px solid var(--border);padding:0 20px;}
+.header-top{display:flex;align-items:center;gap:12px;height:56px;}
+.back-btn{width:36px;height:36px;border-radius:50%;background:var(--cream);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.header-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;flex:1;}
+.mark-all{font-size:13px;color:var(--warm);font-weight:600;cursor:pointer;white-space:nowrap;}
+
+/* Tab bar */
+.tab-bar{display:flex;border-top:1px solid var(--border);}
+.tab-item{flex:1;height:42px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;gap:6px;}
+.tab-item.active{color:var(--dark);border-bottom-color:var(--dark);}
+.tab-badge{background:#FF3B30;color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center;}
+
+/* ── NOTIF GRUPLAR ── */
+.notif-group{margin-bottom:4px;}
+.group-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:16px 20px 8px;}
+
+/* ── NOTIF SATIRI ── */
+.notif-row{display:flex;gap:12px;padding:14px 20px;background:white;cursor:pointer;transition:background .15s;position:relative;align-items:flex-start;}
+.notif-row:active{background:var(--cream);}
+.notif-row.unread{background:#F0F8FF;}
+.notif-row.unread::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--warm);border-radius:0 2px 2px 0;}
+
+/* Avatar */
+.notif-av{position:relative;flex-shrink:0;}
+.av-circle{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:white;overflow:hidden;}
+.av-circle img{width:100%;height:100%;object-fit:cover;}
+.av-badge{position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid white;}
+
+/* İçerik */
+.notif-body{flex:1;min-width:0;}
+.notif-text{font-size:14px;line-height:1.5;margin-bottom:4px;}
+.notif-text strong{font-weight:700;}
+.notif-time{font-size:12px;color:var(--muted);}
+.notif-preview{margin-top:8px;background:var(--cream);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--muted);line-height:1.4;border-left:2px solid var(--border);}
+
+/* Sağ taraf */
+.notif-right{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+.notif-thumb{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.unread-dot{width:8px;height:8px;border-radius:50%;background:var(--warm);margin-top:4px;}
+.follow-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid var(--border);background:white;color:var(--dark);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .18s;}
+.follow-btn.following{background:var(--dark);color:white;border-color:var(--dark);}
+
+/* Ayırıcı */
+.notif-divider{height:1px;background:var(--border);margin:0 20px;}
+
+/* ── BOŞ DURUM ── */
+.empty-state{text-align:center;padding:60px 32px;}
+.empty-icon{font-size:52px;margin-bottom:16px;}
+.empty-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;}
+.empty-sub{font-size:14px;color:var(--muted);line-height:1.6;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:white;border-top:1px solid var(--border);display:flex;padding:8px 0 24px;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;color:var(--muted);cursor:pointer;position:relative;}
+.nav-item.active{color:var(--dark);}
+.nav-item span:first-child{font-size:22px;}
+.nav-dot{position:absolute;top:0;right:calc(50% - 16px);width:7px;height:7px;background:#FF3B30;border-radius:50%;border:1.5px solid white;}
+
+/* Toast */
+#toast{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--dark);color:white;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <div class="header-title">Bildirimler</div>
+    <span class="mark-all" onclick="markAll()">Tümünü oku</span>
+  </div>
+  <div class="tab-bar">
+    <div class="tab-item active" id="tab-tumu" onclick="switchTab('tumu')">
+      Tümü <span class="tab-badge" id="badge-tumu">7</span>
+    </div>
+    <div class="tab-item" id="tab-sozlesmeler" onclick="switchTab('sozlesmeler')">
+      Etkileşim
+    </div>
+    <div class="tab-item" id="tab-mekanlar" onclick="switchTab('mekanlar')">
+      Mekanlar
+    </div>
+    <div class="tab-item" id="tab-sistem" onclick="switchTab('sistem')">
+      Sistem
+    </div>
+  </div>
+</div>
+
+<!-- ════ TÜMÜ ════ -->
+<div id="panel-tumu">
+
+  <!-- BUGÜN -->
+  <div class="notif-group">
+    <div class="group-label">Bugün</div>
+
+    <!-- Beğeni -->
+    <div class="notif-row unread" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#1a1a2e;">Y</div>
+        <div class="av-badge" style="background:#FF3B30;">❤️</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong style="cursor:pointer;color:var(--dark);" onclick="event.stopPropagation();window.location.href='kullanici-profil.html'">@yemekgezgini</strong> yorumunu beğendi.</div>
+        <div class="notif-preview">"Kadıköy'ün en iyi smash burger'ını bulduk..."</div>
+        <div class="notif-time" style="margin-top:6px;">3 dakika önce</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#0f1117,#1a1f2e);">🍔</div>
+        <div class="unread-dot"></div>
+      </div>
+    </div>
+
+    <div class="notif-divider"></div>
+
+    <!-- Yorum -->
+    <div class="notif-row unread" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#16213e;">M</div>
+        <div class="av-badge" style="background:#1D9BF0;">💬</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong>meral_kadikoy</strong> yorumuna yanıt verdi.</div>
+        <div class="notif-preview">"Kesinlikle katılıyorum, Cold Brew gerçekten..."</div>
+        <div class="notif-time" style="margin-top:6px;">18 dakika önce</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#080d18,#0d1a2e);">☕</div>
+        <div class="unread-dot"></div>
+      </div>
+    </div>
+
+    <div class="notif-divider"></div>
+
+    <!-- Takip -->
+    <div class="notif-row unread" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#0a1628;">A</div>
+        <div class="av-badge" style="background:#34C759;">👤</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong>@ahmet_gourmet</strong> seni takip etmeye başladı.</div>
+        <div class="notif-time" style="margin-top:6px;">42 dakika önce</div>
+      </div>
+      <div class="notif-right">
+        <button class="follow-btn" id="follow-ahmet" onclick="toggleFollow(this,event)">Takip Et</button>
+        <div class="unread-dot"></div>
+      </div>
+    </div>
+
+    <div class="notif-divider"></div>
+
+    <!-- Yeni mekan — trend -->
+    <div class="notif-row unread" onclick="readNotif(this); window.location.href='mekan.html'">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#1D9BF0;font-size:20px;">🗺️</div>
+        <div class="av-badge" style="background:#FF9500;">🔥</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text">Yakınında <strong>yeni trend mekan:</strong> Il Pellicano bu hafta 48 gurme yorumu aldı!</div>
+        <div class="notif-time" style="margin-top:6px;">1 saat önce</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#120a1a,#1e1030);">🍕</div>
+        <div class="unread-dot"></div>
+      </div>
+    </div>
+
+    <div class="notif-divider"></div>
+
+    <!-- Koleksiyon beğeni -->
+    <div class="notif-row unread" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#0a1f28;">F</div>
+        <div class="av-badge" style="background:#FF3B30;">❤️</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong>@food_explorer</strong> ve <strong>3 kişi daha</strong> "Kadıköy Kahveleri" koleksiyonunu beğendi.</div>
+        <div class="notif-time" style="margin-top:6px;">2 saat önce</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#0f1117,#1a1f2e);">☕</div>
+        <div class="unread-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DÜN -->
+  <div class="notif-group">
+    <div class="group-label">Dün</div>
+
+    <div class="notif-row" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#1a1a2e;">K</div>
+        <div class="av-badge" style="background:#FF9500;">⭐</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong>Brekkie</strong>, takip listendeki bir mekan güncellendi.</div>
+        <div class="notif-preview">Yeni menü: Avokadolu ​brunch tabağı eklendi</div>
+        <div class="notif-time" style="margin-top:6px;">Dün · 19:34</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#0a1628,#0d1f3c);">🥐</div>
+      </div>
+    </div>
+
+    <div class="notif-divider"></div>
+
+    <div class="notif-row" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#1D9BF0;font-size:20px;">🗺️</div>
+        <div class="av-badge" style="background:#34C759;">✓</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text">Yorumun <strong>Editör Seçimi</strong> olarak öne çıkarıldı! 🎉</div>
+        <div class="notif-preview">"White Burger — Kadıköy'ün smash burger şampiyonu..."</div>
+        <div class="notif-time" style="margin-top:6px;">Dün · 14:21</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">🍔</div>
+      </div>
+    </div>
+
+    <div class="notif-divider"></div>
+
+    <div class="notif-row" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#0d1a2e;">L</div>
+        <div class="av-badge" style="background:#1D9BF0;">💬</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong>@lezzetduragi</strong> yorumunu faydalı buldu.</div>
+        <div class="notif-time" style="margin-top:6px;">Dün · 11:05</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#080d18,#0d1a2e);">👍</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BU HAFTA -->
+  <div class="notif-group">
+    <div class="group-label">Bu hafta</div>
+
+    <div class="notif-row" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#1D9BF0;font-size:20px;">🗺️</div>
+        <div class="av-badge" style="background:#FF9500;">🎉</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong>Gurme Editörü</strong> rozetini kazandın! 50 yorum hedefine ulaştın.</div>
+        <div class="notif-time" style="margin-top:6px;">3 gün önce</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#EBF5FF,#DBEAFE);font-size:22px;">🏅</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════ ETKİLEŞİM ════ -->
+<div id="panel-sozlesmeler" style="display:none;">
+  <div class="notif-group">
+    <div class="group-label">Bugün</div>
+
+    <div class="notif-row unread" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#1a1a2e;">Y</div>
+        <div class="av-badge" style="background:#FF3B30;">❤️</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong style="cursor:pointer;color:var(--dark);" onclick="event.stopPropagation();window.location.href='kullanici-profil.html'">@yemekgezgini</strong> yorumunu beğendi.</div>
+        <div class="notif-preview">"Kadıköy'ün en iyi smash burger'ını bulduk..."</div>
+        <div class="notif-time" style="margin-top:6px;">3 dakika önce</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#0f1117,#1a1f2e);">🍔</div>
+        <div class="unread-dot"></div>
+      </div>
+    </div>
+
+    <div class="notif-divider"></div>
+
+    <div class="notif-row unread" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#16213e;">M</div>
+        <div class="av-badge" style="background:#1D9BF0;">💬</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong>meral_kadikoy</strong> yorumuna yanıt verdi.</div>
+        <div class="notif-preview">"Kesinlikle katılıyorum, Cold Brew gerçekten..."</div>
+        <div class="notif-time" style="margin-top:6px;">18 dakika önce</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#080d18,#0d1a2e);">☕</div>
+        <div class="unread-dot"></div>
+      </div>
+    </div>
+
+    <div class="notif-divider"></div>
+
+    <div class="notif-row unread" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#0a1628;">A</div>
+        <div class="av-badge" style="background:#34C759;">👤</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong>@ahmet_gourmet</strong> seni takip etmeye başladı.</div>
+        <div class="notif-time" style="margin-top:6px;">42 dakika önce</div>
+      </div>
+      <div class="notif-right">
+        <button class="follow-btn" onclick="toggleFollow(this,event)">Takip Et</button>
+        <div class="unread-dot"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MEKANLAR ════ -->
+<div id="panel-mekanlar" style="display:none;">
+  <div class="notif-group">
+    <div class="group-label">Bugün</div>
+
+    <div class="notif-row unread" onclick="readNotif(this); window.location.href='mekan.html'">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#1D9BF0;font-size:20px;">🗺️</div>
+        <div class="av-badge" style="background:#FF9500;">🔥</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text">Yakınında <strong>yeni trend mekan:</strong> Il Pellicano bu hafta 48 gurme yorumu aldı!</div>
+        <div class="notif-time" style="margin-top:6px;">1 saat önce</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#120a1a,#1e1030);">🍕</div>
+        <div class="unread-dot"></div>
+      </div>
+    </div>
+
+    <div class="notif-divider"></div>
+
+    <div class="notif-row" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#1a1a2e;font-size:20px;">🍔</div>
+        <div class="av-badge" style="background:#FF9500;">⭐</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong>White Burger</strong> yeni fotoğraflar ekledi.</div>
+        <div class="notif-preview">12 yeni fotoğraf yüklendi</div>
+        <div class="notif-time" style="margin-top:6px;">Dün · 15:00</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">📸</div>
+      </div>
+    </div>
+
+    <div class="notif-divider"></div>
+
+    <div class="notif-row" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#0f1117;font-size:20px;">☕</div>
+        <div class="av-badge" style="background:#34C759;">✓</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong>Brekkie</strong> çalışma saatlerini güncelledi.</div>
+        <div class="notif-preview">Yeni saatler: Hft içi 08:00 – 18:00</div>
+        <div class="notif-time" style="margin-top:6px;">3 gün önce</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#0a1628,#0d1f3c);">🕐</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ SİSTEM ════ -->
+<div id="panel-sistem" style="display:none;">
+  <div class="notif-group">
+    <div class="group-label">Bu hafta</div>
+
+    <div class="notif-row" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#1D9BF0;font-size:20px;">🗺️</div>
+        <div class="av-badge" style="background:#FF9500;">🎉</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text"><strong>Gurme Editörü</strong> rozetini kazandın! 50 yorum hedefine ulaştın.</div>
+        <div class="notif-time" style="margin-top:6px;">3 gün önce</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#EBF5FF,#DBEAFE);font-size:22px;">🏅</div>
+      </div>
+    </div>
+
+    <div class="notif-divider"></div>
+
+    <div class="notif-row" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#1D9BF0;font-size:20px;">🗺️</div>
+        <div class="av-badge" style="background:#1D9BF0;">ℹ️</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text">Yeni özellik: <strong>Harita popup</strong>'ları aktif! Pin'lere tıklayarak mekan önizlemesi görebilirsin.</div>
+        <div class="notif-time" style="margin-top:6px;">5 gün önce</div>
+      </div>
+      <div class="notif-right">
+        <div class="notif-thumb" style="background:linear-gradient(135deg,#0a1628,#0d1f3c);">🗺️</div>
+      </div>
+    </div>
+
+    <div class="notif-divider"></div>
+
+    <div class="notif-row" onclick="readNotif(this)">
+      <div class="notif-av">
+        <div class="av-circle" style="background:#1D9BF0;font-size:20px;">🔒</div>
+        <div class="av-badge" style="background:#34C759;">✓</div>
+      </div>
+      <div class="notif-body">
+        <div class="notif-text">Şifren başarıyla değiştirildi.</div>
+        <div class="notif-time" style="margin-top:6px;">1 hafta önce</div>
+      </div>
+      <div class="notif-right"></div>
+    </div>
+  </div>
+</div>
+
+  <!-- DAHA ESKİ BİLDİRİMLER -->
+  <div style="padding:12px 16px 4px;">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#536471;margin-bottom:8px;">Daha Önce</div>
+  </div>
+
+  <div style="background:white;" id="older-notifs">
+
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #EFF3F4;cursor:pointer;">
+      <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0a1f28,#0d2a3c);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🥗</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:2px;"><span style="font-weight:700;cursor:pointer;color:var(--warm);" onclick="window.location.href='kullanici-profil.html?name=Ahmet+Gourmet&handle=ahmet_gourmet';event.stopPropagation()">@ahmet_gourmet</span> aynı mekanı listeledi</div>
+        <div style="font-size:11px;color:#536471;">Veganarsist · 2 gün önce</div>
+      </div>
+      <div style="font-size:12px;background:#EFF3F4;color:#536471;padding:3px 8px;border-radius:20px;">🥗</div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #EFF3F4;cursor:pointer;" onclick="window.location.href='liderlik.html'">
+      <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#1a1a2e,#16213e);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🏆</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:2px;">Bu hafta <strong>3. sıraya</strong> çıktın! 🎉</div>
+        <div style="font-size:11px;color:#536471;">Liderlik tablosu · 3 gün önce</div>
+      </div>
+      <div style="font-size:12px;background:#FEF9C3;color:#854D0E;padding:3px 8px;border-radius:20px;">Yeni</div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #EFF3F4;cursor:pointer;">
+      <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#120a1a,#1e1030);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">⭐</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:2px;"><span style="font-weight:700;cursor:pointer;color:var(--warm);" onclick="event.stopPropagation()">Smash Queen</span> yorumunu beğendi</div>
+        <div style="font-size:11px;color:#536471;">White Burger yorumun · 3 gün önce</div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #EFF3F4;cursor:pointer;" onclick="window.location.href='white-burger.html'">
+      <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#1a1a2e,#16213e);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🍔</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:2px;"><strong>White Burger</strong> menüsünü güncelledi</div>
+        <div style="font-size:11px;color:#536471;">Yeni sezonluk ürünler · 4 gün önce</div>
+      </div>
+      <div style="font-size:12px;background:#EFF3F4;color:#536471;padding:3px 8px;border-radius:20px;">🍔</div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;">
+      <div style="width:42px;height:42px;border-radius:50%;background:#F0FFF4;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🏪</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:2px;"><strong>Story Coffee Roasters</strong> yorumuna teşekkür etti</div>
+        <div style="font-size:11px;color:#536471;"><span style="color:#16A34A;font-weight:600;">✓ İşletme Sahibi</span> · 5 gün önce</div>
+      </div>
+    </div>
+
+  </div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item" onclick="window.location.href='anasayfa.html'"><span>🗺️</span><span>Keşfet</span></div>
+  <div class="nav-item" onclick="window.location.href='arama.html'"><span>🔍</span><span>Ara</span></div>
+  <div class="nav-item active" onclick="window.location.href='bildirimler.html'">
+    <span>🔔</span><span>Bildirimler</span>
+    <div class="nav-dot"></div>
+  </div>
+  <div class="nav-item" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var unreadCount = 7;
+
+// Tab geçişi
+function switchTab(tab) {
+  ['tumu','sozlesmeler','mekanlar','sistem'].forEach(function(t) {
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+    document.getElementById('panel-' + t).style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+// Okundu işaretle
+function readNotif(row) {
+  if (row.classList.contains('unread')) {
+    row.classList.remove('unread');
+    var dot = row.querySelector('.unread-dot');
+    if (dot) dot.remove();
+    unreadCount = Math.max(0, unreadCount - 1);
+    updateBadge();
+  }
+}
+
+// Tümünü oku
+function markAll() {
+  document.querySelectorAll('.notif-row.unread').forEach(function(r) {
+    r.classList.remove('unread');
+    var dot = r.querySelector('.unread-dot');
+    if (dot) dot.remove();
+  });
+  unreadCount = 0;
+  updateBadge();
+  showToast('✓ Tüm bildirimler okundu olarak işaretlendi');
+}
+
+// Badge güncelle
+function updateBadge() {
+  var b = document.getElementById('badge-tumu');
+  if (unreadCount > 0) {
+    b.textContent = unreadCount;
+    b.style.display = 'inline-block';
+  } else {
+    b.style.display = 'none';
+  }
+}
+
+// Takip et toggle
+function toggleFollow(btn, e) {
+  e.stopPropagation();
+  var following = btn.classList.contains('following');
+  btn.classList.toggle('following', !following);
+  btn.textContent = following ? 'Takip Et' : 'Takip Ediliyor';
+  showToast(following ? 'Takipten çıkıldı' : '✓ Takip edildi!');
+}
+
+// Toast
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.display = 'none'; }, 2200);
+}
+</script>
+</body>
+</html>

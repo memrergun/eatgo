@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>White Burger — Kadıköy</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F7F7;
+    --dark: #0F0F0F;
+    --warm: #1D9BF0;
+    --muted: #536471;
+    --card: #FFFFFF;
+    --border: #EFF3F4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .top-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(to bottom, rgba(26,22,18,0.7), transparent);
+  }
+
+  .back-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 18px;
+  }
+
+  .site-logo {
+    font-family: 'Playfair Display', serif;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+  }
+
+  /* GALLERY */
+  .gallery {
+    height: 420px;
+    position: relative;
+    overflow: hidden;
+    background: var(--dark);
+  }
+
+  .gallery-main {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+  }
+
+  .gallery-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 200px;
+    background: linear-gradient(to top, var(--cream), transparent);
+  }
+
+  .gallery-grid {
+    position: absolute;
+    bottom: 16px; right: 16px;
+    display: flex;
+    gap: 6px;
+  }
+
+  .gallery-thumb {
+    width: 56px; height: 56px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid white;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .gallery-thumb:hover { opacity: 1; }
+
+  .gallery-count {
+    position: absolute;
+    bottom: 20px; left: 20px;
+    background: rgba(26,22,18,0.7);
+    backdrop-filter: blur(8px);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* MAIN CONTENT */
+  .content {
+    padding: 0 20px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* MEKAN BAŞLIK */
+  .venue-header {
+    padding: 24px 0 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .venue-category {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm);
+    margin-bottom: 6px;
+  }
+
+  .venue-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+
+  .venue-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .meta-item span { font-size: 15px; }
+
+  .google-score {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .stars { color: #F5A623; font-size: 13px; }
+
+  /* AKSIYON BUTONLARI */
+  .actions {
+    display: flex;
+    gap: 10px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .btn-primary {
+    flex: 1;
+    background: var(--dark);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-primary:hover { background: #2d2620; }
+
+  .btn-secondary {
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-secondary:hover { background: var(--cream); }
+
+  /* SEGMENT YORUMLAR */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 24px 0 14px;
+  }
+
+  .segment-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+    margin-bottom: 16px;
+  }
+
+  .segment-tabs::-webkit-scrollbar { display: none; }
+
+  .seg-tab {
+    white-space: nowrap;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+
+  .seg-tab.active {
+    background: var(--dark);
+    color: white;
+    border-color: var(--dark);
+  }
+
+  /* YORUM KARTI */
+  .review-card {
+    background: white;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reviewer-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .reviewer-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--warm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .reviewer-info { flex: 1; }
+
+  .reviewer-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .reviewer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--warm);
+    font-weight: 500;
+  }
+
+  .review-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #3D3530;
+    margin-bottom: 12px;
+  }
+
+  .review-highlight {
+    background: #FFF8F0;
+    border-left: 3px solid var(--warm);
+    padding: 8px 12px;
+    border-radius: 0 8px 8px 0;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .review-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .review-date {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .like-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 20px;
+    transition: all 0.2s;
+  }
+
+  .like-btn:hover { background: #FFF0E8; color: var(--warm); }
+
+  /* MENÜ */
+  .menu-section {
+    margin: 8px 0 24px;
+  }
+
+  .menu-category {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 16px 0 10px;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .menu-item-info { flex: 1; }
+
+  .menu-item-name {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+
+  .menu-item-desc {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .menu-item-price {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--warm);
+    margin-left: 16px;
+  }
+
+  /* BİLGİ KUTUSU */
+  .info-box {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .info-row:last-child { border-bottom: none; }
+
+  .info-icon { font-size: 16px; width: 20px; text-align: center; }
+  .info-label { color: var(--muted); font-size: 12px; }
+  .info-value { font-weight: 500; }
+
+  .open-badge {
+    display: inline-block;
+    background: #E8F5E9;
+    color: #2E7D32;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+  }
+
+  /* VİDEO KARTLARI */
+  .videos-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+    margin-bottom: 8px;
+  }
+  .videos-scroll::-webkit-scrollbar { display: none; }
+
+  .video-card {
+    flex-shrink: 0;
+    width: 130px;
+    height: 200px;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    background: var(--dark);
+    transition: transform 0.2s;
+  }
+
+  .video-card:hover { transform: scale(1.03); }
+
+  .video-bg {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+  }
+
+  .video-play {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    padding-left: 3px;
+  }
+
+  .video-badge {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: rgba(26,22,18,0.75);
+    backdrop-filter: blur(6px);
+    color: white;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 10px;
+  }
+
+  .video-user {
+    position: absolute;
+    bottom: 8px; left: 8px; right: 8px;
+    color: white;
+    font-size: 11px;
+    font-weight: 500;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  }
+
+  /* FULL SCREEN VİDEO MODAL */
+  .video-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: black;
+    flex-direction: column;
+  }
+
+  .video-modal.open { display: flex; }
+
+  .modal-header {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 10;
+    padding: 50px 20px 20px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .modal-close {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .modal-venue-name {
+    color: white;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .video-feed {
+    height: 100%;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+  }
+
+  .video-feed::-webkit-scrollbar { display: none; }
+
+  .video-slide {
+    height: 100vh;
+    scroll-snap-align: start;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .video-slide-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 100px;
+    opacity: 0.15;
+  }
+
+  .video-slide-content {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 80px 20px 50px;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+  }
+
+  .slide-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(200,131,74,0.9);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+
+  .slide-username {
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .slide-desc {
+    color: rgba(255,255,255,0.85);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .slide-actions {
+    position: absolute;
+    right: 16px;
+    bottom: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .slide-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: white;
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  .slide-action-btn span:first-child {
+    font-size: 26px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  }
+
+  .swipe-hint {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-6px); }
+  }
+
+  /* FİLTRE CHİP'LERİ */
+  .filter-chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    scrollbar-width: none;
+    margin-bottom: 4px;
+  }
+  .filter-chips::-webkit-scrollbar { display: none; }
+
+  .chip {
+    white-space: nowrap;
+    padding: 0 14px;
+    height: 32px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    border: 1.5px solid var(--dark);
+    background: white;
+    color: var(--dark);
+    transition: all 0.18s;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  .chip.active {
+    background: var(--dark);
+    color: white;
+    border-color: var(--dark);
+  }
+
+  .chip:hover:not(.active) {
+    border-color: var(--muted);
+    color: var(--dark);
+  }
+
+  /* GOOGLE BLOCK */
+  .google-block {
+    margin-bottom: 8px;
+  }
+
+  .google-score-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+
+  .g-big-score {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--dark);
+    line-height: 1;
+  }
+
+  .g-score-detail { flex: 1; }
+
+  .g-all-btn {
+    background: var(--dark);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+
+  .g-all-btn:hover { background: #2d2620; }
+
+  .g-more-btn {
+    width: 100%;
+    background: white;
+    border: 1.5px solid #4285F4;
+    color: #4285F4;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 4px;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+
+  .g-more-btn:hover { background: #F0F4FF; }
+
+  /* GOOGLE DRAWER */
+  .google-drawer {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+  }
+
+  .google-drawer.open { display: block; }
+
+  .drawer-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(2px);
+  }
+
+  .drawer-sheet {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--cream);
+    border-radius: 24px 24px 0 0;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .drawer-handle {
+    width: 40px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 12px auto 0;
+    flex-shrink: 0;
+  }
+
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .drawer-reviews {
+    overflow-y: auto;
+    padding: 16px 20px;
+    flex: 1;
+  }
+
+  /* BOTTOM SAFE AREA */
+  .bottom-space { height: 40px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <button class="back-btn" onclick="window.location.href='anasayfa.html'">←</button>
+  <div class="site-logo">Mekan Keşfet</div>
+</div>
+
+<!-- GALERİ -->
+<div class="gallery">
+  <svg width="100%" height="100%" viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;">
+    <rect width="800" height="420" fill="#2C1810"/>
+    <rect x="0" y="0" width="800" height="420" fill="url(#bg)"/>
+    <defs>
+      <radialGradient id="bg" cx="50%" cy="40%">
+        <stop offset="0%" stop-color="#5C3A1E" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#1A0E08"/>
+      </radialGradient>
+    </defs>
+    <!-- Burger illustration placeholder -->
+    <circle cx="400" cy="190" r="100" fill="#C8834A" opacity="0.3"/>
+    <ellipse cx="400" cy="200" rx="80" ry="30" fill="#8B4513" opacity="0.5"/>
+    <ellipse cx="400" cy="180" rx="75" ry="25" fill="#D2691E" opacity="0.5"/>
+    <ellipse cx="400" cy="165" rx="70" ry="20" fill="#228B22" opacity="0.4"/>
+    <ellipse cx="400" cy="155" rx="78" ry="28" fill="#C8834A" opacity="0.6"/>
+    <text x="400" y="320" text-anchor="middle" fill="white" font-family="Georgia" font-size="22" opacity="0.6">White Burger</text>
+    <text x="400" y="345" text-anchor="middle" fill="#C8834A" font-family="Georgia" font-size="13" opacity="0.5">Kadıköy, İstanbul</text>
+  </svg>
+  <div class="gallery-overlay"></div>
+  <div class="gallery-count">📷 24 fotoğraf</div>
+  <div class="gallery-grid">
+    <div class="gallery-thumb" style="background:#8B4513;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;">🍔</div>
+    <div class="gallery-thumb" style="background:#556B2F;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;">🥗</div>
+    <div class="gallery-thumb" style="background:#8B6914;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;">🍟</div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- MEKAN BAŞLIK -->
+  <div class="venue-header">
+    <div class="venue-category">🍔 Burger & Fast Casual</div>
+    <h1 class="venue-name">White Burger</h1>
+    <div class="venue-meta">
+      <div class="google-score" onclick="openGoogleDrawer()" style="cursor:pointer;" title="Google yorumlarını gör">
+        <span class="stars">★★★★☆</span>
+        <strong>4.4</strong>
+        <span style="color:var(--muted);font-size:12px">(312)</span>
+        <span style="font-size:10px;color:var(--muted)">Google</span>
+        <span style="font-size:11px;color:#4285F4;">↗</span>
+      </div>
+      <div class="meta-item"><span>📍</span> Kadıköy</div>
+      <div class="meta-item"><span>💰</span> Orta segment</div>
+    </div>
+  </div>
+
+  <!-- BUTONLAR -->
+  <div class="actions">
+    <button class="btn-primary">🗺️ Yol Tarifi</button>
+    <button class="btn-secondary">📞</button>
+    <button class="btn-secondary">🔖</button>
+    <button class="btn-secondary">↗️</button>
+  </div>
+
+  <!-- SEGMENT YORUMLAR -->
+  <div class="section-title">Ne diyorlar?</div>
+
+  <div class="segment-tabs">
+    <div class="seg-tab active" onclick="showSegment('all', this)">Tümü</div>
+    <div class="seg-tab" onclick="showSegment('gurme', this)">🍽️ Gurme</div>
+    <div class="seg-tab" onclick="showSegment('influencer', this)">📱 Influencer</div>
+    <div class="seg-tab" onclick="showSegment('mahalle', this)">📍 Mahalle</div>
+    <div class="seg-tab" onclick="showSegment('google', this)">⭐ Google</div>
+  </div>
+
+  <div class="filter-chips" id="reviewFilters">
+    <div class="chip active" onclick="filterReviews('popular', this)">En Beğenilen</div>
+    <div class="chip" onclick="filterReviews('new', this)">En Yeni</div>
+    <div class="chip" onclick="filterReviews('local', this)">Müdavim</div>
+  </div>
+
+  <div id="reviews-container">
+
+    <!-- GURME YORUM -->
+    <div class="review-card" data-segment="gurme">
+      <div class="reviewer-row">
+        <div class="reviewer-avatar">👨‍🍳</div>
+        <div class="reviewer-info">
+          <div class="reviewer-name">Ahmet Ö. — Yemek Yazarı</div>
+          <div class="reviewer-badge">🍽️ Gurme Editörü</div>
+        </div>
+      </div>
+      <div class="review-highlight">"Kadıköy'ün en otantik smash burger'ı burada."</div>
+      <p class="review-text">Et kalitesi gerçekten fark yaratıyor. Smash tekniği uygulanmış, dışı crispy içi sulu. Ekmek seçimi özenli, soslar ev yapımı. Fast food kategorisinde değerlendirmek haksızlık olur.</p>
+      <div class="review-footer">
+        <span class="review-date">2 hafta önce</span>
+        <button class="like-btn">👍 47 kişi faydalı buldu</button>
+      </div>
+    </div>
+
+    <!-- INFLUENCER YORUM -->
+    <div class="review-card" data-segment="influencer">
+      <div class="reviewer-row">
+        <div class="reviewer-avatar">📱</div>
+        <div class="reviewer-info">
+          <div class="reviewer-name" onclick="window.location.href='kullanici-profil.html'" style="cursor:pointer;color:var(--warm);">@yemekgezgini</div>
+          <div class="reviewer-badge">📱 Food Influencer · 84K takipçi</div>
+        </div>
+      </div>
+      <div class="review-highlight">"Fiyat/performans bu şehirde bu burgerin hakkını yemiyor kimse."</div>
+      <p class="review-text">Reels'ımda gördükten sonra gidenler bilir — görüntüsü kadar lezzetli. Double smash menü şiddetle tavsiye. Özellikle hafta sonu kalabalık, erken gidin.</p>
+      <div class="review-footer">
+        <span class="review-date">1 ay önce</span>
+        <button class="like-btn">👍 132 kişi faydalı buldu</button>
+      </div>
+    </div>
+
+    <!-- MAHALLE YORUM -->
+    <div class="review-card" data-segment="mahalle">
+      <div class="reviewer-row">
+        <div class="reviewer-avatar">🏘️</div>
+        <div class="reviewer-info">
+          <div class="reviewer-name" style="cursor:pointer;color:var(--warm);" onclick="window.location.href='kullanici-profil.html?name=Meral+H&handle=meral_kadikoy'">Meral K.</div>
+          <div class="reviewer-badge">📍 Kadıköy Müdavimi · 3 yıldır müşteri</div>
+        </div>
+      </div>
+      <p class="review-text">Burayı yıllardır biliyorum, açıldığından beri gidiyorum. Kalite düşmedi, fiyat mantıklı kaldı. Çocukla da gidebilirsiniz, rahatsız etmiyorlar. Onion rings mutlaka alın.</p>
+      <div class="review-footer">
+        <span class="review-date">3 hafta önce</span>
+        <button class="like-btn">👍 28 kişi faydalı buldu</button>
+      </div>
+    </div>
+
+    <!-- GOOGLE YORUM -->
+    <div class="review-card" data-segment="google">
+      <div class="reviewer-row">
+        <div class="reviewer-avatar" style="background:#4285F4;font-size:13px;color:white;font-weight:700;">G</div>
+        <div class="reviewer-info">
+          <div class="reviewer-name">Burak T.</div>
+          <div class="reviewer-badge">⭐ Google · Yerel Rehber</div>
+        </div>
+      </div>
+      <p class="review-text">Smash burger konseptini Türkiye'ye iyi taşımışlar. Patates kızartması da güzel. Servis hızlı, personel güler yüzlü. Fiyat biraz yüksek ama kaliteye değer.</p>
+      <div class="review-footer">
+        <span class="review-date">5 gün önce</span>
+        <button class="like-btn">👍 19 kişi faydalı buldu</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- VİDEOLAR -->
+  <div class="section-title">Videolar</div>
+  <div class="videos-scroll">
+    <div class="video-card" onclick="openVideo(0)" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">
+      <div class="video-bg">🍔</div>
+      <div class="video-play">▶</div>
+      <div class="video-badge">📱 Influencer</div>
+      <div class="video-user">@yemekgezgini</div>
+    </div>
+    <div class="video-card" onclick="openVideo(1)" style="background:linear-gradient(135deg,#0d1a2e,#080d18);">
+      <div class="video-bg">🥗</div>
+      <div class="video-play">▶</div>
+      <div class="video-badge">🍽️ Gurme</div>
+      <div class="video-user">Ahmet Öz</div>
+    </div>
+    <div class="video-card" onclick="openVideo(2)" style="background:linear-gradient(135deg,#3d3008,#1a1404);">
+      <div class="video-bg">🍟</div>
+      <div class="video-play">▶</div>
+      <div class="video-badge">📍 Mahalle</div>
+      <div class="video-user">@meral_kadikoy</div>
+    </div>
+    <div class="video-card" onclick="openVideo(3)" style="background:linear-gradient(135deg,#1a1a3d,#08080f);">
+      <div class="video-bg">🧁</div>
+      <div class="video-play">▶</div>
+      <div class="video-badge">📱 Influencer</div>
+      <div class="video-user">@lezzetduragi</div>
+    </div>
+  </div>
+
+  <!-- GOOGLE YORUMLARI -->
+  <div class="section-title">Google'da ne diyorlar?</div>
+  <div class="google-block">
+    <div class="google-score-bar">
+      <div class="g-big-score">4.4</div>
+      <div class="g-score-detail">
+        <div class="stars" style="font-size:18px;">★★★★☆</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px;">312 Google yorumu</div>
+      </div>
+      <button class="g-all-btn" onclick="openGoogleDrawer()">Tümünü gör →</button>
+    </div>
+
+  </div>
+
+  <!-- MENÜ -->
+  <div class="section-title">Menü</div>
+  <div class="menu-section">
+    <div class="menu-category">Burgerler</div>
+    <div class="menu-item">
+      <div class="menu-item-info">
+        <div class="menu-item-name">Classic Smash</div>
+        <div class="menu-item-desc">Dana eti, cheddar, özel sos, turşu</div>
+      </div>
+      <div class="menu-item-price">185₺</div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-info">
+        <div class="menu-item-name">Double Smash ⭐</div>
+        <div class="menu-item-desc">Çift et, double cheddar, karamelize soğan</div>
+      </div>
+      <div class="menu-item-price">245₺</div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-info">
+        <div class="menu-item-name">Mushroom Melt</div>
+        <div class="menu-item-desc">Dana eti, mantar, gruyère, truffle sos</div>
+      </div>
+      <div class="menu-item-price">265₺</div>
+    </div>
+
+    <div class="menu-category">Yanlar</div>
+    <div class="menu-item">
+      <div class="menu-item-info">
+        <div class="menu-item-name">Onion Rings</div>
+        <div class="menu-item-desc">Ev yapımı panko kaplama</div>
+      </div>
+      <div class="menu-item-price">95₺</div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-info">
+        <div class="menu-item-name">Smash Fries</div>
+        <div class="menu-item-desc">Parmesan, sarımsak, maydanoz</div>
+      </div>
+      <div class="menu-item-price">85₺</div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-info">
+        <div class="menu-item-name">Sweet Potato Fries</div>
+        <div class="menu-item-desc">Tatlı patates, chipotle sos</div>
+      </div>
+      <div class="menu-item-price">95₺</div>
+    </div>
+
+    <div class="menu-category">İçecekler</div>
+    <div class="menu-item">
+      <div class="menu-item-info">
+        <div class="menu-item-name">Limonata ⭐</div>
+        <div class="menu-item-desc">Taze sıkım, nane, az şeker</div>
+      </div>
+      <div class="menu-item-price">75₺</div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-info">
+        <div class="menu-item-name">Homemade Ayran</div>
+        <div class="menu-item-desc">Ev yapımı, tuzlu, soğuk</div>
+      </div>
+      <div class="menu-item-price">45₺</div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-info">
+        <div class="menu-item-name">Gazlı İçecek</div>
+        <div class="menu-item-desc">Cola, Fanta, Sprite</div>
+      </div>
+      <div class="menu-item-price">55₺</div>
+    </div>
+
+    <div class="menu-category">Tatlılar</div>
+    <div class="menu-item">
+      <div class="menu-item-info">
+        <div class="menu-item-name">Nutella Milkshake</div>
+        <div class="menu-item-desc">El yapımı dondurma, gerçek Nutella</div>
+      </div>
+      <div class="menu-item-price">115₺</div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-info">
+        <div class="menu-item-name">Cookie Dough</div>
+        <div class="menu-item-desc">Sıcak, dondurmalı, ev yapımı</div>
+      </div>
+      <div class="menu-item-price">95₺</div>
+    </div>
+  </div>
+
+  <!-- BENZER MEKANLAR -->
+  <div class="section-title">Bunları da beğenebilirsiniz</div>
+  <div style="display:flex;flex-direction:column;gap:10px;margin:0 16px 20px;">
+    <div style="display:flex;align-items:center;gap:12px;background:white;border-radius:14px;padding:12px;border:1px solid var(--border);cursor:pointer;" onclick="window.location.href='mekan.html?name=Ember+Smash&score=4.6&emoji=🍔&hood=Moda'">
+      <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#2d1000,#0f0f0f);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🍔</div>
+      <div style="flex:1;"><div style="font-size:14px;font-weight:700;">Ember Smash</div><div style="font-size:11px;color:var(--muted);">Moda · Double Smash · 340m</div></div>
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;">4.6</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;background:white;border-radius:14px;padding:12px;border:1px solid var(--border);cursor:pointer;" onclick="window.location.href='mekan.html?name=Burger+Lab&score=4.5&emoji=🍔&hood=Kadıköy'">
+      <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#0a1628,#0d1f3c);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🍔</div>
+      <div style="flex:1;"><div style="font-size:14px;font-weight:700;">Burger Lab</div><div style="font-size:11px;color:var(--muted);">Kadıköy · Gourmet Burger · 480m</div></div>
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;">4.5</div>
+    </div>
+  </div>
+
+  <!-- BİLGİ KUTUSU -->
+  <div class="section-title">Bilgiler</div>
+  <div class="info-box">
+    <div class="info-row">
+      <span class="info-icon">🕐</span>
+      <div>
+        <div class="info-label">Çalışma Saatleri</div>
+        <div class="info-value">12:00 – 23:00 <span class="open-badge">Açık</span></div>
+      </div>
+    </div>
+    <div class="info-row">
+      <span class="info-icon">📍</span>
+      <div>
+        <div class="info-label">Adres</div>
+        <div class="info-value">Moda Cad. No:42, Kadıköy</div>
+      </div>
+    </div>
+    <div class="info-row">
+      <span class="info-icon">💳</span>
+      <div>
+        <div class="info-label">Ödeme</div>
+        <div class="info-value">Nakit, Kredi Kartı, Multinet</div>
+      </div>
+    </div>
+    <div class="info-row">
+      <span class="info-icon">🅿️</span>
+      <div>
+        <div class="info-label">Park</div>
+        <div class="info-value">Yakın çevrede ücretli park mevcut</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-space"></div>
+</div>
+
+<!-- GOOGLE DRAWER -->
+<div class="google-drawer" id="googleDrawer">
+  <div class="drawer-overlay" onclick="closeGoogleDrawer()"></div>
+  <div class="drawer-sheet">
+    <div class="drawer-handle"></div>
+    <div class="drawer-header">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;">Google Yorumları</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:2px;">White Burger · 312 yorum · 4.4 ★</div>
+      </div>
+      <button class="modal-close" onclick="closeGoogleDrawer()" style="background:var(--border);color:var(--dark);">✕</button>
+    </div>
+    <div class="filter-chips" style="padding: 12px 20px 8px;border-bottom:1px solid var(--border);">
+      <div class="chip active" onclick="filterGoogle('helpful', this)">En Faydalı</div>
+      <div class="chip" onclick="filterGoogle('new', this)">En Yeni</div>
+      <div class="chip" onclick="filterGoogle('high', this)">En Yüksek Puan</div>
+      <div class="chip" onclick="filterGoogle('low', this)">En Düşük Puan</div>
+    </div>
+    <div class="drawer-reviews">
+
+      <div class="review-card">
+        <div class="reviewer-row">
+          <div class="reviewer-avatar" style="background:#4285F4;font-size:13px;color:white;font-weight:700;">G</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">Burak T.</div>
+            <div class="reviewer-badge" style="color:#4285F4;">⭐⭐⭐⭐⭐ · Yerel Rehber</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);">5 gün önce</div>
+        </div>
+        <p class="review-text">Smash burger konseptini Türkiye'ye iyi taşımışlar. Patates kızartması da güzel. Servis hızlı, personel güler yüzlü. Fiyat biraz yüksek ama kaliteye değer.</p>
+        <div style="font-size:12px;color:var(--muted);">👍 94 kişi faydalı buldu</div>
+      </div>
+
+      <div class="review-card">
+        <div class="reviewer-row">
+          <div class="reviewer-avatar" style="background:#EA4335;font-size:13px;color:white;font-weight:700;">G</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">Selin A.</div>
+            <div class="reviewer-badge" style="color:#4285F4;">⭐⭐⭐⭐☆</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);">2 hafta önce</div>
+        </div>
+        <p class="review-text">Fiyat biraz yüksek ama kaliteye değer. Double smash kesinlikle tavsiye. Hafta sonları kalabalık olabiliyor, rezervasyon yok o yüzden erken gidin.</p>
+        <div style="font-size:12px;color:var(--muted);">👍 61 kişi faydalı buldu</div>
+      </div>
+
+      <div class="review-card">
+        <div class="reviewer-row">
+          <div class="reviewer-avatar" style="background:#34A853;font-size:13px;color:white;font-weight:700;">G</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">Mehmet K.</div>
+            <div class="reviewer-badge" style="color:#4285F4;">⭐⭐⭐⭐⭐ · Yerel Rehber</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);">3 hafta önce</div>
+        </div>
+        <p class="review-text">Kadıköy'ün en iyi burgeri tartışmasız. Ekmek kalitesi özellikle çok iyi. Onion rings şiddetle tavsiye.</p>
+        <div style="font-size:12px;color:var(--muted);">👍 43 kişi faydalı buldu</div>
+      </div>
+
+      <div class="review-card">
+        <div class="reviewer-row">
+          <div class="reviewer-avatar" style="background:#FBBC05;font-size:13px;color:var(--dark);font-weight:700;">G</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">Ayşe D.</div>
+            <div class="reviewer-badge" style="color:#4285F4;">⭐⭐⭐☆☆</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);">1 ay önce</div>
+        </div>
+        <p class="review-text">Burger güzeldi ama bekleme süresi çok uzundu. 35 dakika bekledik. Kalite iyi ama hız sorunu var hafta sonları.</p>
+        <div style="font-size:12px;color:var(--muted);">👍 28 kişi faydalı buldu</div>
+      </div>
+
+      <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">
+        Tüm yorumları görmek için Google Maps'e git →
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VİDEO MODAL -->
+<div class="video-modal" id="videoModal">
+  <div class="modal-header">
+    <button class="modal-close" onclick="closeVideo()">✕</button>
+    <div class="modal-venue-name">White Burger</div>
+  </div>
+
+  <div class="video-feed" id="videoFeed">
+
+    <div class="video-slide" style="background:linear-gradient(160deg,#0f0f0f,#1a1a2e,#16213e);">
+      <div class="video-slide-bg">🍔</div>
+      <div class="slide-actions">
+        <div class="slide-action-btn"><span>❤️</span><span>2.4K</span></div>
+        <div class="slide-action-btn"><span>💬</span><span>84</span></div>
+        <div class="slide-action-btn"><span>↗️</span><span>Paylaş</span></div>
+        <div class="slide-action-btn"><span>🔖</span><span>Kaydet</span></div>
+      </div>
+      <div class="video-slide-content">
+        <div class="slide-badge">📱 Influencer</div>
+        <div class="slide-username" onclick="window.location.href='kullanici-profil.html'" style="cursor:pointer;">@yemekgezgini</div>
+        <div class="slide-desc">Kadıköy'ün en iyi smash burger'ını bulduk 🔥 Double smash menü kesinlikle denenmeli. Fiyat/performans şampiyonu!</div>
+      </div>
+      <div class="swipe-hint"><span>↑</span><span>Kaydır</span></div>
+    </div>
+
+    <div class="video-slide" style="background:linear-gradient(160deg,#080d18,#0d1a2e,#0d200d);">
+      <div class="video-slide-bg">🥗</div>
+      <div class="slide-actions">
+        <div class="slide-action-btn"><span>❤️</span><span>891</span></div>
+        <div class="slide-action-btn"><span>💬</span><span>47</span></div>
+        <div class="slide-action-btn"><span>↗️</span><span>Paylaş</span></div>
+        <div class="slide-action-btn"><span>🔖</span><span>Kaydet</span></div>
+      </div>
+      <div class="video-slide-content">
+        <div class="slide-badge">🍽️ Gurme</div>
+        <div class="slide-username">Ahmet Öz — Yemek Yazarı</div>
+        <div class="slide-desc">Et kalitesi gerçekten fark yaratıyor. Smash tekniği doğru uygulanmış, dışı crispy içi sulu. Türkiye'de bu konsepti en iyi yapanlardan.</div>
+      </div>
+    </div>
+
+    <div class="video-slide" style="background:linear-gradient(160deg,#1a1404,#3d3008,#1a1200);">
+      <div class="video-slide-bg">🍟</div>
+      <div class="slide-actions">
+        <div class="slide-action-btn"><span>❤️</span><span>432</span></div>
+        <div class="slide-action-btn"><span>💬</span><span>29</span></div>
+        <div class="slide-action-btn"><span>↗️</span><span>Paylaş</span></div>
+        <div class="slide-action-btn"><span>🔖</span><span>Kaydet</span></div>
+      </div>
+      <div class="video-slide-content">
+        <div class="slide-badge">📍 Mahalle</div>
+        <div class="slide-username">@meral_kadikoy</div>
+        <div class="slide-desc">3 yıldır müdavimiyim. Kalite hiç düşmedi. Onion rings mutlaka alın, ev yapımı panko kaplama gerçekten farklı 👌</div>
+      </div>
+    </div>
+
+    <div class="video-slide" style="background:linear-gradient(160deg,#08080f,#1a1a3d,#0d0d20);">
+      <div class="video-slide-bg">🧁</div>
+      <div class="slide-actions">
+        <div class="slide-action-btn"><span>❤️</span><span>1.1K</span></div>
+        <div class="slide-action-btn"><span>💬</span><span>63</span></div>
+        <div class="slide-action-btn"><span>↗️</span><span>Paylaş</span></div>
+        <div class="slide-action-btn"><span>🔖</span><span>Kaydet</span></div>
+      </div>
+      <div class="video-slide-content">
+        <div class="slide-badge">📱 Influencer</div>
+        <div class="slide-username">@lezzetduragi</div>
+        <div class="slide-desc">Dessert menüsünü de denedik! Tatlı kısmı da güçlü. Milkshake çok yoğun, paylaşarak için 😅</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function filterGoogle(type, el) {
+  document.querySelectorAll('#googleDrawer .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function filterReviews(type, el) {
+  document.querySelectorAll('#reviewFilters .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  // Gerçek uygulamada burada sıralama yapılır
+}
+
+function openGoogleDrawer() {
+  document.getElementById('googleDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGoogleDrawer() {
+  document.getElementById('googleDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function openVideo(index) {
+  const modal = document.getElementById('videoModal');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  const feed = document.getElementById('videoFeed');
+  const slides = feed.querySelectorAll('.video-slide');
+  if (slides[index]) {
+    feed.scrollTo({ top: slides[index].offsetTop, behavior: 'instant' });
+  }
+}
+
+function closeVideo() {
+  document.getElementById('videoModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function showSegment(seg, el) {
+  document.querySelectorAll('.seg-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  
+  document.querySelectorAll('.review-card').forEach(card => {
+    if (seg === 'all' || card.dataset.segment === seg) {
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
+
+<style>
+  .bottom-nav-wb {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 100; background: white;
+    border-top: 1px solid #E8E0D5;
+    display: flex; padding: 8px 0 24px;
+  }
+  .nav-item-wb {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 500;
+    color: #8C7B6B; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav-item-wb span:first-child { font-size: 22px; }
+</style>
+
+<div class="bottom-nav-wb">
+  <div class="nav-item-wb" onclick="window.location.href='anasayfa.html'"><span>🗺️</span><span>Keşfet</span></div>
+  <div class="nav-item-wb" onclick="window.location.href='arama.html'"><span>🔍</span><span>Ara</span></div>
+  <div class="nav-item-wb" onclick="window.location.href='blog.html'"><span>📰</span><span>Blog</span></div>
+  <div class="nav-item-wb" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
+</div>
+
+</body>
+</html>

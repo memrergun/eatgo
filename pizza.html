@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pizzaseverler İçin Kadıköy Turu — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --cream:#F5F0E8; --dark:#1A1612; --warm:#C8834A; --muted:#8C7B6B; --border:#E8E0D5; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--cream); color:var(--dark); font-family:'DM Sans',sans-serif; padding-bottom:90px; }
+  .header { position:sticky; top:0; z-index:50; background:var(--cream); border-bottom:1px solid var(--border); padding:14px 16px 10px; display:flex; align-items:center; gap:12px; }
+  .back-btn { width:36px; height:36px; border-radius:10px; background:white; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; flex-shrink:0; }
+  .header-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; }
+  .cover { position:relative; height:280px; overflow:hidden; background:linear-gradient(160deg,#120a1a,#1e1030,#0d0404); display:flex; align-items:center; justify-content:center; }
+  .cover-emoji { font-size:80px; opacity:0.3; position:absolute; }
+  .cover-content { position:relative; z-index:2; padding:24px; text-align:center; color:white; }
+  .cover-tag { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.6); margin-bottom:10px; }
+  .cover-title { font-family:'Playfair Display',serif; font-size:26px; font-weight:900; line-height:1.2; margin-bottom:10px; }
+  .cover-desc { font-size:13px; color:rgba(255,255,255,0.75); line-height:1.6; max-width:280px; margin:0 auto 14px; }
+  .cover-meta { display:flex; align-items:center; justify-content:center; gap:12px; font-size:11px; color:rgba(255,255,255,0.5); }
+  .section { padding:20px 16px 0; }
+  .section-title { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+  .venue-item { display:flex; align-items:flex-start; gap:12px; padding:14px 0; border-bottom:1px solid var(--border); cursor:pointer; }
+  .venue-item:last-child { border-bottom:none; }
+  .venue-num { font-family:'Playfair Display',serif; font-size:22px; font-weight:900; color:var(--border); width:28px; flex-shrink:0; line-height:1; }
+  .venue-thumb { width:72px; height:72px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
+  .venue-info { flex:1; min-width:0; }
+  .venue-name { font-size:15px; font-weight:700; margin-bottom:3px; }
+  .venue-type { font-size:12px; color:var(--warm); font-weight:500; margin-bottom:4px; }
+  .venue-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+  .venue-tags { display:flex; gap:6px; margin-top:7px; flex-wrap:wrap; }
+  .vtag { font-size:10px; font-weight:600; padding:3px 8px; border-radius:20px; background:white; border:1px solid var(--border); color:var(--muted); }
+  .vtag.g { background:#f0f7f0; border-color:#c8e0c8; color:#3a7a3a; }
+  .vtag.i { background:#f5f0f7; border-color:#d8c8e0; color:#6a3a7a; }
+  .vtag.m { background:#fff5f0; border-color:#e8d0c8; color:#7a3a20; }
+  .divider { height:8px; background:var(--border); opacity:0.4; margin:8px 0; }
+  .video-section { padding:20px 16px 0; }
+  .video-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .video-card { border-radius:16px; overflow:hidden; cursor:pointer; position:relative; aspect-ratio:9/14; display:flex; align-items:flex-end; }
+  .video-bg { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:42px; }
+  .video-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%); }
+  .video-content { position:relative; z-index:2; padding:12px; width:100%; }
+  .video-play { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.2); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; font-size:10px; margin-bottom:6px; }
+  .video-venue { color:white; font-size:12px; font-weight:700; margin-bottom:2px; }
+  .video-meta { color:rgba(255,255,255,0.6); font-size:10px; }
+  .video-seg { position:absolute; top:10px; right:10px; font-size:9px; font-weight:600; padding:3px 7px; border-radius:20px; backdrop-filter:blur(8px); }
+  .bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:100; background:white; border-top:1px solid var(--border); display:flex; padding:8px 0 24px; }
+  .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; font-weight:500; color:var(--muted); cursor:pointer; }
+  .nav-item.active { color:var(--dark); }
+  .nav-item span:first-child { font-size:22px; }
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:200; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal-close { position:absolute; top:20px; right:20px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.2); border:none; color:white; font-size:18px; cursor:pointer; }
+  .modal-inner { color:white; text-align:center; padding:24px; }
+  .modal-emoji { font-size:64px; margin-bottom:16px; }
+  .modal-title { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; margin-bottom:8px; }
+  .modal-sub { font-size:13px; color:rgba(255,255,255,0.6); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="back-btn" onclick="window.location.href='blog.html'">←</div>
+  <div class="header-title">Pizzaseverler İçin Kadıköy Turu</div>
+</div>
+
+<div class="cover">
+  <div class="cover-emoji">🍕</div>
+  <div class="cover-content">
+    <div class="cover-tag">🍕 Pizza Rehberi · Kadıköy</div>
+    <h1 class="cover-title">Pizzaseverler İçin Kadıköy Turu</h1>
+    <p class="cover-desc">Napoliten'den Chicago stiline, odun ateşinden taş fırına — Moda ve çevresinin en iyi 5 pizzacısı.</p>
+    <div class="cover-meta">
+      <span>✍️ Mekan Keşfet Editörü</span>
+      <span>·</span>
+      <span>5.4K okuma</span>
+      <span>·</span>
+      <span>Ocak 2026</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">🏆 Editör Seçimi — 5 Mekan</div>
+
+  <div class="venue-item">
+    <div class="venue-num">1</div>
+    <div class="venue-thumb" style="background:linear-gradient(135deg,#120a1a,#1e1030);">🍕</div>
+    <div class="venue-info">
+      <div class="venue-name">The Artisan Craft</div>
+      <div class="venue-type">Napoliten · El Açması · Moda</div>
+      <div class="venue-desc">Moda'nın kalbinde. Tüm pizzalar tıpkı Napoli usulü elle açılıyor, buffalo mozzarella kullanılıyor. Füme etleri de kendi hazırlıyorlar. Hamurun dışı çıtır, içi yumuşak.</div>
+      <div class="venue-tags">
+        <span class="vtag g">🍽️ Gurme</span>
+        <span class="vtag m">📍 Müdavim</span>
+        <span class="vtag">4.7 ★</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="venue-item">
+    <div class="venue-num">2</div>
+    <div class="venue-thumb" style="background:linear-gradient(135deg,#1a0a00,#3d1e00);">🇮🇹</div>
+    <div class="venue-info">
+      <div class="venue-name">Pizzeria Il Pellicano</div>
+      <div class="venue-type">İtalyan Şef · 4 Kuşaklık Aile</div>
+      <div class="venue-desc">Sahibi ve şefi Napoli'den gelen bir İtalyan. Ailesi 4 kuşaktır Napoli'de pizzacılık yapıyor. Az ama öz pizza çeşitleri, Margherita ve Calzone favoriler arasında.</div>
+      <div class="venue-tags">
+        <span class="vtag g">🍽️ Gurme</span>
+        <span class="vtag">4.8 ★</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="venue-item">
+    <div class="venue-num">3</div>
+    <div class="venue-thumb" style="background:linear-gradient(135deg,#0a0a1a,#1a1a3d);">🔥</div>
+    <div class="venue-info">
+      <div class="venue-name">Fornello Pizzeria</div>
+      <div class="venue-type">Odun Ateşi · Serasker Caddesi</div>
+      <div class="venue-desc">Odun ateşinde pişirilen gerçek İtalyan pizzaları. Dana pepperoni, dana sucuk, mantar kombinasyonlu "Al Mista" en sevilen pizza. Hamuru bile başlı başına bir lezzet.</div>
+      <div class="venue-tags">
+        <span class="vtag g">🍽️ Gurme</span>
+        <span class="vtag m">📍 Müdavim</span>
+        <span class="vtag">4.6 ★</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="venue-item">
+    <div class="venue-num">4</div>
+    <div class="venue-thumb" style="background:linear-gradient(135deg,#0f1117,#1a1f2e);">🍕</div>
+    <div class="venue-info">
+      <div class="venue-name">Il Sud</div>
+      <div class="venue-type">Napoli'den Getirilmiş Taş Fırın</div>
+      <div class="venue-desc">Fırını bizzat Napoli'den getirilmiş, Türkiye'de bu fırına sahip nadir işletmelerden biri. Üzerindeki tüm malzemeler İtalya'dan ithal ediliyor. Moda'da gizli bir cevher.</div>
+      <div class="venue-tags">
+        <span class="vtag g">🍽️ Gurme</span>
+        <span class="vtag">4.7 ★</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="venue-item">
+    <div class="venue-num">5</div>
+    <div class="venue-thumb" style="background:linear-gradient(135deg,#08101a,#0a1a2d);">🏡</div>
+    <div class="venue-info">
+      <div class="venue-name">Trattoria da Rosario</div>
+      <div class="venue-type">İtalya Kırsalı Atmosferi · Koşuyolu</div>
+      <div class="venue-desc">Ağaçların altında İtalya kırsalı havasında rustik trattoria. Fırın İtalya'dan getirilmiş, unlar İtalyan. Burrata peynirli pizza ve dana kaburgalı pizza öne çıkıyor.</div>
+      <div class="venue-tags">
+        <span class="vtag g">🍽️ Gurme</span>
+        <span class="vtag i">📱 Influencer</span>
+        <span class="vtag">4.6 ★</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="video-section">
+  <div class="section-title">🎬 Videolar</div>
+  <div class="video-grid">
+    <div class="video-card" onclick="openVid(0)">
+      <div class="video-bg" style="background:linear-gradient(135deg,#120a1a,#1e1030);">🍕</div>
+      <div class="video-overlay"></div>
+      <div class="video-seg" style="background:rgba(58,122,58,0.8);color:white;">🍽️ Gurme</div>
+      <div class="video-content">
+        <div class="video-play">▶</div>
+        <div class="video-venue">The Artisan Craft</div>
+        <div class="video-meta">@pizzaistanbul · 6.3K</div>
+      </div>
+    </div>
+    <div class="video-card" onclick="openVid(1)">
+      <div class="video-bg" style="background:linear-gradient(135deg,#1a0a00,#3d1e00);">🇮🇹</div>
+      <div class="video-overlay"></div>
+      <div class="video-seg" style="background:rgba(106,58,122,0.8);color:white;">📱 Instagram</div>
+      <div class="video-content">
+        <div class="video-play">▶</div>
+        <div class="video-venue">Il Pellicano</div>
+        <div class="video-meta">@italyan_gurme · 4.8K</div>
+      </div>
+    </div>
+    <div class="video-card" onclick="openVid(2)">
+      <div class="video-bg" style="background:linear-gradient(135deg,#0a0a1a,#1a1a3d);">🔥</div>
+      <div class="video-overlay"></div>
+      <div class="video-seg" style="background:rgba(122,58,32,0.8);color:white;">📍 Mahalle</div>
+      <div class="video-content">
+        <div class="video-play">▶</div>
+        <div class="video-venue">Fornello Pizzeria</div>
+        <div class="video-meta">@kadikoyluler · 3.1K</div>
+      </div>
+    </div>
+    <div class="video-card" onclick="openVid(3)">
+      <div class="video-bg" style="background:linear-gradient(135deg,#0f1117,#1a1f2e);">🍕</div>
+      <div class="video-overlay"></div>
+      <div class="video-seg" style="background:rgba(106,58,122,0.8);color:white;">📱 TikTok</div>
+      <div class="video-content">
+        <div class="video-play">▶</div>
+        <div class="video-venue">Il Sud</div>
+        <div class="video-meta">@moda_lezzet · 2.7K</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-item" onclick="window.location.href='anasayfa.html'"><span>🗺️</span><span>Keşfet</span></div>
+  <div class="nav-item" onclick="window.location.href='arama.html'"><span>🔍</span><span>Ara</span></div>
+  <div class="nav-item active" onclick="window.location.href='blog.html'"><span>📰</span><span>Blog</span></div>
+  <div class="nav-item" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
+</div>
+
+<div class="modal-overlay" id="vidModal" onclick="closeVid()">
+  <button class="modal-close">✕</button>
+  <div class="modal-inner" id="vidContent"></div>
+</div>
+
+<script>
+const vids = [
+  { emoji:'🍕', title:'The Artisan Craft', sub:'Moda\'nın en iyi Napoliten pizzası · 4:05' },
+  { emoji:'🇮🇹', title:'Pizzeria Il Pellicano', sub:'4 kuşaklık İtalyan pizza ustası · 3:20' },
+  { emoji:'🔥', title:'Fornello Pizzeria', sub:'Odun ateşinde İtalyan pizza · 2:55' },
+  { emoji:'🍕', title:'Il Sud', sub:'Napoli\'den gelen taş fırın · 3:40' },
+];
+function openVid(i) {
+  document.getElementById('vidContent').innerHTML = '<div class="modal-emoji">' + vids[i].emoji + '</div><div class="modal-title">' + vids[i].title + '</div><div class="modal-sub">' + vids[i].sub + '</div>';
+  document.getElementById('vidModal').classList.add('open');
+}
+function closeVid() { document.getElementById('vidModal').classList.remove('open'); }
+</script>
+</body>
+</html>

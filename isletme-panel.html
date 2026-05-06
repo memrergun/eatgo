@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İşletme Paneli — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F7F7F7;--dark:#0F0F0F;--warm:#1D9BF0;--muted:#536471;--border:#EFF3F4;--green:#16A34A;--red:#E74C3C;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cream);color:var(--dark);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:40px;}
+
+/* HEADER */
+.header{background:var(--dark);padding:0 20px;display:flex;align-items:center;gap:12px;height:56px;position:sticky;top:0;z-index:100;}
+.back-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:white;}
+.header-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:white;flex:1;}
+.header-save{padding:7px 16px;background:var(--warm);color:white;border:none;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+
+/* İŞLETME HERO */
+.business-hero{background:linear-gradient(135deg,#0a1628,#1a1f2e);padding:20px;display:flex;align-items:center;gap:14px;}
+.biz-avatar{width:64px;height:64px;border-radius:16px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;}
+.biz-info{flex:1;}
+.biz-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:white;margin-bottom:3px;}
+.biz-type{font-size:12px;color:rgba(255,255,255,.6);margin-bottom:8px;}
+.biz-status{display:flex;gap:8px;}
+.status-pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.status-verified{background:rgba(22,163,74,.25);color:#4ade80;}
+.status-owner{background:rgba(29,155,240,.25);color:#60b4ff;}
+
+/* İSTATİSTİK KARTLARI */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px;}
+.stat-card{background:white;border-radius:16px;padding:14px;border:1px solid var(--border);}
+.stat-card-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.stat-card-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;margin-bottom:2px;}
+.stat-card-change{font-size:12px;font-weight:600;}
+.stat-card-change.up{color:var(--green);}
+.stat-card-change.down{color:var(--red);}
+
+/* BÖLÜM */
+.section{background:white;margin:0 0 10px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;}
+.section-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;}
+.section-action{font-size:13px;font-weight:600;color:var(--warm);cursor:pointer;}
+
+/* FORM ALANLARI */
+.form-group{padding:0 20px 16px;}
+.form-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:block;}
+.form-input{width:100%;height:44px;border:1.5px solid var(--border);border-radius:12px;padding:0 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--dark);background:var(--cream);outline:none;transition:border-color .2s;}
+.form-input:focus{border-color:var(--warm);background:white;}
+.form-textarea{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--dark);background:var(--cream);outline:none;resize:none;line-height:1.5;transition:border-color .2s;}
+.form-textarea:focus{border-color:var(--warm);background:white;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 16px;}
+.form-row .form-label{display:block;}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-info{flex:1;}
+.toggle-name{font-size:14px;font-weight:600;margin-bottom:2px;}
+.toggle-sub{font-size:12px;color:var(--muted);}
+.toggle{position:relative;width:46px;height:26px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:#CBD5E1;border-radius:13px;cursor:pointer;transition:background .2s;}
+.toggle-slider::before{content:'';position:absolute;width:20px;height:20px;background:white;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.toggle input:checked+.toggle-slider{background:var(--warm);}
+.toggle input:checked+.toggle-slider::before{transform:translateX(20px);}
+
+/* MENÜ ITEM LIST */
+.menu-list{padding:0 20px;}
+.menu-list-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.menu-list-item:last-child{border-bottom:none;}
+.mli-emoji{width:44px;height:44px;border-radius:10px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:1.5px dashed var(--border);}
+.mli-body{flex:1;min-width:0;}
+.mli-name{font-size:14px;font-weight:600;margin-bottom:2px;}
+.mli-cat{font-size:11px;color:var(--muted);}
+.mli-right{display:flex;align-items:center;gap:8px;}
+.mli-price{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;}
+.mli-toggle{width:36px;height:20px;position:relative;}
+.mli-toggle input{opacity:0;width:0;height:0;}
+.mli-toggle-sl{position:absolute;inset:0;background:#CBD5E1;border-radius:10px;cursor:pointer;transition:background .2s;}
+.mli-toggle-sl::before{content:'';position:absolute;width:14px;height:14px;background:white;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.mli-toggle input:checked+.mli-toggle-sl{background:var(--green);}
+.mli-toggle input:checked+.mli-toggle-sl::before{transform:translateX(16px);}
+.mli-del{color:var(--red);font-size:18px;cursor:pointer;padding:4px;}
+
+/* FOTOĞRAF GRID */
+.photo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 20px 20px;}
+.photo-cell{aspect-ratio:1;border-radius:12px;overflow:hidden;position:relative;cursor:pointer;}
+.photo-cell-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;}
+.photo-cell .photo-del{position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(0,0,0,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:white;cursor:pointer;}
+.photo-add{border:2px dashed var(--border);background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:24px;color:var(--muted);cursor:pointer;border-radius:12px;aspect-ratio:1;}
+.photo-add span{font-size:11px;font-weight:600;}
+
+/* ÇALIŞMA SAATLERİ */
+.hours-row{display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--border);}
+.hours-row:last-child{border-bottom:none;}
+.hours-day{font-size:13px;font-weight:600;width:60px;flex-shrink:0;}
+.hours-toggle{flex-shrink:0;}
+.hours-time{flex:1;display:flex;gap:6px;align-items:center;}
+.hours-input{flex:1;height:34px;border:1.5px solid var(--border);border-radius:8px;padding:0 10px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--cream);outline:none;text-align:center;}
+.hours-sep{color:var(--muted);font-size:12px;}
+.hours-closed{font-size:12px;color:var(--muted);font-style:italic;}
+
+/* YENİ MENÜ ITEM DRAWER */
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;backdrop-filter:blur(3px);}
+.drawer-overlay.open{display:block;}
+.drawer{position:fixed;bottom:0;left:0;right:0;z-index:201;background:white;border-radius:24px 24px 0 0;padding:20px 20px 44px;transform:translateY(100%);transition:transform .32s cubic-bezier(.25,.8,.25,1);max-height:90vh;overflow-y:auto;}
+.drawer.open{transform:translateY(0);}
+.drawer-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+.drawer-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:18px;}
+
+/* EMOJI PİCKER */
+.emoji-picker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.ep-item{width:44px;height:44px;border-radius:10px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:1.5px solid transparent;transition:all .15s;}
+.ep-item.active{border-color:var(--warm);background:#EBF5FF;}
+
+/* KATEGORI SEÇİCİ */
+.cat-select{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.cat-opt{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);color:var(--muted);background:white;transition:all .15s;}
+.cat-opt.active{background:var(--dark);color:white;border-color:var(--dark);}
+
+/* KAYDET BUTONU */
+.save-btn{width:100%;height:48px;background:var(--dark);color:white;border:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;transition:opacity .2s;}
+.save-btn:active{opacity:.85;}
+
+/* BADGE */
+.verified-badge{display:inline-flex;align-items:center;gap:5px;background:#EBF5FF;color:var(--warm);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;margin:0 20px 16px;}
+
+/* Toast */
+#toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--dark);color:white;padding:12px 24px;border-radius:20px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.2);}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <div class="header-title">🏪 İşletme Paneli</div>
+  <button class="header-save" onclick="saveAll()">Kaydet</button>
+</div>
+
+<!-- İŞLETME HERO -->
+<div class="business-hero">
+  <div class="biz-avatar">☕</div>
+  <div class="biz-info">
+    <div class="biz-name">Story Coffee Roasters</div>
+    <div class="biz-type">Specialty Coffee · Moda, Kadıköy</div>
+    <div class="biz-status">
+      <span class="status-pill status-verified">✓ Doğrulanmış İşletme</span>
+      <span class="status-pill status-owner">👤 Yetkili Sahip</span>
+    </div>
+  </div>
+</div>
+
+<!-- İSTATİSTİKLER -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-label">Bu Hafta Görüntülenme</div>
+    <div class="stat-card-num">2.841</div>
+    <div class="stat-card-change up">↑ %18 geçen haftaya göre</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-label">Profil Tıklamaları</div>
+    <div class="stat-card-num">347</div>
+    <div class="stat-card-change up">↑ %23</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-label">Yeni Yorumlar</div>
+    <div class="stat-card-num">12</div>
+    <div class="stat-card-change up">↑ %9</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-label">Ortalama Puan</div>
+    <div class="stat-card-num">4.7</div>
+    <div class="stat-card-change up">↑ +0.1</div>
+  </div>
+</div>
+
+<!-- TEMEL BİLGİLER -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Temel Bilgiler</div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">İşletme Adı</label>
+    <input class="form-input" type="text" value="Story Coffee Roasters">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Kısa Açıklama</label>
+    <textarea class="form-textarea" rows="3">Specialty coffee ve single origin kahvelerin buluşma noktası. Moda'nın kalbinde, bahçeli kafemizde filtre kahve deneyimi yaşıyoruz.</textarea>
+  </div>
+
+  <div class="form-row">
+    <div>
+      <label class="form-label">Telefon</label>
+      <input class="form-input" type="tel" value="+90 216 345 67 89">
+    </div>
+    <div>
+      <label class="form-label">Web Sitesi</label>
+      <input class="form-input" type="url" value="storycoffee.com.tr">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Adres</label>
+    <input class="form-input" type="text" value="Moda Caddesi No:42, Kadıköy / İstanbul">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Instagram</label>
+    <input class="form-input" type="text" value="@storycoffeeroasters">
+  </div>
+</div>
+
+<!-- ÖZELLİKLER -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Özellikler</div>
+  </div>
+
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <div class="toggle-name">📶 Wi-Fi Mevcut</div>
+      <div class="toggle-sub">Misafirlere ücretsiz internet</div>
+    </div>
+    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <div class="toggle-name">🐾 Evcil Hayvan Dostu</div>
+      <div class="toggle-sub">Bahçede kabul ediliyor</div>
+    </div>
+    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <div class="toggle-name">♿ Engelli Erişimi</div>
+      <div class="toggle-sub">Rampa ve geniş geçişler</div>
+    </div>
+    <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <div class="toggle-name">💳 Kart ile Ödeme</div>
+      <div class="toggle-sub">Visa, Mastercard, AMEX</div>
+    </div>
+    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <div class="toggle-name">🅿️ Yakın Park</div>
+      <div class="toggle-sub">200m mesafede ücretli otopark</div>
+    </div>
+    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <div class="toggle-name">🌿 Bahçe / Dış Alan</div>
+      <div class="toggle-sub">Açık alan oturma mevcuttur</div>
+    </div>
+    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+  </div>
+</div>
+
+<!-- ÇALIŞMA SAATLERİ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Çalışma Saatleri</div>
+  </div>
+
+  <div id="hoursContainer">
+    <!-- JS ile doldurulacak -->
+  </div>
+</div>
+
+<!-- MENÜ YÖNETİMİ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Menü</div>
+    <div class="section-action" onclick="openAddItem()">+ Ürün Ekle</div>
+  </div>
+
+  <div class="verified-badge">
+    <span>✓</span> Menü platformda doğrudan yönetilir — başka app gerekmez
+  </div>
+
+  <div class="menu-list" id="menuList">
+    <!-- JS ile doldurulacak -->
+  </div>
+</div>
+
+<!-- FOTOĞRAFLAR -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Fotoğraflar</div>
+    <div class="section-action" onclick="showToast('Fotoğraf yükleme yakında!')">+ Ekle</div>
+  </div>
+
+  <div class="photo-grid">
+    <div class="photo-cell">
+      <div class="photo-cell-inner" style="background:linear-gradient(135deg,#0f1117,#1a1f2e);">☕</div>
+      <div class="photo-del" onclick="showToast('Fotoğraf silindi')">✕</div>
+    </div>
+    <div class="photo-cell">
+      <div class="photo-cell-inner" style="background:linear-gradient(135deg,#080d18,#0d1a2e);">🧊</div>
+      <div class="photo-del" onclick="showToast('Fotoğraf silindi')">✕</div>
+    </div>
+    <div class="photo-cell">
+      <div class="photo-cell-inner" style="background:linear-gradient(135deg,#0a1628,#16213e);">🌿</div>
+      <div class="photo-del" onclick="showToast('Fotoğraf silindi')">✕</div>
+    </div>
+    <div class="photo-add" onclick="showToast('Fotoğraf yükleme yakında!')">
+      <span>＋</span>
+      <span>Fotoğraf Ekle</span>
+    </div>
+  </div>
+</div>
+
+<!-- YENİ MENÜ İTEM DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeAddItem()"></div>
+<div class="drawer" id="addItemDrawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title">Yeni Ürün Ekle</div>
+
+  <label class="form-label">Emoji / İkon</label>
+  <div class="emoji-picker" id="emojiPicker">
+    <div class="ep-item active" onclick="selectEmoji(this)">☕</div>
+    <div class="ep-item" onclick="selectEmoji(this)">🧊</div>
+    <div class="ep-item" onclick="selectEmoji(this)">🥛</div>
+    <div class="ep-item" onclick="selectEmoji(this)">🍋</div>
+    <div class="ep-item" onclick="selectEmoji(this)">🫖</div>
+    <div class="ep-item" onclick="selectEmoji(this)">🥤</div>
+    <div class="ep-item" onclick="selectEmoji(this)">🍰</div>
+    <div class="ep-item" onclick="selectEmoji(this)">🥐</div>
+    <div class="ep-item" onclick="selectEmoji(this)">🧁</div>
+    <div class="ep-item" onclick="selectEmoji(this)">🍫</div>
+    <div class="ep-item" onclick="selectEmoji(this)">🥗</div>
+    <div class="ep-item" onclick="selectEmoji(this)">🥪</div>
+  </div>
+
+  <label class="form-label">Kategori</label>
+  <div class="cat-select" id="catSelect">
+    <div class="cat-opt active" onclick="selectCat(this)">Sıcak İçecek</div>
+    <div class="cat-opt" onclick="selectCat(this)">Soğuk İçecek</div>
+    <div class="cat-opt" onclick="selectCat(this)">Tatlı</div>
+    <div class="cat-opt" onclick="selectCat(this)">Atıştırmalık</div>
+    <div class="cat-opt" onclick="selectCat(this)">Yemek</div>
+  </div>
+
+  <div class="form-group" style="padding:0 0 12px;">
+    <label class="form-label">Ürün Adı</label>
+    <input class="form-input" id="newItemName" type="text" placeholder="ör. Oat Milk Latte">
+  </div>
+  <div class="form-group" style="padding:0 0 12px;">
+    <label class="form-label">Açıklama (opsiyonel)</label>
+    <input class="form-input" id="newItemDesc" type="text" placeholder="ör. Yulaf sütü ile hazırlanır">
+  </div>
+  <div class="form-group" style="padding:0 0 12px;">
+    <label class="form-label">Fiyat (₺)</label>
+    <input class="form-input" id="newItemPrice" type="number" placeholder="0">
+  </div>
+
+  <button class="save-btn" onclick="addMenuItem()">✓ Menüye Ekle</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── ÇALIŞMA SAATLERİ ──
+var days = [
+  {d:'Pzt', open:true,  from:'08:00', to:'20:00'},
+  {d:'Sal', open:true,  from:'08:00', to:'20:00'},
+  {d:'Çar', open:true,  from:'08:00', to:'20:00'},
+  {d:'Per', open:true,  from:'08:00', to:'20:00'},
+  {d:'Cum', open:true,  from:'08:00', to:'21:00'},
+  {d:'Cmt', open:true,  from:'09:00', to:'21:00'},
+  {d:'Paz', open:true,  from:'09:00', to:'20:00'},
+];
+
+function renderHours() {
+  var c = document.getElementById('hoursContainer');
+  c.innerHTML = days.map(function(d,i) {
+    return '<div class="hours-row">' +
+      '<span class="hours-day">' + d.d + '</span>' +
+      '<label class="hours-toggle mli-toggle" style="width:36px;height:20px;">' +
+        '<input type="checkbox"' + (d.open?' checked':'') + ' onchange="toggleDay('+i+',this.checked)">' +
+        '<span class="mli-toggle-sl"></span>' +
+      '</label>' +
+      '<div class="hours-time" id="htime'+i+'" style="'+(d.open?'':'opacity:.35;pointer-events:none;')+'">' +
+        '<input class="hours-input" type="time" value="'+d.from+'" onchange="days['+i+'].from=this.value">' +
+        '<span class="hours-sep">—</span>' +
+        '<input class="hours-input" type="time" value="'+d.to+'" onchange="days['+i+'].to=this.value">' +
+      '</div>' +
+      (!d.open ? '<span class="hours-closed">Kapalı</span>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function toggleDay(i, val) {
+  days[i].open = val;
+  renderHours();
+}
+
+// ── MENÜ ──
+var menuItems = [
+  {emoji:'☕', name:'Single Origin Filter', desc:'Ethiopia Yirgacheffe', price:85, cat:'Sıcak İçecek', active:true},
+  {emoji:'🧊', name:'Cold Brew',            desc:'18 saat demleme',      price:95, cat:'Soğuk İçecek', active:true},
+  {emoji:'🥛', name:'Flat White',           desc:'House blend',           price:75, cat:'Sıcak İçecek', active:true},
+  {emoji:'🍋', name:'Portakallı Espresso',  desc:'Taze sıkım portakal',   price:90, cat:'Soğuk İçecek', active:false},
+  {emoji:'🫖', name:'Türk Kahvesi',         desc:'Geleneksel',            price:55, cat:'Sıcak İçecek', active:true},
+];
+
+function renderMenu() {
+  var c = document.getElementById('menuList');
+  c.innerHTML = menuItems.map(function(item, i) {
+    return '<div class="menu-list-item">' +
+      '<div class="mli-emoji">' + item.emoji + '</div>' +
+      '<div class="mli-body">' +
+        '<div class="mli-name">' + item.name + '</div>' +
+        '<div class="mli-cat">' + item.cat + ' · ' + item.desc + '</div>' +
+      '</div>' +
+      '<div class="mli-right">' +
+        '<div class="mli-price">₺' + item.price + '</div>' +
+        '<label class="mli-toggle">' +
+          '<input type="checkbox"' + (item.active?' checked':'') + ' onchange="menuItems['+i+'].active=this.checked">' +
+          '<span class="mli-toggle-sl"></span>' +
+        '</label>' +
+        '<span class="mli-del" onclick="deleteMenuItem('+i+')">🗑</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function deleteMenuItem(i) {
+  menuItems.splice(i, 1);
+  renderMenu();
+  showToast('Ürün silindi');
+}
+
+// ── YENİ ÜRÜN DRAWER ──
+var selectedEmoji = '☕';
+var selectedCat   = 'Sıcak İçecek';
+
+function openAddItem() {
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('addItemDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('newItemName').value  = '';
+  document.getElementById('newItemDesc').value  = '';
+  document.getElementById('newItemPrice').value = '';
+}
+
+function closeAddItem() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('addItemDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function selectEmoji(el) {
+  document.querySelectorAll('.ep-item').forEach(function(e){ e.classList.remove('active'); });
+  el.classList.add('active');
+  selectedEmoji = el.textContent;
+}
+
+function selectCat(el) {
+  document.querySelectorAll('.cat-opt').forEach(function(e){ e.classList.remove('active'); });
+  el.classList.add('active');
+  selectedCat = el.textContent;
+}
+
+function addMenuItem() {
+  var name  = document.getElementById('newItemName').value.trim();
+  var desc  = document.getElementById('newItemDesc').value.trim();
+  var price = parseInt(document.getElementById('newItemPrice').value) || 0;
+  if (!name) { showToast('Ürün adı gerekli!'); return; }
+  if (!price){ showToast('Fiyat giriniz!'); return; }
+  menuItems.unshift({emoji:selectedEmoji, name:name, desc:desc||'—', price:price, cat:selectedCat, active:true});
+  renderMenu();
+  closeAddItem();
+  showToast('✓ ' + name + ' menüye eklendi!');
+}
+
+// ── KAYDET ──
+function saveAll() {
+  showToast('✓ Tüm değişiklikler kaydedildi');
+}
+
+// Toast
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.display='none'; }, 2500);
+}
+
+// Init
+renderHours();
+renderMenu();
+</script>
+</body>
+</html>

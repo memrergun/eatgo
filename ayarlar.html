@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayarlar — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F7F7;
+    --dark: #0F0F0F;
+    --warm: #1D9BF0;
+    --muted: #536471;
+    --border: #EFF3F4;
+    --danger: #C0392B;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 48px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--cream);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 16px 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .back-btn {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: white; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; cursor: pointer; flex-shrink: 0;
+  }
+
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; font-weight: 700;
+  }
+
+  /* ── PROFİL KARTI ── */
+  .profile-card {
+    margin: 16px;
+    background: white;
+    border-radius: 20px;
+    padding: 16px;
+    display: flex; align-items: center; gap: 14px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .profile-card:active { opacity: 0.85; }
+
+  .profile-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--warm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; flex-shrink: 0;
+    border: 3px solid var(--cream);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .profile-info { flex: 1; min-width: 0; }
+
+  .profile-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-weight: 700; margin-bottom: 2px;
+  }
+
+  .profile-handle { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+
+  .profile-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+
+  .pbadge {
+    font-size: 10px; font-weight: 600;
+    padding: 2px 8px; border-radius: 10px;
+  }
+  .pbadge.gurme  { background: #EBF5FF; color: #0A66C2; }
+  .pbadge.yildiz { background: #F0FFF4; color: #16A34A; }
+
+  .profile-arrow { font-size: 20px; color: #CCC; flex-shrink: 0; }
+
+  /* ── BÖLÜM BAŞLIĞI ── */
+  .section-header {
+    padding: 8px 16px 6px;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── AYAR GRUBU ── */
+  .settings-group {
+    margin: 0 16px 14px;
+    background: white;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .setting-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .setting-row:last-child { border-bottom: none; }
+  .setting-row:active { background: var(--cream); }
+
+  .setting-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .setting-icon.orange { background: #EBF5FF; }
+  .setting-icon.blue   { background: #E3F2FD; }
+  .setting-icon.green  { background: #E8F5E9; }
+  .setting-icon.purple { background: #F3E5F5; }
+  .setting-icon.red    { background: #FFEBEE; }
+  .setting-icon.yellow { background: #F0FFF4; }
+  .setting-icon.gray   { background: #F5F5F5; }
+
+  .setting-text { flex: 1; min-width: 0; }
+
+  .setting-label { font-size: 14px; font-weight: 500; margin-bottom: 1px; }
+  .setting-sub   { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+  .setting-arrow { font-size: 16px; color: #CCC; flex-shrink: 0; }
+  .setting-value { font-size: 13px; color: var(--muted); font-weight: 500; flex-shrink: 0; }
+
+  /* ── TOGGLE ── */
+  .toggle {
+    position: relative; width: 46px; height: 26px; flex-shrink: 0;
+  }
+  .toggle-track {
+    position: absolute; inset: 0;
+    background: #DDD; border-radius: 13px;
+    transition: background 0.25s; cursor: pointer;
+  }
+  .toggle-thumb {
+    position: absolute; top: 3px; left: 3px;
+    width: 20px; height: 20px;
+    background: white; border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    transition: transform 0.25s;
+  }
+  .toggle.on .toggle-track { background: var(--warm); }
+  .toggle.on .toggle-thumb { transform: translateX(20px); }
+
+  /* ── INPUT ── */
+  .input-row {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .input-row:last-child { border-bottom: none; }
+
+  .input-label {
+    font-size: 11px; font-weight: 600;
+    color: var(--muted); letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+
+  .input-field {
+    width: 100%; height: 42px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 0 12px;
+    font-size: 14px; font-family: 'DM Sans', sans-serif;
+    color: var(--dark); background: var(--cream);
+    outline: none;
+  }
+  .input-field:focus { border-color: var(--warm); }
+
+  .save-btn {
+    margin: 0 16px 14px;
+    width: calc(100% - 32px);
+    height: 48px; border-radius: 14px;
+    background: var(--dark); color: white;
+    border: none; font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  .save-btn:active { opacity: 0.85; }
+
+  /* ── TEHLİKELİ EYLEMLER ── */
+  .danger-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .danger-row:last-child { border-bottom: none; }
+  .danger-row:active { background: #FFF0EE; }
+
+  .danger-label {
+    flex: 1; font-size: 14px; font-weight: 500; color: var(--danger);
+  }
+
+  /* ── VERSİYON ── */
+  .version-text {
+    text-align: center; font-size: 12px; color: var(--muted);
+    padding: 16px;
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200; align-items: flex-end;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal-sheet {
+    background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 20px 20px 44px;
+    width: 100%;
+    animation: slideUp 0.28s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  .modal-handle {
+    width: 36px; height: 4px;
+    background: var(--border); border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; font-weight: 700; margin-bottom: 6px;
+  }
+
+  .modal-sub {
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 20px; line-height: 1.6;
+  }
+
+  .modal-btn {
+    width: 100%; height: 48px;
+    border-radius: 14px; border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer; margin-bottom: 10px;
+  }
+  .modal-btn:last-child { margin-bottom: 0; }
+  .modal-btn.danger  { background: var(--danger); color: white; }
+  .modal-btn.cancel  { background: var(--cream); color: var(--dark); border: 1px solid var(--border); }
+  .modal-btn.primary { background: var(--dark); color: white; }
+
+  .option-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+
+  .option-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 14px; border-radius: 12px;
+    border: 1.5px solid var(--border);
+    cursor: pointer; font-size: 14px; font-weight: 500;
+  }
+  .option-item.selected { border-color: var(--dark); background: var(--cream); }
+
+  .option-check { margin-left: auto; font-size: 16px; display: none; }
+  .option-item.selected .option-check { display: block; }
+
+  /* ── TOAST ── */
+  #toast {
+    display: none; position: fixed;
+    bottom: 32px; left: 50%; transform: translateX(-50%);
+    background: var(--dark); color: white;
+    padding: 10px 22px; border-radius: 20px;
+    font-size: 13px; font-weight: 600;
+    z-index: 300; white-space: nowrap;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="back-btn" onclick="window.location.href='profil.html'">←</div>
+  <div class="header-title">Ayarlar</div>
+</div>
+
+<!-- PROFİL ÖZET KARTI -->
+<div style="height:16px"></div>
+<div class="profile-card" onclick="window.location.href='profil.html'">
+  <div class="profile-avatar" style="padding:0;overflow:hidden;"><img src="data:image/jpeg;base64,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" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
+  <div class="profile-info">
+    <div class="profile-name">Emre Ergün</div>
+    <div class="profile-handle">@emreergun · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8beae3e6eeffcbe4f9e5eee0a5e8e4e6">[email&#160;protected]</a></div>
+    <div class="profile-badges">
+      <span class="pbadge gurme">🍽️ Gurme Editörü</span>
+      <span class="pbadge yildiz">⭐ Yıldızlı Üye</span>
+    </div>
+  </div>
+  <div class="profile-arrow">›</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  1. BİLDİRİM TERCİHLERİ               -->
+<!-- ══════════════════════════════════════ -->
+<div class="section-header">🔔 Bildirim Tercihleri</div>
+<div class="settings-group">
+
+  <div class="setting-row">
+    <div class="setting-icon orange">📲</div>
+    <div class="setting-text">
+      <div class="setting-label">Anlık Bildirimler</div>
+      <div class="setting-sub">Takip ettiğin mekanların güncellemeleri</div>
+    </div>
+    <div class="toggle on" onclick="toggleSwitch(this,event)">
+      <div class="toggle-track"></div><div class="toggle-thumb"></div>
+    </div>
+  </div>
+
+  <div class="setting-row">
+    <div class="setting-icon yellow">📧</div>
+    <div class="setting-text">
+      <div class="setting-label">E-posta Bülteni</div>
+      <div class="setting-sub">Haftalık özet ve editör önerileri</div>
+    </div>
+    <div class="toggle" onclick="toggleSwitch(this,event)">
+      <div class="toggle-track"></div><div class="toggle-thumb"></div>
+    </div>
+  </div>
+
+  <div class="setting-row">
+    <div class="setting-icon blue">💬</div>
+    <div class="setting-text">
+      <div class="setting-label">Yorum Bildirimleri</div>
+      <div class="setting-sub">Yorumlarına gelen yanıtlar ve beğeniler</div>
+    </div>
+    <div class="toggle on" onclick="toggleSwitch(this,event)">
+      <div class="toggle-track"></div><div class="toggle-thumb"></div>
+    </div>
+  </div>
+
+  <div class="setting-row">
+    <div class="setting-icon green">🎉</div>
+    <div class="setting-text">
+      <div class="setting-label">Kampanya & Fırsatlar</div>
+      <div class="setting-sub">Yakınındaki özel teklifler ve etkinlikler</div>
+    </div>
+    <div class="toggle" onclick="toggleSwitch(this,event)">
+      <div class="toggle-track"></div><div class="toggle-thumb"></div>
+    </div>
+  </div>
+
+  <div class="setting-row" onclick="openModal('sessiz-saat')">
+    <div class="setting-icon purple">🕐</div>
+    <div class="setting-text">
+      <div class="setting-label">Sessiz Saatler</div>
+      <div class="setting-sub">Bu saatlerde bildirim gelmesin</div>
+    </div>
+    <div class="setting-value">23:00 – 08:00</div>
+    <div class="setting-arrow">›</div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  2. KONUM & GİZLİLİK                  -->
+<!-- ══════════════════════════════════════ -->
+<div class="section-header">📍 Konum & Gizlilik</div>
+<div class="settings-group">
+
+  <div class="setting-row">
+    <div class="setting-icon blue">📍</div>
+    <div class="setting-text">
+      <div class="setting-label">Konum Paylaşımı</div>
+      <div class="setting-sub">Yakındaki mekanları bulmak için kullanılır</div>
+    </div>
+    <div class="toggle on" onclick="toggleSwitch(this,event)">
+      <div class="toggle-track"></div><div class="toggle-thumb"></div>
+    </div>
+  </div>
+
+  <div class="setting-row" onclick="openModal('hassasiyet')">
+    <div class="setting-icon gray">🎯</div>
+    <div class="setting-text">
+      <div class="setting-label">Konum Hassasiyeti</div>
+      <div class="setting-sub">Tam ya da yaklaşık konum kullan</div>
+    </div>
+    <div class="setting-value">Tam</div>
+    <div class="setting-arrow">›</div>
+  </div>
+
+  <div class="setting-row" onclick="openModal('gorunum')">
+    <div class="setting-icon gray">👁️</div>
+    <div class="setting-text">
+      <div class="setting-label">Profil Görünürlüğü</div>
+      <div class="setting-sub">Kim profilini görebilir?</div>
+    </div>
+    <div class="setting-value">Herkese Açık</div>
+    <div class="setting-arrow">›</div>
+  </div>
+
+  <div class="setting-row">
+    <div class="setting-icon orange">📊</div>
+    <div class="setting-text">
+      <div class="setting-label">Anonim Veri Paylaşımı</div>
+      <div class="setting-sub">Uygulama deneyimini geliştirmek için kullanılır</div>
+    </div>
+    <div class="toggle on" onclick="toggleSwitch(this,event)">
+      <div class="toggle-track"></div><div class="toggle-thumb"></div>
+    </div>
+  </div>
+
+  <div class="setting-row" onclick="openModal('engellenenler')">
+    <div class="setting-icon red">🚫</div>
+    <div class="setting-text">
+      <div class="setting-label">Engellenen Kullanıcılar</div>
+      <div class="setting-sub">Engellediğin hesapları yönet</div>
+    </div>
+    <div class="setting-value">0</div>
+    <div class="setting-arrow">›</div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  3. HESAP & PROFİL AYARLARI           -->
+<!-- ══════════════════════════════════════ -->
+<div class="section-header">👤 Hesap & Profil Ayarları</div>
+<div class="settings-group">
+
+  <div class="input-row">
+    <div class="input-label">Ad Soyad</div>
+    <input class="input-field" type="text" value="Emre Ergün">
+  </div>
+
+  <div class="input-row">
+    <div class="input-label">Kullanıcı Adı</div>
+    <input class="input-field" type="text" value="emreergun">
+  </div>
+
+  <div class="input-row">
+    <div class="input-label">E-posta</div>
+    <input class="input-field" type="email" value="emre@ornek.com">
+  </div>
+
+  <div class="input-row">
+    <div class="input-label">Biyografi</div>
+    <input class="input-field" type="text" value="Yemek yazarı ve mekan avcısı.">
+  </div>
+
+  <div class="setting-row" onclick="openModal('sifre')">
+    <div class="setting-icon gray">🔑</div>
+    <div class="setting-text">
+      <div class="setting-label">Şifreyi Değiştir</div>
+    </div>
+    <div class="setting-arrow">›</div>
+  </div>
+
+  <div class="setting-row" onclick="openModal('telefon')">
+    <div class="setting-icon green">📱</div>
+    <div class="setting-text">
+      <div class="setting-label">Telefon Numarası</div>
+      <div class="setting-sub">Hesap güvenliği için</div>
+    </div>
+    <div class="setting-value">+90 5••• •••••</div>
+    <div class="setting-arrow">›</div>
+  </div>
+
+  <div class="setting-row" onclick="openModal('2fa')">
+    <div class="setting-icon blue">🛡️</div>
+    <div class="setting-text">
+      <div class="setting-label">İki Adımlı Doğrulama</div>
+      <div class="setting-sub">Hesabını ekstra güvende tut</div>
+    </div>
+    <div class="setting-value" style="color:#27AE60;font-weight:600;">Aktif</div>
+    <div class="setting-arrow">›</div>
+  </div>
+
+</div>
+
+<button class="save-btn" onclick="saveProfile()">Değişiklikleri Kaydet</button>
+
+<!-- Hesap İşlemleri -->
+<div class="section-header">Hesap İşlemleri</div>
+<div class="settings-group">
+
+  <div class="danger-row" onclick="openModal('cikis')">
+    <div class="setting-icon red">🚪</div>
+    <div class="danger-label">Çıkış Yap</div>
+  </div>
+
+  <div class="danger-row" onclick="openModal('sil')">
+    <div class="setting-icon red">🗑️</div>
+    <div class="danger-label">Hesabı Kalıcı Olarak Sil</div>
+  </div>
+
+</div>
+
+<div class="version-text">Mekan Keşfet v1.0.0 · © 2026</div>
+<div id="toast">✓ Değişiklikler kaydedildi</div>
+
+<!-- ══ MODALLAR ══ -->
+
+<!-- Sessiz saatler -->
+<div class="modal-overlay" id="modal-sessiz-saat" onclick="closeModals()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Sessiz Saatler</div>
+    <div class="modal-sub">Bu aralıkta bildirim almak istemiyorsun.</div>
+    <div class="option-list">
+      <div class="option-item" onclick="selectOption(this)"><span>🌙</span> 22:00 – 07:00 <div class="option-check">✓</div></div>
+      <div class="option-item selected" onclick="selectOption(this)"><span>🌙</span> 23:00 – 08:00 <div class="option-check">✓</div></div>
+      <div class="option-item" onclick="selectOption(this)"><span>🌙</span> 00:00 – 09:00 <div class="option-check">✓</div></div>
+      <div class="option-item" onclick="selectOption(this)"><span>🔕</span> Tüm gün sessiz <div class="option-check">✓</div></div>
+    </div>
+    <button class="modal-btn primary" onclick="closeModals()">Kaydet</button>
+    <button class="modal-btn cancel" onclick="closeModals()">İptal</button>
+  </div>
+</div>
+
+<!-- Konum hassasiyeti -->
+<div class="modal-overlay" id="modal-hassasiyet" onclick="closeModals()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Konum Hassasiyeti</div>
+    <div class="modal-sub">Yakındaki mekan önerilerinin ne kadar kesin olacağını belirler.</div>
+    <div class="option-list">
+      <div class="option-item selected" onclick="selectOption(this)"><span>🎯</span> Tam konum — En iyi sonuçlar <div class="option-check">✓</div></div>
+      <div class="option-item" onclick="selectOption(this)"><span>📍</span> Yaklaşık — Semt bazlı öneriler <div class="option-check">✓</div></div>
+    </div>
+    <button class="modal-btn primary" onclick="closeModals()">Kaydet</button>
+    <button class="modal-btn cancel" onclick="closeModals()">İptal</button>
+  </div>
+</div>
+
+<!-- Profil görünürlüğü -->
+<div class="modal-overlay" id="modal-gorunum" onclick="closeModals()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Profil Görünürlüğü</div>
+    <div class="modal-sub">Profilini ve yorumlarını kimlerin görebileceğini seç.</div>
+    <div class="option-list">
+      <div class="option-item selected" onclick="selectOption(this)"><span>🌍</span> Herkese Açık <div class="option-check">✓</div></div>
+      <div class="option-item" onclick="selectOption(this)"><span>👥</span> Sadece Takipçiler <div class="option-check">✓</div></div>
+      <div class="option-item" onclick="selectOption(this)"><span>🔒</span> Gizli <div class="option-check">✓</div></div>
+    </div>
+    <button class="modal-btn primary" onclick="closeModals()">Kaydet</button>
+    <button class="modal-btn cancel" onclick="closeModals()">İptal</button>
+  </div>
+</div>
+
+<!-- Engellenenler -->
+<div class="modal-overlay" id="modal-engellenenler" onclick="closeModals()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Engellenen Kullanıcılar</div>
+    <div style="text-align:center;padding:28px 0;color:var(--muted);font-size:14px;">
+      🎉<br><br>Henüz kimseyi engellemiyorsun.
+    </div>
+    <button class="modal-btn cancel" onclick="closeModals()">Kapat</button>
+  </div>
+</div>
+
+<!-- Şifre -->
+<div class="modal-overlay" id="modal-sifre" onclick="closeModals()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Şifreyi Değiştir</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+      <input class="input-field" type="password" placeholder="Mevcut şifre">
+      <input class="input-field" type="password" placeholder="Yeni şifre">
+      <input class="input-field" type="password" placeholder="Yeni şifre (tekrar)">
+    </div>
+    <button class="modal-btn primary" onclick="closeModals()">Güncelle</button>
+    <button class="modal-btn cancel" onclick="closeModals()">İptal</button>
+  </div>
+</div>
+
+<!-- Telefon -->
+<div class="modal-overlay" id="modal-telefon" onclick="closeModals()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Telefon Numarası</div>
+    <div class="modal-sub">Doğrulama kodu gönderilecek.</div>
+    <input class="input-field" type="tel" placeholder="+90 5__ ___ ____" style="margin-bottom:16px;">
+    <button class="modal-btn primary" onclick="closeModals()">Kod Gönder</button>
+    <button class="modal-btn cancel" onclick="closeModals()">İptal</button>
+  </div>
+</div>
+
+<!-- 2FA -->
+<div class="modal-overlay" id="modal-2fa" onclick="closeModals()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">İki Adımlı Doğrulama</div>
+    <div class="modal-sub">Hesabına giriş yaparken SMS ile ek doğrulama istenir. Şu an <strong style="color:#27AE60;">aktif</strong>.</div>
+    <button class="modal-btn cancel" style="margin-bottom:10px;" onclick="closeModals()">Ayarları Gör</button>
+    <button class="modal-btn danger" onclick="closeModals()">Devre Dışı Bırak</button>
+  </div>
+</div>
+
+<!-- Çıkış -->
+<div class="modal-overlay" id="modal-cikis" onclick="closeModals()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Çıkış Yap</div>
+    <div class="modal-sub">Hesabından çıkış yapmak istediğinden emin misin?</div>
+    <button class="modal-btn danger" onclick="closeModals()">Çıkış Yap</button>
+    <button class="modal-btn cancel" onclick="closeModals()">Vazgeç</button>
+  </div>
+</div>
+
+<!-- Hesap sil -->
+<div class="modal-overlay" id="modal-sil" onclick="closeModals()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Hesabı Sil</div>
+    <div class="modal-sub">Bu işlem geri alınamaz. Tüm yorumların, koleksiyonların ve kayıtlı mekanların kalıcı olarak silinir.</div>
+    <button class="modal-btn danger" onclick="closeModals()">Evet, Hesabımı Sil</button>
+    <button class="modal-btn cancel" onclick="closeModals()">Vazgeç</button>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  function toggleSwitch(el, e) {
+    e.stopPropagation();
+    el.classList.toggle('on');
+  }
+
+  function openModal(id) {
+    document.getElementById('modal-' + id).classList.add('open');
+  }
+
+  function closeModals() {
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+  }
+
+  function selectOption(el) {
+    el.closest('.option-list').querySelectorAll('.option-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+    closeModals();
+    showToast('✓ Ayar kaydedildi');
+  }
+
+  function saveProfile() {
+    showToast('✓ Profil bilgileri güncellendi');
+  }
+
+  var toastTimer;
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'toast';
+      t.style.cssText = 'display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#0F0F0F;color:white;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap;';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.style.display = 'none'; }, 2200);
+  }
+</script>
+</body>
+</html>

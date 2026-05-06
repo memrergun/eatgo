@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Click Test</title>
+</head>
+<body>
+<div id="test" style="width:200px;height:100px;background:red;color:white;padding:20px;cursor:pointer;">
+TIKLA BANA
+</div>
+
+<script>
+console.log('Script yüklendi');
+
+var testDiv = document.getElementById('test');
+console.log('Element bulundu:', testDiv);
+
+testDiv.addEventListener('click', function() {
+  console.log('TIKLANDI!');
+  alert('Click çalıştı!');
+});
+
+console.log('Event listener eklendi');
+</script>
+</body>
+</html>
