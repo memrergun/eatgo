@@ -3,164 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mekan Keşfet</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<title>Mekan Keşfet - EatGo</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --warm: #1D9BF0;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html, body {
-    height: 100%;
-    font-family: 'DM Sans', sans-serif;
-    background: #0f0f0f;
-    color: white;
-    overflow: hidden;
-  }
-
-  .page-header {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 20px;
-    background: rgba(15,15,15,0.95);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(8px);
-    height: 64px;
-  }
-
-  .header-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    color: white;
-  }
-
-  .header-logo-icon {
-    width: 40px; height: 40px;
-    background: var(--warm);
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    box-shadow: 0 4px 16px rgba(29,155,240,0.25);
-  }
-
-  .header-logo-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px; font-weight: 900;
-  }
-
-  .header-nav {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .header-nav a {
-    color: rgba(255,255,255,0.85);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 8px 12px;
-    border-radius: 10px;
-    transition: background 0.2s;
-  }
-
-  .header-nav a:hover {
-    background: rgba(255,255,255,0.1);
-  }
-
-  #map {
-    position: absolute;
-    top: 64px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    background: #1a1a2e;
-  }
-
-  .leaflet-popup-content {
-    margin: 12px 14px !important;
-    font-family: 'DM Sans', sans-serif;
-  }
-  
-  .leaflet-popup-content-wrapper {
-    border-radius: 12px !important;
-  }
+:root{--cream:#F7F7F7;--dark:#0F0F0F;--warm:#1D9BF0;--muted:#536471;--border:#EFF3F4;--card:#FFFFFF;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;height:100vh;overflow:hidden;background:#e8e0d0;}
+.view-tabs{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;background:white;border-bottom:1px solid var(--border);padding:12px 16px 0;gap:0;}
+.view-tab{flex:1;padding:12px 16px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;transition:color 0.2s,border-color 0.2s;}
+.view-tab.active{color:var(--dark);border-bottom-color:var(--warm);}
+.view-tab:hover:not(.active){color:var(--dark);}
+.map-view .top-bar{top:52px;}
+.feed-view{display:none;padding:80px 16px 100px;overflow-y:auto;height:100vh;box-sizing:border-box;}
+.feed-view.active{display:block;}
+.venues-grid{display:grid;gap:16px;max-width:1200px;margin:0 auto;}
+@media (max-width:599px){.venues-grid{grid-template-columns:1fr;}}
+@media (min-width:600px) and (max-width:899px){.venues-grid{grid-template-columns:repeat(2,1fr);}}
+@media (min-width:900px){.venues-grid{grid-template-columns:repeat(3,1fr);}}
+.feed-view .venue-card{width:100%;flex-shrink:unset;}
+.map-view{display:none;position:fixed;inset:0;z-index:1;}
+.map-view.active{display:block;}
+.map-view .top-bar,.map-view .map,.map-view .map-fade-bottom,.map-view .location-btn,.map-view .fab-menu,.map-view .fab-backdrop,.map-view .fab{z-index:50;}
+body.view-feed .map-view,body.view-feed .map-view .map,body.view-feed .map-view .map-fade-bottom,body.view-feed .location-btn,body.view-feed .fab,body.view-feed .fab-menu,body.view-feed .fab-backdrop{display:none!important;}
+body.view-map .feed-view{display:none!important;}
+.loading{text-align:center;color:var(--muted);font-size:14px;padding:24px;}
+.map{position:fixed;inset:0;background:#e8e0d0;}
+.top-bar{position:fixed;top:0;left:0;right:0;z-index:50;padding:52px 16px 12px;}
+.search-row{display:flex;gap:10px;align-items:center;}
+.search-box{flex:1;display:flex;align-items:center;gap:10px;background:white;border-radius:16px;padding:0 16px;height:48px;box-shadow:0 4px 20px rgba(0,0,0,0.12);}
+.search-icon{font-size:16px;color:var(--muted);}
+.search-input{flex:1;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--dark);background:transparent;}
+.search-input::placeholder{color:var(--muted);}
+.filter-btn{width:48px;height:48px;background:var(--dark);border:none;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.2);flex-shrink:0;}
+.category-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:10px 0 2px;}
+.category-scroll::-webkit-scrollbar{display:none;}
+.cat-chip{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:0 14px;height:34px;border-radius:20px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;border:1.5px solid var(--dark);background:white;color:var(--dark);box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:all 0.18s;line-height:1;}
+.cat-chip.active{background:var(--dark);color:white;}
+.location-btn{position:fixed;right:16px;bottom:200px;z-index:50;width:44px;height:44px;background:white;border:none;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.12);}
+.fab{position:fixed;right:16px;bottom:140px;z-index:50;width:56px;height:56px;background:var(--warm);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 6px 24px rgba(29,155,240,.2);transition:transform 0.2s,box-shadow 0.2s;}
+.fab:hover{transform:scale(1.08);box-shadow:0 8px 28px rgba(200,131,74,0.55);}
+.fab:active{transform:scale(0.95);}
+.fab-menu{position:fixed;right:16px;bottom:210px;z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:10px;opacity:0;pointer-events:none;transform:translateY(10px);transition:all 0.25s ease;}
+.fab-menu.open{opacity:1;pointer-events:all;transform:translateY(0);}
+.fab-option{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.fab-option-label{background:var(--dark);color:white;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+.fab-option-icon{width:44px;height:44px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 12px rgba(0,0,0,0.15);flex-shrink:0;}
+.fab-backdrop{display:none;position:fixed;inset:0;z-index:45;background:rgba(0,0,0,0.2);backdrop-filter:blur(2px);}
+.fab-backdrop.open{display:block;}
+.venue-card{flex-shrink:0;width:100%;background:white;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.12);cursor:pointer;transition:transform 0.2s;}
+.venue-card:hover{transform:translateY(-2px);}
+.card-img{height:180px;display:flex;align-items:center;justify-content:center;font-size:50px;position:relative;background-size:cover;background-position:center;}
+.card-badge{position:absolute;top:10px;left:10px;background:rgba(26,22,18,0.75);backdrop-filter:blur(6px);color:white;font-size:11px;font-weight:500;padding:3px 8px;border-radius:10px;}
+.card-distance{position:absolute;top:10px;right:10px;background:white;color:var(--dark);font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px;}
+.card-body{padding:12px 14px 14px;}
+.card-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:4px;}
+.card-meta{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:8px;}
+.card-score{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--dark);}
+.card-score span{color:#F5A623;}
+.card-segments{display:flex;gap:5px;flex-wrap:wrap;}
+.seg-pill{font-size:11px;padding:2px 8px;background:var(--cream);border-radius:10px;color:var(--muted);font-weight:500;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:white;border-top:1px solid var(--border);display:flex;padding:8px 0 24px;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;color:var(--muted);cursor:pointer;padding:4px 0;transition:color 0.2s;}
+.nav-item.active{color:var(--dark);}
+.nav-item span:first-child{font-size:22px;}
+.map-fade-bottom{position:fixed;bottom:60px;left:0;right:0;height:180px;background:linear-gradient(to top,rgba(232,224,208,0.6),transparent);pointer-events:none;z-index:5;}
 </style>
 </head>
-<body>
-
-  <header class="page-header">
-    <a href="index.html" class="header-logo">
-      <div class="header-logo-icon">🗺️</div>
-      <span class="header-logo-text">Mekan Keşfet</span>
-    </a>
-    <nav class="header-nav">
-      <a href="arama.html">🔍 Ara</a>
-    </nav>
-  </header>
-
-  <div id="map"></div>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script>
-    var map = L.map('map', { center: [40.99, 29.03], zoom: 13, zoomControl: true });
-    
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap, &copy; CARTO'
-    }).addTo(map);
-
-    fetch('./data/venues.json')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        var venues = data.venues || data;
-        var bounds = [];
-
-        venues.forEach(function(v) {
-          var lat = v.location && v.location.coordinates && v.location.coordinates.lat;
-          var lng = v.location && v.location.coordinates && v.location.coordinates.lng;
-          if (!lat || !lng) return;
-
-          var rating = ((v.rating && v.rating.overall) || 0).toFixed(1);
-          var reviewCount = (v.rating && v.rating.reviewCount) || 0;
-          var slug = v.slug || '';
-          var name = v.name || 'İsimsiz';
-          var category = v.category || '';
-          var price = (v.pricing && v.pricing.range) || '';
-          var imageUrl = (v.media && v.media.coverImage) || '';
-
-          var popupContent = 
-            '<div style="min-width:220px;max-width:240px">' +
-              (imageUrl ? '<div style="width:100%;height:120px;background-image:url(\'' + imageUrl + '\');background-size:cover;background-position:center;border-radius:8px;margin-bottom:10px"></div>' : '') +
-              '<strong style="font-size:15px;display:block;margin-bottom:4px">' + name + '</strong>' +
-              '<div style="color:#666;font-size:12px;margin-bottom:6px">' + category + ' · ' + price + '</div>' +
-              '<div style="font-size:13px;margin-bottom:10px">⭐ ' + rating + ' <span style="color:#999">(' + reviewCount + ' yorum)</span></div>' +
-              '<a href="venue.html?slug=' + encodeURIComponent(slug) + '" style="display:block;text-align:center;background:#1D9BF0;color:white;padding:8px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none">Detayları Gör →</a>' +
-            '</div>';
-
-          L.marker([lat, lng])
-            .addTo(map)
-            .bindPopup(popupContent, { maxWidth: 240 });
-          
-          bounds.push([lat, lng]);
-        });
-
-        if (bounds.length > 0) {
-          map.fitBounds(bounds, { padding: [60, 60] });
-        }
-      })
-      .catch(function(err) {
-        console.error('Harita yükleme hatası:', err);
-      });
-  </script>
+<body class="view-feed">
+<nav class="view-tabs">
+<button type="button" class="view-tab active" data-view="feed">Feed Görünümü</button>
+<button type="button" class="view-tab" data-view="map">Harita Görünümü</button>
+</nav>
+<section class="feed-view active" id="feedView">
+<div id="venues-grid" class="venues-grid">
+<div class="loading">🔄 Mekanlar yükleniyor...</div>
+</div>
+</section>
+<div class="map-view" id="mapView">
+<div class="map"><div id="leafletMap" style="width:100%;height:100%;"></div></div>
+<div class="map-fade-bottom"></div>
+<div class="top-bar">
+<div class="search-row">
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input class="search-input" type="text" placeholder="Mekan, kategori veya semt ara..." onclick="window.location.href='arama.html'" readonly>
+</div>
+<button class="filter-btn">🔔</button>
+</div>
+<div class="category-scroll">
+<div class="cat-chip active" data-cat="all">Tümü</div>
+<div class="cat-chip" data-cat="cafe">☕ Kafe</div>
+<div class="cat-chip" data-cat="restaurant">🍽️ Restoran</div>
+<div class="cat-chip" data-cat="bar">🍺 Bar</div>
+<div class="cat-chip" data-cat="fastfood">🍔 Fast Food</div>
+<div class="cat-chip" data-cat="pizza">🍕 Pizza</div>
+</div>
+</div>
+<button class="location-btn" id="locationBtn">📍</button>
+<div class="fab-backdrop" id="fabBackdrop" onclick="closeFab()"></div>
+<div class="fab-menu" id="fabMenu">
+<div class="fab-option"><div class="fab-option-label">Yorum Yaz</div><div class="fab-option-icon">✍️</div></div>
+<div class="fab-option"><div class="fab-option-label">Video Ekle</div><div class="fab-option-icon">🎬</div></div>
+<div class="fab-option"><div class="fab-option-label">Mekan Öner</div><div class="fab-option-icon">📍</div></div>
+</div>
+<button class="fab" id="fab" onclick="toggleFab()">＋</button>
+</div>
+<div class="bottom-nav">
+<div class="nav-item active"><span>🗺️</span><span>Keşfet</span></div>
+<div class="nav-item" onclick="window.location.href='arama.html'"><span>🔍</span><span>Ara</span></div>
+<div class="nav-item" onclick="window.location.href='blog.html'"><span>📰</span><span>Blog</span></div>
+<div class="nav-item" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+console.log('🚀 Anasayfa yükleniyor...');
+var map=null,venuesData=[],mapMarkers={},activeMarkerId=null,currentCategory='all',openPopup=null;
+document.querySelectorAll('.view-tab').forEach(function(btn){btn.addEventListener('click',function(){var view=this.dataset.view;console.log('📑 Görünüm:',view);document.body.className='view-'+view;document.querySelectorAll('.view-tab').forEach(function(b){b.classList.remove('active');});this.classList.add('active');document.getElementById('feedView').classList.toggle('active',view==='feed');document.getElementById('mapView').classList.toggle('active',view==='map');if(view==='map'&&map){setTimeout(function(){map.invalidateSize();},100);}});});
+function toggleFab(){var menu=document.getElementById('fabMenu'),backdrop=document.getElementById('fabBackdrop'),fab=document.getElementById('fab');var isOpen=menu.classList.contains('open');if(isOpen){menu.classList.remove('open');backdrop.classList.remove('open');fab.textContent='＋';fab.style.background='var(--warm)';}else{menu.classList.add('open');backdrop.classList.add('open');fab.textContent='✕';fab.style.background='var(--dark)';}}
+function closeFab(){document.getElementById('fabMenu').classList.remove('open');document.getElementById('fabBackdrop').classList.remove('open');document.getElementById('fab').textContent='＋';document.getElementById('fab').style.background='var(--warm)';}
+window.goToVenue=function(url){console.log('🔗 Mekan detayına git:',url);window.location.href=url;};
+window.addEventListener('load',function(){
+if(typeof L==='undefined'){console.error('❌ Leaflet yüklenemedi');return;}
+console.log('✅ Leaflet yüklendi');
+function initMap(){console.log('🗺️ Harita başlatılıyor...');map=L.map('leafletMap',{center:[40.9917,29.0262],zoom:13,zoomControl:false,attributionControl:false});L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(map);var userIcon=L.divIcon({className:'',html:'<div style="width:16px;height:16px;background:#4285F4;border-radius:50%;border:3px solid white;box-shadow:0 0 0 5px rgba(66,133,244,0.2);"></div>',iconSize:[16,16],iconAnchor:[8,8]});L.marker([40.9917,29.0262],{icon:userIcon,zIndexOffset:1000}).addTo(map);console.log('✅ Harita hazır');}
+window.addEventListener('venuesLoaded',function(e){venuesData=e.detail.venues;console.log('📍 Harita güncelleniyor:',venuesData.length,'mekan');if(!map){initMap();}addMarkersToMap();});
+function getCategoryEmoji(category){var emojiMap={'Cafe':'☕','Restaurant':'🍽️','Bar':'🍺','Fast Food':'🍔','Pizza':'🍕','Dessert':'🍰','Asian':'🍜','Turkish':'🥙','Breakfast':'🥐','Mediterranean':'🫒','Seafood':'🐟','Italian':'🍝'};return emojiMap[category]||'🍽️';}
+function addMarkersToMap(){console.log('📍 Marker\'lar ekleniyor...');Object.values(mapMarkers).forEach(function(m){if(m)map.removeLayer(m);});mapMarkers={};venuesData.forEach(function(venue,idx){var lat=venue.location?.coordinates?.lat;var lng=venue.location?.coordinates?.lng;if(!lat||!lng){console.warn('⚠️ Koordinat eksik:',venue.name);return;}var markerData={id:idx,name:venue.name,emoji:getCategoryEmoji(venue.category),score:(venue.rating?.overall||4.0).toFixed(1),hood:venue.location?.neighborhood||'İstanbul',reviews:venue.rating?.reviewCount||0,category:(venue.category||'restaurant').toLowerCase().replace(/\s/g,''),url:'./mekan.html?slug='+(venue.slug||'')};var marker=L.marker([lat,lng],{icon:makeMarkerIcon(markerData,false),zIndexOffset:0}).addTo(map);marker.on('click',function(){highlightMarker(idx);});mapMarkers[idx]=marker;});console.log('✅',Object.keys(mapMarkers).length,'marker eklendi');if(venuesData.length>0){highlightMarker(0);}}
+function makeMarkerIcon(data,isActive){var bg=isActive?'#0F0F0F':'white';var color=isActive?'white':'#0F0F0F';var shadow=isActive?'0 4px 16px rgba(0,0,0,0.4)':'0 2px 8px rgba(0,0,0,0.15)';var border=isActive?'#0F0F0F':'#E2E8F0';var scale=isActive?'scale(1.1)':'scale(1)';var html='<div style="display:inline-flex;align-items:center;gap:5px;background:'+bg+';color:'+color+';padding:6px 12px;border-radius:20px;white-space:nowrap;font-size:12px;font-weight:700;font-family:DM Sans,sans-serif;box-shadow:'+shadow+';border:1.5px solid '+border+';transform:'+scale+';transition:all .2s;"><span>'+data.emoji+'</span><span>'+data.name+'</span><span style="opacity:.7;font-weight:600;font-size:11px;margin-left:2px;">'+data.score+'</span></div>';return L.divIcon({className:'',html:html,iconAnchor:[0,30]});}
+function makePopupHTML(data){return'<div style="text-align:center;padding:6px 4px 4px;"><div style="font-size:32px;margin-bottom:8px;">'+data.emoji+'</div><div style="font-family:Playfair Display,serif;font-size:15px;font-weight:700;margin-bottom:4px;">'+data.name+'</div><div style="font-size:11px;color:#536471;margin-bottom:8px;">'+data.hood+' · ★'+data.score+' · '+data.reviews+' yorum</div><button onclick="window.goToVenue(\''+data.url.replace(/'/g,"\\'")+'\');" style="width:100%;height:36px;background:#0F0F0F;color:white;border:none;border-radius:10px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Detaya Git →</button></div>';}
+function highlightMarker(id){var venue=venuesData[id];if(!venue)return;var lat=venue.location?.coordinates?.lat;var lng=venue.location?.coordinates?.lng;if(!lat||!lng)return;console.log('🎯 Marker highlight:',venue.name);if(activeMarkerId!==null&&mapMarkers[activeMarkerId]){var oldVenue=venuesData[activeMarkerId];mapMarkers[activeMarkerId].setIcon(makeMarkerIcon({id:activeMarkerId,name:oldVenue.name,emoji:getCategoryEmoji(oldVenue.category),score:(oldVenue.rating?.overall||4.0).toFixed(1),hood:oldVenue.location?.neighborhood||'İstanbul',reviews:oldVenue.rating?.reviewCount||0,category:(oldVenue.category||'restaurant').toLowerCase()},false));mapMarkers[activeMarkerId].setZIndexOffset(0);}activeMarkerId=id;var markerData={id:id,name:venue.name,emoji:getCategoryEmoji(venue.category),score:(venue.rating?.overall||4.0).toFixed(1),hood:venue.location?.neighborhood||'İstanbul',reviews:venue.rating?.reviewCount||0,category:(venue.category||'restaurant').toLowerCase(),url:'./mekan.html?slug='+(venue.slug||'')};mapMarkers[id].setIcon(makeMarkerIcon(markerData,true));mapMarkers[id].setZIndexOffset(500);if(openPopup){map.closePopup(openPopup);}var popupOpts={maxWidth:200,minWidth:180,offset:[0,-30],closeButton:false,className:'mk-popup'};openPopup=L.popup(popupOpts).setLatLng([lat,lng]).setContent(makePopupHTML(markerData)).openOn(map);map.panTo([lat-0.002,lng],{animate:true,duration:0.4});}
+document.querySelectorAll('.cat-chip').forEach(function(chip){chip.addEventListener('click',function(){var cat=this.dataset.cat;console.log('🏷️ Kategori:',cat);currentCategory=cat;document.querySelectorAll('.cat-chip').forEach(function(c){c.classList.remove('active');});this.classList.add('active');venuesData.forEach(function(venue,idx){var marker=mapMarkers[idx];if(!marker)return;var venueCategory=(venue.category||'restaurant').toLowerCase().replace(/\s/g,'');var show=cat==='all'||venueCategory===cat;if(show){marker.addTo(map);}else{map.removeLayer(marker);}});if(openPopup){map.closePopup(openPopup);openPopup=null;}var firstVisible=venuesData.findIndex(function(v,idx){var venueCategory=(v.category||'restaurant').toLowerCase().replace(/\s/g,'');return cat==='all'||venueCategory===cat;});if(firstVisible!==-1){highlightMarker(firstVisible);}});});
+document.getElementById('locationBtn').addEventListener('click',function(){console.log('📍 Konuma dön');if(map){map.flyTo([40.9917,29.0262],13,{animate:true,duration:0.8});}});
+var style=document.createElement('style');style.textContent='.mk-popup .leaflet-popup-content-wrapper{border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.18);border:1px solid #EFF3F4;padding:0;}.mk-popup .leaflet-popup-content{margin:14px 14px 12px;}.mk-popup .leaflet-popup-tip-container{display:none;}';document.head.appendChild(style);
+initMap();
+});
+console.log('✅ Anasayfa hazır');
+</script>
+<script src="./app.js"></script>
 </body>
 </html>
