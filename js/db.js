@@ -54,11 +54,24 @@ window.DB = {
     return rows.map(function (r) { return r.data; });
   },
 
-  // Harita için düz kolonlar — PostgREST max 1000/sayfa, tüm mekanlar için sayfalama
+  // Harita için düz kolonlar — localStorage cache (30 dk), ilk açılışta çeker
   fetchVenuesMap: async function () {
-    var PAGE = 1000;
-    var all = [];
-    var offset = 0;
+    var CACHE_KEY = 'eatgo_map_v1';
+    var TTL = 30 * 60 * 1000; // 30 dakika
+
+    try {
+      var raw = localStorage.getItem(CACHE_KEY);
+      if (raw) {
+        var cached = JSON.parse(raw);
+        if (Date.now() - cached.ts < TTL) {
+          console.log('🗄️ Harita verisi cache\'den:', cached.data.length, 'mekan');
+          return cached.data;
+        }
+      }
+    } catch(e) {}
+
+    console.log('📡 Harita verisi Supabase\'den çekiliyor...');
+    var PAGE = 1000, all = [], offset = 0;
     while (true) {
       var resp = await fetch(
         window.SUPABASE_URL + '/rest/v1/venues?select=name,slug,category,lat,lng,rating,review_count&order=id.asc&limit=' + PAGE + '&offset=' + offset,
@@ -70,6 +83,12 @@ window.DB = {
       if (rows.length < PAGE) break;
       offset += PAGE;
     }
+
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: all }));
+    } catch(e) {}
+
+    console.log('✅ Harita verisi cache\'e kaydedildi:', all.length, 'mekan');
     return all;
   },
 
