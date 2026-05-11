@@ -192,11 +192,27 @@ function renderVenue(venue){
   html += '<div class="price-pill">' + priceRange + '</div>';
   html += '</div>';
 
-  // Menü butonu
-  if(venue.menu_url){
-    html += '<a href="' + escapeHtml(venue.menu_url) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;margin:16px 0 4px;background:linear-gradient(135deg,#e65c00,#f9d423);color:#fff;font-weight:700;font-size:15px;border-radius:14px;text-decoration:none;box-shadow:0 4px 15px rgba(230,92,0,.35);">';
-    html += '🍽️ Menüyü Gör</a>';
+  // Aksiyon butonları
+  var websiteUrl = venue.menu_url || (venue.contact && venue.contact.website) || null;
+  var mapsUrl = (venue.contact && venue.contact.googleMapsUrl) || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(venue.name + ' ' + ((venue.location && venue.location.address) || 'İstanbul')));
+
+  html += '<div style="display:flex;gap:10px;margin:16px 0 4px;">';
+
+  if(websiteUrl){
+    html += '<a href="' + escapeHtml(websiteUrl) + '" target="_blank" rel="noopener" '
+      + 'style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:14px 10px;'
+      + 'background:linear-gradient(135deg,#e65c00,#f9d423);color:#fff;font-weight:700;font-size:14px;'
+      + 'border-radius:14px;text-decoration:none;box-shadow:0 4px 15px rgba(230,92,0,.3);">'
+      + '🍽️ Web Sitesi</a>';
   }
+
+  html += '<a href="' + escapeHtml(mapsUrl) + '" target="_blank" rel="noopener" '
+    + 'style="' + (websiteUrl ? 'flex:1;' : 'flex:1;') + 'display:flex;align-items:center;justify-content:center;gap:7px;padding:14px 10px;'
+    + 'background:#0F0F0F;color:#fff;font-weight:700;font-size:14px;'
+    + 'border-radius:14px;text-decoration:none;">'
+    + '🗺️ Google Maps</a>';
+
+  html += '</div>';
 
   // Gallery
   if(gallery.length > 0){
