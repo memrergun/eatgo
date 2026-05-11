@@ -102,22 +102,16 @@ function appendVenues(venues) {
   venues.forEach(function(v) { var c = createVenueCard(v); if (c) grid.appendChild(c); });
 }
 
-var _scrollSentinel = null;
-
 function setupInfiniteScroll() {
-  if (_scrollSentinel) _scrollSentinel.remove();
-  if (_allLoaded) return;
-  var grid = document.getElementById('venues-grid');
-  if (!grid) return;
-  var sentinel = document.createElement('div');
-  sentinel.id = 'scroll-sentinel';
-  sentinel.style.cssText = 'height:1px;';
-  grid.parentNode.insertBefore(sentinel, grid.nextSibling);
-  _scrollSentinel = sentinel;
-  var observer = new IntersectionObserver(function(entries) {
-    if (entries[0].isIntersecting) loadMoreVenues();
-  }, { rootMargin: '200px' });
-  observer.observe(sentinel);
+  var feedView = document.getElementById('feedView');
+  if (!feedView || feedView._scrollBound) return;
+  feedView._scrollBound = true;
+  feedView.addEventListener('scroll', function() {
+    if (_feedLoading || _allLoaded) return;
+    if (feedView.scrollTop + feedView.clientHeight >= feedView.scrollHeight - 600) {
+      loadMoreVenues();
+    }
+  });
 }
 
 async function loadMoreVenues() {
@@ -125,13 +119,9 @@ async function loadMoreVenues() {
   _feedLoading = true;
   try {
     var venues = await window.DB.fetchVenues(_feedOffset, _feedPageSize);
-    if (venues.length < _feedPageSize) {
-      _allLoaded = true;
-      if (_scrollSentinel) _scrollSentinel.remove();
-    }
+    if (venues.length < _feedPageSize) _allLoaded = true;
     _feedOffset += venues.length;
     appendVenues(venues);
-    if (!_allLoaded) setupInfiniteScroll();
   } catch(e) {}
   _feedLoading = false;
 }
@@ -162,7 +152,6 @@ async function loadVenues() {
     grid.innerHTML = '';
     appendVenues(venues);
     setupInfiniteScroll();
-
     window.dispatchEvent(new CustomEvent('venuesLoaded', { detail: { venues: venues } }));
 
   } catch (error) {
