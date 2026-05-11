@@ -5,6 +5,13 @@
 
 console.log('🚀 app.js yüklendi');
 
+var userLat = null, userLng = null;
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(function(p){ userLat=p.coords.latitude; userLng=p.coords.longitude; }, function(){});
+}
+function haversineKm(a,b,c,d){var R=6371,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180,x=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)*Math.sin(dG/2);return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+function formatDist(km){return km<1?Math.round(km*1000)+' m':km.toFixed(1)+' km';}
+
 // ========================================
 // KATEGORİ EMOJİ HELPER
 // ========================================
@@ -93,7 +100,9 @@ function createVenueCard(venue) {
   }
   
   cardHTML += badge;
-  cardHTML += '<div class="card-distance">' + priceRange + '</div>';
+  var vLat = venue.location?.coordinates?.lat, vLng = venue.location?.coordinates?.lng;
+  var distLabel = (userLat !== null && vLat && vLng) ? formatDist(haversineKm(userLat,userLng,vLat,vLng)) : priceRange;
+  cardHTML += '<div class="card-distance">' + distLabel + '</div>';
   cardHTML += '</div>';
   
   cardHTML += '<div class="card-body">';

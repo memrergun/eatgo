@@ -27,7 +27,7 @@ window.DB = {
   // Tüm mekanları getir (harita + feed için)
   fetchVenues: async function () {
     var resp = await fetch(
-      window.SUPABASE_URL + '/rest/v1/venues?select=data&order=name',
+      window.SUPABASE_URL + '/rest/v1/venues?select=data&order=rating.desc&limit=200',
       { headers: this._headers() }
     );
     if (!resp.ok) throw new Error('Supabase HTTP ' + resp.status);

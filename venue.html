@@ -280,7 +280,8 @@ function renderVenue(venue){
       var initial = (rev.author || '?').charAt(0).toUpperCase();
       var revText = rev.text || '';
       var isLong = revText.length > 200;
-      html += '<div class="review-item">';
+      html += '<a href="' + googleReviewsUrl + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:block;">';
+      html += '<div class="review-item" style="cursor:pointer;">';
       html += '<div class="review-header">';
       if(rev.profilePhoto){
         html += '<img class="review-avatar" src="' + rev.profilePhoto + '" alt="" onerror="this.outerHTML=\'<div class=&quot;review-avatar-fallback&quot;>' + initial + '</div>\'">';
@@ -302,6 +303,7 @@ function renderVenue(venue){
         html += '<button class="read-more" onclick="document.getElementById(\'rev-' + idx + '\').classList.toggle(\'collapsed\');this.textContent=this.textContent===\'Devamını oku\'?\'Daha az göster\':\'Devamını oku\';">Devamını oku</button>';
       }
       html += '</div>';
+      html += '</a>';
     });
     html += '<a href="' + googleReviewsUrl + '" target="_blank" rel="noopener" style="display:block;text-align:center;padding:12px;margin-top:8px;border-radius:12px;border:1.5px solid var(--border);font-size:13px;font-weight:700;color:var(--dark);text-decoration:none;">Google\'da tüm yorumları gör →</a>';
     html += '</div>';
