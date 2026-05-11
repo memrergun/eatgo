@@ -294,48 +294,7 @@
 </div>
 
 <!-- SONUÇLAR -->
-<div class="results" id="resultsState">
-  <div class="result-item" onclick="window.location.href='white-burger.html'">
-    <div class="result-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">🍔</div>
-    <div class="result-info">
-      <div class="result-name">White Burger</div>
-      <div class="result-sub">Kadıköy · Smash Burger · 120m</div>
-    </div>
-    <div class="result-score">4.4<div class="result-score-sub">★ Google</div></div>
-  </div>
-  <div class="result-item" onclick="window.location.href='venue.html?slug=burger-lab'">
-    <div class="result-thumb" style="background:linear-gradient(135deg,#120a1a,#1e1030);">🍔</div>
-    <div class="result-info">
-      <div class="result-name">Burger Lab</div>
-      <div class="result-sub">Moda · Gourmet Burger · 340m</div>
-    </div>
-    <div class="result-score">4.6<div class="result-score-sub">★ Google</div></div>
-  </div>
-  <div class="result-item" onclick="window.location.href='venue.html?slug=smash-bros'">
-    <div class="result-thumb" style="background:linear-gradient(135deg,#0f1117,#3d2d08);">🍟</div>
-    <div class="result-info">
-      <div class="result-name">Smash Bros</div>
-      <div class="result-sub">Moda · Double Smash · 610m</div>
-    </div>
-    <div class="result-score">4.1<div class="result-score-sub">★ Google</div></div>
-  </div>
-  <div class="result-item" onclick="window.location.href='venue.html?slug=green-smash'">
-    <div class="result-thumb" style="background:linear-gradient(135deg,#0a1f28,#0d2a3c);">🥗</div>
-    <div class="result-info">
-      <div class="result-name">Green Smash</div>
-      <div class="result-sub">Kadıköy · Vegan Burger · 480m</div>
-    </div>
-    <div class="result-score">4.3<div class="result-score-sub">★ Google</div></div>
-  </div>
-  <div class="result-item" onclick="window.location.href='venue.html?slug=usta-burger'">
-    <div class="result-thumb" style="background:linear-gradient(135deg,#120a1a,#1e1030);">🍔</div>
-    <div class="result-info">
-      <div class="result-name">Usta Burger</div>
-      <div class="result-sub">Moda · Klasik Burger · 720m</div>
-    </div>
-    <div class="result-score">4.0<div class="result-score-sub">★ Google</div></div>
-  </div>
-</div>
+<div class="results" id="resultsState"></div>
 
 <!-- BOŞ DURUM -->
 <div class="empty-state" id="emptyState">
@@ -352,24 +311,97 @@
   <div class="nav-item" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
 </div>
 
+<script src="js/db.js"></script>
 <script>
+  var _searchTimer = null;
+  var _lastQuery = '';
+
+  function getEmojiForCategory(cat) {
+    if (!cat) return '🍽️';
+    var c = cat.toLowerCase();
+    if (c.includes('cafe') || c.includes('kafeterya') || c.includes('coffee') || c.includes('kahve')) return '☕';
+    if (c.includes('kahvaltı') || c.includes('breakfast')) return '🥐';
+    if (c.includes('pastane') || c.includes('bakery') || c.includes('tatlı') || c.includes('dessert')) return '🍰';
+    if (c.includes('bar')) return '🍺';
+    if (c.includes('pizza')) return '🍕';
+    if (c.includes('burger') || c.includes('fast')) return '🍔';
+    if (c.includes('balık') || c.includes('deniz') || c.includes('seafood')) return '🐟';
+    if (c.includes('asya') || c.includes('asian') || c.includes('ramen')) return '🍜';
+    return '🍽️';
+  }
+
+  async function searchVenues(query) {
+    if (!query || !window.SUPABASE_URL) return [];
+    var q = query.replace(/[()]/g, '').trim();
+    if (!q) return [];
+    var url = window.SUPABASE_URL + '/rest/v1/venues?select=name,slug,category,rating,review_count'
+      + '&or=(name.ilike.*' + encodeURIComponent(q) + '*,category.ilike.*' + encodeURIComponent(q) + '*)'
+      + '&order=rating.desc&limit=20';
+    var r = await fetch(url, {
+      headers: {
+        'apikey': window.SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + window.SUPABASE_ANON_KEY
+      }
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  }
+
+  async function doSearch(query) {
+    if (!query) return;
+    _lastQuery = query;
+    var resultsState = document.getElementById('resultsState');
+    var emptyState = document.getElementById('emptyState');
+    resultsState.classList.add('visible');
+    emptyState.classList.remove('visible');
+    resultsState.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:14px;">🔍 Aranıyor…</div>';
+    try {
+      var venues = await searchVenues(query);
+      if (query !== _lastQuery) return;
+      if (!venues.length) {
+        resultsState.classList.remove('visible');
+        emptyState.classList.add('visible');
+        return;
+      }
+      resultsState.innerHTML = '';
+      venues.forEach(function(v) {
+        var item = document.createElement('div');
+        item.className = 'result-item';
+        item.onclick = function() { window.location.href = 'venue.html#' + encodeURIComponent(v.slug || ''); };
+        var rating = parseFloat(v.rating) || 0;
+        var category = v.category || 'Restoran';
+        var emoji = getEmojiForCategory(category);
+        item.innerHTML =
+          '<div class="result-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">' + emoji + '</div>' +
+          '<div class="result-info">' +
+          '<div class="result-name">' + (v.name || '') + '</div>' +
+          '<div class="result-sub">' + category + '</div>' +
+          '</div>' +
+          (rating ? '<div class="result-score">' + rating.toFixed(1) + '<div class="result-score-sub">★ Puan</div></div>' : '');
+        resultsState.appendChild(item);
+      });
+    } catch(e) {
+      if (query !== _lastQuery) return;
+      resultsState.innerHTML = '<div style="padding:24px;text-align:center;color:#e74c3c;font-size:14px;">⚠️ Arama başarısız. Tekrar dene.</div>';
+    }
+  }
+
   function handleSearch(val) {
     var clearBtn = document.getElementById('clearBtn');
     var defaultState = document.getElementById('defaultState');
     var resultsState = document.getElementById('resultsState');
     var emptyState = document.getElementById('emptyState');
-
     if (val.length > 0) {
       clearBtn.classList.add('visible');
       defaultState.style.display = 'none';
-      // Basit demo: her aramada sonuçları göster
-      resultsState.classList.add('visible');
-      emptyState.classList.remove('visible');
+      clearTimeout(_searchTimer);
+      _searchTimer = setTimeout(function() { doSearch(val.trim()); }, 300);
     } else {
       clearBtn.classList.remove('visible');
       defaultState.style.display = 'block';
       resultsState.classList.remove('visible');
       emptyState.classList.remove('visible');
+      resultsState.innerHTML = '';
     }
   }
 
@@ -381,7 +413,9 @@
   }
 
   function searchFor(term) {
-    window.location.href = 'arama-sonuc.html?q=' + encodeURIComponent(term);
+    var input = document.getElementById('searchInput');
+    input.value = term;
+    handleSearch(term);
   }
 </script>
 

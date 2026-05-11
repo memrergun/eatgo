@@ -205,7 +205,7 @@ function sbHeaders() {
 
 async function fetchBySlug(slugs) {
   if (!slugs || !slugs.length) return [];
-  var url = SB_URL + '/rest/v1/venues?select=data,menu_url&slug=in.(' + slugs.map(encodeURIComponent).join(',') + ')&limit=' + slugs.length;
+  var url = SB_URL + '/rest/v1/venues?select=data,menu_url&slug=in.(' + slugs.join(',') + ')&limit=' + slugs.length;
   var r = await fetch(url, { headers: sbHeaders() });
   if (!r.ok) return [];
   var rows = await r.json();

@@ -56,7 +56,7 @@ window.DB = {
 
   // Harita için düz kolonlar — localStorage cache (30 dk), ilk açılışta çeker
   fetchVenuesMap: async function () {
-    var CACHE_KEY = 'eatgo_map_v1';
+    var CACHE_KEY = 'eatgo_map_v2';
     var TTL = 30 * 60 * 1000; // 30 dakika
 
     try {

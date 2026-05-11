@@ -102,34 +102,37 @@ function appendVenues(venues) {
   venues.forEach(function(v) { var c = createVenueCard(v); if (c) grid.appendChild(c); });
 }
 
-function renderLoadMoreBtn() {
-  var old = document.getElementById('load-more-btn');
-  if (old) old.remove();
+var _scrollSentinel = null;
+
+function setupInfiniteScroll() {
+  if (_scrollSentinel) _scrollSentinel.remove();
   if (_allLoaded) return;
   var grid = document.getElementById('venues-grid');
   if (!grid) return;
-  var btn = document.createElement('button');
-  btn.id = 'load-more-btn';
-  btn.textContent = 'Daha Fazla Yükle';
-  btn.style.cssText = 'display:block;width:calc(100% - 32px);margin:16px 16px 8px;padding:14px;background:#0F0F0F;color:white;border:none;border-radius:14px;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;';
-  btn.onclick = loadMoreVenues;
-  grid.parentNode.insertBefore(btn, grid.nextSibling);
+  var sentinel = document.createElement('div');
+  sentinel.id = 'scroll-sentinel';
+  sentinel.style.cssText = 'height:1px;';
+  grid.parentNode.insertBefore(sentinel, grid.nextSibling);
+  _scrollSentinel = sentinel;
+  var observer = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting) loadMoreVenues();
+  }, { rootMargin: '200px' });
+  observer.observe(sentinel);
 }
 
 async function loadMoreVenues() {
   if (_feedLoading || _allLoaded) return;
   _feedLoading = true;
-  var btn = document.getElementById('load-more-btn');
-  if (btn) btn.textContent = '🔄 Yükleniyor...';
   try {
     var venues = await window.DB.fetchVenues(_feedOffset, _feedPageSize);
-    if (venues.length < _feedPageSize) _allLoaded = true;
+    if (venues.length < _feedPageSize) {
+      _allLoaded = true;
+      if (_scrollSentinel) _scrollSentinel.remove();
+    }
     _feedOffset += venues.length;
     appendVenues(venues);
-    renderLoadMoreBtn();
-  } catch(e) {
-    if (btn) btn.textContent = 'Daha Fazla Yükle';
-  }
+    if (!_allLoaded) setupInfiniteScroll();
+  } catch(e) {}
   _feedLoading = false;
 }
 
@@ -158,7 +161,7 @@ async function loadVenues() {
 
     grid.innerHTML = '';
     appendVenues(venues);
-    renderLoadMoreBtn();
+    setupInfiniteScroll();
 
     window.dispatchEvent(new CustomEvent('venuesLoaded', { detail: { venues: venues } }));
 
