@@ -3,7 +3,8 @@
     "node": ">=18"
   },
   "dependencies": {
-    "axios": "^1.13.6"
+    "axios": "^1.13.6",
+    "pg": "^8.20.0"
   },
   "devDependencies": {
     "dotenv": "^17.4.2"
