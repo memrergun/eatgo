@@ -4,8 +4,6 @@
 // ========================================
 
 var userLat = null, userLng = null;
-var DEFAULT_LAT = 41.0082, DEFAULT_LNG = 28.9784;
-var NEARBY_KM = 3;
 
 function haversineKm(a,b,c,d){var R=6371,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180,x=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)*Math.sin(dG/2);return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 function formatDist(km){return km<1?Math.round(km*1000)+' m':km.toFixed(1)+' km';}
@@ -82,76 +80,85 @@ function createVenueCard(venue) {
 }
 
 // ========================================
-// FEED — GPS bekle, yakın mekanları yükle
+// FEED — GPS arka planda al (mesafe için), tüm mekanları göster
 // ========================================
 
-function getGPS() {
-  return new Promise(function(resolve) {
-    if (!navigator.geolocation) { resolve(null); return; }
-    var timer = setTimeout(function() { resolve(null); }, 6000);
-    navigator.geolocation.getCurrentPosition(
-      function(pos) {
-        clearTimeout(timer);
-        resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-      },
-      function() { clearTimeout(timer); resolve(null); },
-      { timeout: 6000, maximumAge: 60000 }
-    );
-  });
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    function(p) { userLat = p.coords.latitude; userLng = p.coords.longitude; },
+    function() {},
+    { timeout: 8000, maximumAge: 60000 }
+  );
+}
+
+var _feedOffset = 0;
+var _feedPageSize = 200;
+var _feedLoading = false;
+var _allLoaded = false;
+
+function appendVenues(venues) {
+  var grid = document.getElementById('venues-grid');
+  if (!grid) return;
+  venues.forEach(function(v) { var c = createVenueCard(v); if (c) grid.appendChild(c); });
+}
+
+function renderLoadMoreBtn() {
+  var old = document.getElementById('load-more-btn');
+  if (old) old.remove();
+  if (_allLoaded) return;
+  var grid = document.getElementById('venues-grid');
+  if (!grid) return;
+  var btn = document.createElement('button');
+  btn.id = 'load-more-btn';
+  btn.textContent = 'Daha Fazla Yükle';
+  btn.style.cssText = 'display:block;width:calc(100% - 32px);margin:16px 16px 8px;padding:14px;background:#0F0F0F;color:white;border:none;border-radius:14px;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;';
+  btn.onclick = loadMoreVenues;
+  grid.parentNode.insertBefore(btn, grid.nextSibling);
+}
+
+async function loadMoreVenues() {
+  if (_feedLoading || _allLoaded) return;
+  _feedLoading = true;
+  var btn = document.getElementById('load-more-btn');
+  if (btn) btn.textContent = '🔄 Yükleniyor...';
+  try {
+    var venues = await window.DB.fetchVenues(_feedOffset, _feedPageSize);
+    if (venues.length < _feedPageSize) _allLoaded = true;
+    _feedOffset += venues.length;
+    appendVenues(venues);
+    renderLoadMoreBtn();
+  } catch(e) {
+    if (btn) btn.textContent = 'Daha Fazla Yükle';
+  }
+  _feedLoading = false;
 }
 
 async function loadVenues() {
   var grid = document.getElementById('venues-grid');
   if (!grid) return;
 
-  grid.innerHTML = '<div class="loading">📍 Konumunuz alınıyor...</div>';
-
-  var pos = await getGPS();
-  if (pos) {
-    userLat = pos.lat;
-    userLng = pos.lng;
-  } else {
-    userLat = DEFAULT_LAT;
-    userLng = DEFAULT_LNG;
-  }
-
-  grid.innerHTML = '<div class="loading">🔄 Yakın mekanlar yükleniyor...</div>';
+  _feedOffset = 0;
+  _allLoaded = false;
+  grid.innerHTML = '<div class="loading">🔄 Mekanlar yükleniyor...</div>';
 
   try {
     var venues = [];
 
     if (window.DB && window.DB._ready()) {
-      var raw = await window.DB.fetchVenuesNearby(userLat, userLng, NEARBY_KM);
-      // Bounding box kare, haversine ile tam çembere kes
-      venues = raw.filter(function(v) {
-        var vLat = v.location?.coordinates?.lat;
-        var vLng = v.location?.coordinates?.lng;
-        if (!vLat || !vLng) return false;
-        return haversineKm(userLat, userLng, vLat, vLng) <= NEARBY_KM;
-      });
-      // Mesafeye göre sırala
-      venues.sort(function(a, b) {
-        var da = haversineKm(userLat, userLng, a.location.coordinates.lat, a.location.coordinates.lng);
-        var db = haversineKm(userLat, userLng, b.location.coordinates.lat, b.location.coordinates.lng);
-        return da - db;
-      });
+      venues = await window.DB.fetchVenues(0, _feedPageSize);
+      if (venues.length < _feedPageSize) _allLoaded = true;
+      _feedOffset = venues.length;
     } else {
       var response = await fetch('./data/venues.json');
       if (!response.ok) throw new Error('HTTP ' + response.status);
       var data = await response.json();
       venues = (data.venues && Array.isArray(data.venues)) ? data.venues : (Array.isArray(data) ? data : []);
+      _allLoaded = true;
     }
 
     grid.innerHTML = '';
-
-    if (venues.length === 0) {
-      grid.innerHTML = '<div class="loading">📍 ' + NEARBY_KM + ' km çevresinde mekan bulunamadı.</div>';
-    } else {
-      venues.forEach(function(venue) {
-        var card = createVenueCard(venue);
-        if (card) grid.appendChild(card);
-      });
-    }
+    appendVenues(venues);
+    renderLoadMoreBtn();
 
     window.dispatchEvent(new CustomEvent('venuesLoaded', { detail: { venues: venues } }));
 
