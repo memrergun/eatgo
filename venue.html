@@ -93,11 +93,8 @@ function escapeHtml(str){
 }
 
 function proxyPhoto(url) {
-  if (!url) return url;
-  var m = url.match(/photoreference=([^&]+)/);
-  if (!m) return url;
-  var w = (url.match(/maxwidth=(\d+)/) || [])[1] || '1200';
-  return '/api/photo?ref=' + encodeURIComponent(m[1]) + '&maxwidth=' + w;
+  if (!url || !url.includes('googleapis.com')) return url;
+  return '/api/photo?url=' + encodeURIComponent(url);
 }
 
 function getStars(rating){
