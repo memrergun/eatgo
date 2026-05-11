@@ -8,8 +8,9 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  // Only allow Google Maps photo URLs
-  if (!url.startsWith('https://maps.googleapis.com/maps/api/place/photo')) {
+  const isOldApi = url.startsWith('https://maps.googleapis.com/maps/api/place/photo');
+  const isNewApi = url.startsWith('https://places.googleapis.com/v1/places/');
+  if (!isOldApi && !isNewApi) {
     res.status(403).send('Forbidden');
     return;
   }

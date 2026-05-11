@@ -92,8 +92,15 @@ function escapeHtml(str){
   });
 }
 
-function proxyPhoto(url) {
+function proxyPhoto(url, placeId) {
   if (!url || !url.includes('googleapis.com')) return url;
+  var m = url.match(/photoreference=([^&]+)/);
+  if (m && placeId) {
+    var newUrl = 'https://places.googleapis.com/v1/places/' + placeId +
+      '/photos/' + m[1] + '/media?maxWidthPx=1200&skipHttpRedirect=true' +
+      '&key=AIzaSyApsshzyL42u5DqGzi_80bMsdGDL1XnW3c';
+    return '/api/photo?url=' + encodeURIComponent(newUrl);
+  }
   return '/api/photo?url=' + encodeURIComponent(url);
 }
 
@@ -131,7 +138,7 @@ function renderVenue(venue){
   var rating = venue.rating?.overall || 4.0;
   var reviewCount = venue.rating?.reviewCount || 0;
   var priceRange = escapeHtml(venue.pricing?.range || '₺₺');
-  var coverImage = proxyPhoto(venue.media?.coverImage || (venue.media?.gallery && venue.media.gallery[0]) || '');
+  var coverImage = proxyPhoto(venue.media?.coverImage || (venue.media?.gallery && venue.media.gallery[0]) || '', venue.id);
   var gallery = venue.media?.gallery || [];
   var hours = venue.hours || {};
   var contact = venue.contact || {};
@@ -181,7 +188,7 @@ function renderVenue(venue){
     html += '<div class="section-title">📸 Fotoğraflar</div>';
     html += '<div class="gallery">';
     gallery.slice(0, 6).forEach(function(img){
-      html += '<img src="' + proxyPhoto(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">';
+      html += '<img src="' + proxyPhoto(img, venue.id) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">';
     });
     html += '</div>';
     html += '</div>';
