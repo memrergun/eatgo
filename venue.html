@@ -94,15 +94,18 @@ function escapeHtml(str){
 }
 
 function proxyPhoto(url, placeId) {
-  if (!url || !url.includes('googleapis.com')) return url;
+  if (!url) return url;
+  // Yeni Places API v1 URL'leri direkt çalışır (browser redirect takip eder)
+  if (url.includes('places.googleapis.com/v1/')) return url;
+  if (!url.includes('googleapis.com')) return url;
+  // Eski format: photoreference= → yeni endpoint'e çevir
   var m = url.match(/photoreference=([^&]+)/);
   if (m && placeId) {
-    var newUrl = 'https://places.googleapis.com/v1/places/' + placeId +
-      '/photos/' + m[1] + '/media?maxWidthPx=1200&skipHttpRedirect=true' +
+    return 'https://places.googleapis.com/v1/places/' + placeId +
+      '/photos/' + m[1] + '/media?maxWidthPx=1200' +
       '&key=AIzaSyApsshzyL42u5DqGzi_80bMsdGDL1XnW3c';
-    return '/api/photo?url=' + encodeURIComponent(newUrl);
   }
-  return '/api/photo?url=' + encodeURIComponent(url);
+  return url;
 }
 
 function getStars(rating){
