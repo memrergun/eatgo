@@ -35,6 +35,17 @@ window.DB = {
     return rows.map(function (r) { return r.data; });
   },
 
+  // Harita için sadece düz kolonlar (lat/lng/name/slug/category/rating) — çok daha hafif
+  fetchVenuesMap: async function (limit) {
+    var lim = limit || 3000;
+    var resp = await fetch(
+      window.SUPABASE_URL + '/rest/v1/venues?select=name,slug,category,lat,lng,rating,review_count&order=rating.desc&limit=' + lim,
+      { headers: this._headers() }
+    );
+    if (!resp.ok) throw new Error('Supabase HTTP ' + resp.status);
+    return await resp.json();
+  },
+
   // Tek mekan getir (venue.html için)
   fetchVenue: async function (slug) {
     var resp = await fetch(
