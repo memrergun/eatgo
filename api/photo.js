@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 module.exports = async function handler(req, res) {
   const { ref, maxwidth } = req.query;
   if (!ref) {
@@ -7,25 +9,24 @@ module.exports = async function handler(req, res) {
 
   const key = 'AIzaSyApsshzyL42u5DqGzi_80bMsdGDL1XnW3c';
   const width = maxwidth || '1200';
-  const googleUrl =
-    'https://maps.googleapis.com/maps/api/place/photo' +
-    '?maxwidth=' + width +
-    '&photoreference=' + encodeURIComponent(ref) +
-    '&key=' + key;
 
   try {
-    const response = await fetch(googleUrl);
-    if (!response.ok) {
-      res.status(response.status).send('Google API error: ' + response.status);
-      return;
-    }
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
+    const response = await axios.get(
+      'https://maps.googleapis.com/maps/api/place/photo',
+      {
+        params: { maxwidth: width, photoreference: ref, key: key },
+        responseType: 'arraybuffer',
+        maxRedirects: 5,
+        timeout: 12000
+      }
+    );
+    const contentType = response.headers['content-type'] || 'image/jpeg';
     res.setHeader('Content-Type', contentType);
     res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    const buffer = await response.arrayBuffer();
-    res.send(Buffer.from(buffer));
+    res.send(Buffer.from(response.data));
   } catch (err) {
-    res.status(500).send('Proxy error: ' + err.message);
+    const status = err.response ? err.response.status : 500;
+    res.status(status).send('Error: ' + err.message);
   }
 };
