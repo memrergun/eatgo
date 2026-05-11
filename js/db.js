@@ -38,12 +38,15 @@ window.DB = {
   // Tek mekan getir (venue.html için)
   fetchVenue: async function (slug) {
     var resp = await fetch(
-      window.SUPABASE_URL + '/rest/v1/venues?slug=eq.' + encodeURIComponent(slug) + '&select=data&limit=1',
+      window.SUPABASE_URL + '/rest/v1/venues?slug=eq.' + encodeURIComponent(slug) + '&select=data,menu_url&limit=1',
       { headers: this._headers() }
     );
     if (!resp.ok) throw new Error('Supabase HTTP ' + resp.status);
     var rows = await resp.json();
-    return (rows[0] && rows[0].data) ? rows[0].data : null;
+    if (!rows[0] || !rows[0].data) return null;
+    var venue = rows[0].data;
+    if (rows[0].menu_url) venue.menu_url = rows[0].menu_url;
+    return venue;
   }
 
 };

@@ -192,6 +192,12 @@ function renderVenue(venue){
   html += '<div class="price-pill">' + priceRange + '</div>';
   html += '</div>';
 
+  // Menü butonu
+  if(venue.menu_url){
+    html += '<a href="' + escapeHtml(venue.menu_url) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;margin:16px 0 4px;background:linear-gradient(135deg,#e65c00,#f9d423);color:#fff;font-weight:700;font-size:15px;border-radius:14px;text-decoration:none;box-shadow:0 4px 15px rgba(230,92,0,.35);">';
+    html += '🍽️ Menüyü Gör</a>';
+  }
+
   // Gallery
   if(gallery.length > 0){
     var catEmoji = {'Restoran':'🍽️','Kahvaltı':'🥐','Kahve':'☕','Burger':'🍔','Pizza':'🍕','Vegan':'🥗','Bar':'🍷','Tatlı':'🍰','Asya':'🍜','Döner':'🥙'}[category] || '🍽️';
