@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
 <title>Mekan Detayı - EatGo</title>
+<script src="js/db.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--cream:#F7F7F7;--dark:#0F0F0F;--warm:#1D9BF0;--muted:#536471;--border:#EFF3F4;--card:#FFFFFF;}
@@ -328,12 +329,19 @@ async function init(){
   }
 
   try{
-    var response = await fetch('./data/venues.json');
-    if(!response.ok) throw new Error('HTTP ' + response.status);
-    var data = await response.json();
-    var venues = data.venues || data;
+    var venue = null;
 
-    var venue = venues.find(function(v){ return v.slug === slug; });
+    if(window.DB && window.DB._ready()){
+      console.log('📡 Supabase\'den yükleniyor...');
+      venue = await window.DB.fetchVenue(slug);
+    } else {
+      var response = await fetch('./data/venues.json');
+      if(!response.ok) throw new Error('HTTP ' + response.status);
+      var data = await response.json();
+      var venues = data.venues || data;
+      venue = venues.find(function(v){ return v.slug === slug; }) || null;
+    }
+
     console.log('🎯 Bulunan mekan:', venue ? venue.name : 'YOK');
 
     renderVenue(venue);

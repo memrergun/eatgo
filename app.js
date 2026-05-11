@@ -170,36 +170,31 @@ function displayVenues(venues) {
 
 async function loadVenues() {
   var grid = document.getElementById('venues-grid');
-  
+
   if (!grid) {
     console.warn('⚠️ venues-grid elementi bulunamadı');
     return;
   }
-  
+
   grid.innerHTML = '<div class="loading">🔄 Mekanlar yükleniyor...</div>';
-  
+
   try {
-    console.log('📡 venues.json yükleniyor...');
-    
-    var response = await fetch('./data/venues.json');
-    
-    if (!response.ok) {
-      throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-    }
-    
-    var data = await response.json();
-    
     var venues = [];
-    
-    if (data.venues && Array.isArray(data.venues)) {
-      venues = data.venues;
-    } else if (Array.isArray(data)) {
-      venues = data;
+
+    // Supabase varsa oradan, yoksa venues.json'dan
+    if (window.DB && window.DB._ready()) {
+      console.log('📡 Supabase\'den yükleniyor...');
+      venues = await window.DB.fetchVenues();
+      console.log('✅ Supabase yüklendi');
     } else {
-      throw new Error('Geçersiz veri formatı');
+      console.log('📡 venues.json yükleniyor...');
+      var response = await fetch('./data/venues.json');
+      if (!response.ok) throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+      var data = await response.json();
+      venues = (data.venues && Array.isArray(data.venues)) ? data.venues : (Array.isArray(data) ? data : []);
+      console.log('✅ venues.json yüklendi');
     }
-    
-    console.log('✅ venues.json yüklendi');
+
     console.log('📦 Toplam mekan sayısı:', venues.length);
     
     if (venues.length > 0) {
