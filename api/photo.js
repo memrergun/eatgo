@@ -3,15 +3,8 @@ const axios = require('axios');
 module.exports = async function handler(req, res) {
   const { url } = req.query;
 
-  if (!url) {
-    res.status(400).send('Missing url parameter');
-    return;
-  }
-
-  const isOldApi = url.startsWith('https://maps.googleapis.com/maps/api/place/photo');
-  const isNewApi = url.startsWith('https://places.googleapis.com/v1/places/');
-  if (!isOldApi && !isNewApi) {
-    res.status(403).send('Forbidden');
+  if (!url || !url.includes('googleapis.com')) {
+    res.status(400).send('Missing or invalid url');
     return;
   }
 
@@ -28,6 +21,6 @@ module.exports = async function handler(req, res) {
     res.send(Buffer.from(response.data));
   } catch (err) {
     const status = err.response ? err.response.status : 500;
-    res.status(status).send('Google API error ' + status + ': ' + err.message);
+    res.status(status).send('Google error ' + status);
   }
 };

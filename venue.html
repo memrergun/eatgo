@@ -148,8 +148,14 @@ function renderVenue(venue){
 
   var html = '';
 
-  // Cover
-  html += '<div class="cover" style="background-image:url(\'' + coverImage + '\');">';
+  // Cover — fallback to gradient if image fails
+  var coverStyle = coverImage
+    ? 'background-image:url(\'' + coverImage + '\');background-color:#1a1f2e;'
+    : 'background:linear-gradient(135deg,#0a1628,#1a1f2e,#0d2040);';
+  html += '<div class="cover" id="coverDiv" style="' + coverStyle + '">';
+  if(coverImage){
+    html += '<img src="' + coverImage + '" style="display:none;" onerror="(function(el){var d=document.getElementById(\'coverDiv\');d.style.backgroundImage=\'\';d.style.background=\'linear-gradient(135deg,#0a1628,#1a1f2e,#0d2040)\';d.innerHTML+=\'<div style=\\\'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:80px;opacity:.15;\\\'>' + escapeHtml(category) + '</div>\'})(this)">';
+  }
   html += '<div class="cover-overlay"></div>';
   if(featured){
     html += '<div class="featured-badge">⭐ Öne Çıkan</div>';
@@ -184,11 +190,16 @@ function renderVenue(venue){
 
   // Gallery
   if(gallery.length > 0){
+    var catEmoji = {'Restoran':'🍽️','Kahvaltı':'🥐','Kahve':'☕','Burger':'🍔','Pizza':'🍕','Vegan':'🥗','Bar':'🍷','Tatlı':'🍰','Asya':'🍜','Döner':'🥙'}[category] || '🍽️';
     html += '<div class="section">';
     html += '<div class="section-title">📸 Fotoğraflar</div>';
     html += '<div class="gallery">';
-    gallery.slice(0, 6).forEach(function(img){
-      html += '<img src="' + proxyPhoto(img, venue.id) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">';
+    gallery.slice(0, 6).forEach(function(img, i){
+      var proxied = proxyPhoto(img, venue.id);
+      html += '<div style="position:relative;aspect-ratio:1;">';
+      html += '<div style="position:absolute;inset:0;background:linear-gradient(135deg,#0a1628,#1a1f2e);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;opacity:.5;">' + catEmoji + '</div>';
+      html += '<img src="' + proxied + '" alt="" loading="lazy" referrerpolicy="no-referrer" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;" onerror="this.style.display=\'none\'">';
+      html += '</div>';
     });
     html += '</div>';
     html += '</div>';
