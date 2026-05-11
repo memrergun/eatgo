@@ -9,6 +9,22 @@ function haversineKm(a,b,c,d){var R=6371,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/1
 function formatDist(km){return km<1?Math.round(km*1000)+' m':km.toFixed(1)+' km';}
 
 // ========================================
+// GPS — 4 saniye timeout, sonra null döner
+// ========================================
+
+function getGPS() {
+  return new Promise(function(resolve) {
+    if (!navigator.geolocation) { resolve(null); return; }
+    var t = setTimeout(function() { resolve(null); }, 4000);
+    navigator.geolocation.getCurrentPosition(
+      function(p) { clearTimeout(t); resolve({ lat: p.coords.latitude, lng: p.coords.longitude }); },
+      function() { clearTimeout(t); resolve(null); },
+      { timeout: 4000, maximumAge: 60000 }
+    );
+  });
+}
+
+// ========================================
 // KATEGORİ EMOJİ HELPER
 // ========================================
 
@@ -19,7 +35,9 @@ function getCategoryEmoji(category) {
     'cafe':'☕','coffee':'☕','restaurant':'🍽️','bar':'🍺',
     'fast food':'🍔','burger':'🍔','pizza':'🍕','dessert':'🍰',
     'asian':'🍜','turkish':'🥙','breakfast':'🥐','mediterranean':'🫒',
-    'seafood':'🐟','italian':'🍝','vegan':'🥗','brunch':'🥐'
+    'seafood':'🐟','italian':'🍝','vegan':'🥗','brunch':'🥐',
+    'kafeterya':'☕','kahve':'☕','kahvaltı':'🥐','pastane':'🍰',
+    'balık':'🐟','kebap':'🥙','restoran':'🍽️'
   };
   for (var key in emojiMap) { if (cat.includes(key)) return emojiMap[key]; }
   return '🍽️';
@@ -34,7 +52,6 @@ function createVenueCard(venue) {
 
   var card = document.createElement('div');
   card.className = 'venue-card';
-  if (venue.id) card.dataset.venueId = venue.id;
   if (venue.slug) card.dataset.slug = venue.slug;
 
   var name = venue.name || 'İsimsiz Mekan';
@@ -50,7 +67,8 @@ function createVenueCard(venue) {
   var badge = venue.featured ? '<div class="card-badge">⭐ Öne Çıkan</div>' : '';
 
   var vLat = venue.location?.coordinates?.lat, vLng = venue.location?.coordinates?.lng;
-  var distLabel = (userLat !== null && vLat && vLng)
+  var hasCoords = vLat != null && vLng != null;
+  var distLabel = (userLat !== null && hasCoords)
     ? formatDist(haversineKm(userLat, userLng, vLat, vLng))
     : priceRange;
 
@@ -80,16 +98,8 @@ function createVenueCard(venue) {
 }
 
 // ========================================
-// FEED — GPS arka planda al (mesafe için), tüm mekanları göster
+// FEED
 // ========================================
-
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-    function(p) { userLat = p.coords.latitude; userLng = p.coords.longitude; },
-    function() {},
-    { timeout: 8000, maximumAge: 60000 }
-  );
-}
 
 var _feedOffset = 0;
 var _feedPageSize = 200;
@@ -132,15 +142,34 @@ async function loadVenues() {
 
   _feedOffset = 0;
   _allLoaded = false;
-  grid.innerHTML = '<div class="loading">🔄 Mekanlar yükleniyor...</div>';
+  grid.innerHTML = '<div class="loading">📍 Konum alınıyor…</div>';
 
   try {
     var venues = [];
 
     if (window.DB && window.DB._ready()) {
-      venues = await window.DB.fetchVenues(0, _feedPageSize);
-      if (venues.length < _feedPageSize) _allLoaded = true;
-      _feedOffset = venues.length;
+      var gps = await getGPS();
+
+      if (gps) {
+        userLat = gps.lat;
+        userLng = gps.lng;
+        grid.innerHTML = '<div class="loading">🔄 Yakın mekanlar yükleniyor…</div>';
+        var nearby = await window.DB.fetchVenuesNearby(gps.lat, gps.lng, 15);
+        venues = nearby.filter(Boolean);
+        venues.sort(function(a, b) {
+          var aLat = a.location?.coordinates?.lat, aLng = a.location?.coordinates?.lng;
+          var bLat = b.location?.coordinates?.lat, bLng = b.location?.coordinates?.lng;
+          if (!aLat || !aLng) return 1;
+          if (!bLat || !bLng) return -1;
+          return haversineKm(gps.lat, gps.lng, aLat, aLng) - haversineKm(gps.lat, gps.lng, bLat, bLng);
+        });
+        _allLoaded = true;
+      } else {
+        grid.innerHTML = '<div class="loading">🔄 Mekanlar yükleniyor…</div>';
+        venues = await window.DB.fetchVenues(0, _feedPageSize);
+        if (venues.length < _feedPageSize) _allLoaded = true;
+        _feedOffset = venues.length;
+      }
     } else {
       var response = await fetch('./data/venues.json');
       if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -151,7 +180,7 @@ async function loadVenues() {
 
     grid.innerHTML = '';
     appendVenues(venues);
-    setupInfiniteScroll();
+    if (!_allLoaded) setupInfiniteScroll();
     window.dispatchEvent(new CustomEvent('venuesLoaded', { detail: { venues: venues } }));
 
   } catch (error) {
