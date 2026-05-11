@@ -56,7 +56,7 @@ window.DB = {
 
   // Harita için sadece düz kolonlar (lat/lng/name/slug/category/rating) — çok daha hafif
   fetchVenuesMap: async function (limit) {
-    var lim = limit || 3000;
+    var lim = limit || 7000;
     var resp = await fetch(
       window.SUPABASE_URL + '/rest/v1/venues?select=name,slug,category,lat,lng,rating,review_count&order=rating.desc&limit=' + lim,
       { headers: this._headers() }

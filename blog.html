@@ -3,803 +3,416 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kadıköy'ün En İyi Burgerleri — Mekan Keşfet</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>İstanbul Rehberi — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --cream: #F7F7F7;
-    --dark: #0F0F0F;
-    --warm: #1D9BF0;
-    --muted: #536471;
-    --border: #EFF3F4;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--cream);
-    color: var(--dark);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    padding-bottom: 90px;
-  }
-
-  .header {
-    position: sticky; top: 0; z-index: 50;
-    background: var(--cream);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 16px 10px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-
-  .logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; }
-  .header-right { display: flex; gap: 10px; }
-  .icon-btn {
-    width: 36px; height: 36px; border-radius: 10px;
-    background: white; border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; cursor: pointer;
-  }
-
-  /* COVER */
-  .cover {
-    position: relative; height: 380px; overflow: hidden;
-  }
-
-  .cover-bg {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 140px; opacity: 0.18;
-  }
-
-  .cover-gradient {
-    position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(26,22,18,0.95) 0%, rgba(26,22,18,0.3) 60%, transparent 100%);
-  }
-
-  .cover-content {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    padding: 24px 20px;
-  }
-
-  .cover-tag {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--warm); color: white;
-    font-size: 11px; font-weight: 600;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 4px 12px; border-radius: 20px; margin-bottom: 12px;
-  }
-
-  .cover-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 34px; font-weight: 900;
-    color: white; line-height: 1.1; margin-bottom: 10px;
-  }
-
-  .cover-desc {
-    font-size: 13px; line-height: 1.6;
-    color: rgba(255,255,255,0.75); margin-bottom: 16px;
-  }
-
-  .cover-meta { display: flex; align-items: center; gap: 12px; }
-
-  .cover-author { display: flex; align-items: center; gap: 8px; }
-
-  .author-dot {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--warm);
-    display: flex; align-items: center; justify-content: center; font-size: 13px;
-  }
-
-  .author-text { font-size: 12px; color: rgba(255,255,255,0.8); }
-  .author-name { font-weight: 600; color: white; }
-
-  .cover-stats { display: flex; gap: 12px; margin-left: auto; }
-  .cstat { font-size: 12px; color: rgba(255,255,255,0.6); }
-
-  /* TABS */
-  .tabs-bar {
-    display: flex; gap: 8px; overflow-x: auto;
-    scrollbar-width: none; padding: 12px 16px 10px;
-    border-bottom: 1px solid var(--border);
-    background: var(--cream);
-    position: sticky; top: 57px; z-index: 40;
-  }
-  .tabs-bar::-webkit-scrollbar { display: none; }
-
-  .tab {
-    display: inline-flex; align-items: center; justify-content: center;
-    white-space: nowrap; padding: 0 14px; height: 32px;
-    border-radius: 20px; font-size: 13px; font-weight: 500;
-    font-family: 'DM Sans', sans-serif; cursor: pointer;
-    border: 1.5px solid var(--dark);
-    background: white; color: var(--dark);
-    transition: all 0.18s; line-height: 1;
-  }
-  .tab.active { background: var(--dark); color: white; }
-
-  /* MAGAZİN */
-  .magazine { padding: 20px 16px 0; }
-
-  .mag-label {
-    font-size: 11px; font-weight: 600;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 14px;
-  }
-
-  /* EDITÖR NOTU */
-  .editor-note {
-    background: white; border-radius: 16px;
-    padding: 16px; margin-bottom: 20px;
-    border-left: 4px solid var(--warm);
-  }
-  .editor-label {
-    font-size: 10px; font-weight: 600;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--warm); margin-bottom: 6px;
-  }
-  .editor-text { font-size: 13px; line-height: 1.65; color: #4A3F35; font-style: italic; }
-
-  /* FEATURED */
-  .featured-card {
-    border-radius: 20px; overflow: hidden;
-    background: white; box-shadow: 0 4px 24px rgba(0,0,0,0.1);
-    margin-bottom: 12px; cursor: pointer; transition: transform 0.2s;
-  }
-  .featured-card:hover { transform: translateY(-2px); }
-
-  .featured-thumb {
-    height: 220px; position: relative;
-    display: flex; align-items: center; justify-content: center; font-size: 80px;
-  }
-
-  .featured-play {
-    position: absolute; width: 56px; height: 56px;
-    background: rgba(255,255,255,0.92); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; padding-left: 4px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  }
-
-  .featured-seg {
-    position: absolute; top: 12px; left: 12px;
-    background: rgba(26,22,18,0.8); backdrop-filter: blur(6px);
-    color: white; font-size: 11px; font-weight: 500;
-    padding: 4px 10px; border-radius: 12px;
-  }
-
-  .platform-tag {
-    position: absolute; top: 12px; right: 12px;
-    width: 26px; height: 26px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center; font-size: 13px;
-  }
-
-  .featured-dur {
-    position: absolute; bottom: 12px; right: 12px;
-    background: rgba(0,0,0,0.7); color: white;
-    font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 8px;
-  }
-
-  .featured-body { padding: 14px 16px 18px; }
-
-  .featured-venue {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px; font-weight: 700; margin-bottom: 4px;
-  }
-
-  .featured-sub { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
-
-  .featured-quote {
-    font-size: 13px; line-height: 1.6; color: #4A3F35;
-    font-style: italic; border-left: 3px solid var(--warm);
-    padding-left: 12px; margin-bottom: 12px;
-  }
-
-  .featured-footer { display: flex; align-items: center; justify-content: space-between; }
-
-  .score-chip {
-    display: flex; align-items: center; gap: 5px;
-    background: var(--cream); border-radius: 20px;
-    padding: 5px 12px; font-size: 13px; font-weight: 600;
-  }
-  .score-chip span { color: #F5A623; }
-
-  .seg-pills { display: flex; gap: 5px; }
-  .spill { font-size: 11px; padding: 3px 8px; background: var(--cream); border-radius: 10px; color: var(--muted); font-weight: 500; }
-
-  /* 2 KOLON */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-
-  .small-card {
-    border-radius: 16px; overflow: hidden; background: white;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-    cursor: pointer; transition: transform 0.2s;
-  }
-  .small-card:hover { transform: translateY(-2px); }
-
-  .small-thumb {
-    height: 110px; position: relative;
-    display: flex; align-items: center; justify-content: center; font-size: 40px;
-  }
-
-  .small-play {
-    position: absolute; width: 36px; height: 36px;
-    background: rgba(255,255,255,0.9); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; padding-left: 2px;
-  }
-
-  .small-seg {
-    position: absolute; top: 8px; left: 8px;
-    background: rgba(26,22,18,0.75); backdrop-filter: blur(6px);
-    color: white; font-size: 10px; font-weight: 500;
-    padding: 2px 7px; border-radius: 8px;
-  }
-
-  .small-dur {
-    position: absolute; bottom: 8px; right: 8px;
-    background: rgba(0,0,0,0.7); color: white;
-    font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 6px;
-  }
-
-  .small-body { padding: 10px 10px 12px; }
-  .small-venue { font-size: 13px; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .small-meta { font-size: 11px; color: var(--muted); }
-
-  /* YATAY ŞERİT */
-  .strip-wrap {
-    margin: 0 -16px; padding: 0 16px;
-    overflow-x: auto; scrollbar-width: none;
-    display: flex; gap: 10px;
-  }
-  .strip-wrap::-webkit-scrollbar { display: none; }
-
-  .strip-card {
-    flex-shrink: 0; width: 140px; border-radius: 14px;
-    overflow: hidden; background: white; cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-    transition: transform 0.2s; margin-bottom: 16px;
-  }
-  .strip-card:hover { transform: translateY(-2px); }
-
-  .strip-thumb {
-    height: 160px; position: relative;
-    display: flex; align-items: center; justify-content: center; font-size: 40px;
-  }
-
-  .strip-play {
-    position: absolute; width: 34px; height: 34px;
-    background: rgba(255,255,255,0.9); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; padding-left: 2px;
-  }
-
-  .strip-seg {
-    position: absolute; top: 8px; left: 8px;
-    background: rgba(26,22,18,0.75);
-    color: white; font-size: 10px; font-weight: 500;
-    padding: 2px 7px; border-radius: 8px;
-  }
-
-  .strip-body { padding: 8px 10px 10px; }
-  .strip-venue { font-size: 12px; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .strip-meta { font-size: 10px; color: var(--muted); }
-
-  .divider { height: 1px; background: var(--border); margin: 20px 0; }
-
-  /* ALT NAV */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-    background: white; border-top: 1px solid var(--border);
-    display: flex; padding: 8px 0 24px;
-  }
-
-  .nav-item {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; gap: 3px;
-    font-size: 10px; font-weight: 500; color: var(--muted); cursor: pointer;
-  }
-  .nav-item.active { color: var(--dark); }
-  .nav-item span:first-child { font-size: 22px; }
-
-  /* VİDEO MODAL */
-  .video-modal { display: none; position: fixed; inset: 0; z-index: 200; background: black; flex-direction: column; }
-  .video-modal.open { display: flex; }
-
-  .modal-top {
-    position: absolute; top: 0; left: 0; right: 0; z-index: 10;
-    padding: 50px 20px 20px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
-    display: flex; align-items: center; gap: 12px;
-  }
-
-  .modal-close {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: rgba(255,255,255,0.15); border: none;
-    color: white; font-size: 18px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .modal-title { color: white; font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; }
-
-  .video-feed { height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
-  .video-feed::-webkit-scrollbar { display: none; }
-
-  .video-slide {
-    height: 100vh; scroll-snap-align: start; position: relative;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-
-  .slide-emoji { font-size: 100px; opacity: 0.15; }
-
-  .slide-actions {
-    position: absolute; right: 16px; bottom: 120px;
-    display: flex; flex-direction: column; align-items: center; gap: 20px;
-  }
-
-  .slide-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; color: white; font-size: 10px; cursor: pointer; }
-  .slide-btn span:first-child { font-size: 26px; }
-
-  .slide-content {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    padding: 80px 20px 60px;
-    background: linear-gradient(to top, rgba(0,0,0,0.88), transparent);
-  }
-
-  .slide-seg {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: rgba(200,131,74,0.9); color: white;
-    font-size: 11px; font-weight: 600;
-    padding: 4px 10px; border-radius: 12px; margin-bottom: 8px;
-  }
-
-  .slide-user { color: white; font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-  .slide-venue { color: rgba(255,255,255,0.65); font-size: 13px; margin-bottom: 8px; }
-  .slide-desc { color: rgba(255,255,255,0.85); font-size: 13px; line-height: 1.55; }
-
-  .swipe-hint {
-    position: absolute; bottom: 14px; left: 50%;
-    transform: translateX(-50%);
-    color: rgba(255,255,255,0.35); font-size: 11px;
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
-    animation: bounce 2s infinite;
-  }
-
-  @keyframes bounce {
-    0%,100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-5px); }
-  }
+:root{--cream:#F7F4EF;--dark:#0F0F0F;--warm:#1D9BF0;--muted:#6B7280;--border:#E5E0D8;--card:#FFFFFF;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cream);color:var(--dark);font-family:'DM Sans',sans-serif;padding-bottom:90px;}
+
+.header{position:sticky;top:0;z-index:50;background:var(--cream);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;letter-spacing:-.5px;}
+.header-sub{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:1px;}
+
+/* DISTRICT TABS */
+.district-tabs{display:flex;gap:8px;padding:14px 16px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:57px;z-index:40;}
+.district-tabs::-webkit-scrollbar{display:none;}
+.dtab{flex-shrink:0;padding:7px 16px;border-radius:20px;border:1.5px solid var(--border);background:white;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.dtab.active{background:var(--dark);color:white;border-color:var(--dark);}
+
+/* ARTICLE */
+.article{margin-bottom:0;border-bottom:8px solid var(--border);}
+
+/* HERO */
+.art-hero{position:relative;height:320px;overflow:hidden;background:#111;}
+.art-hero-img{width:100%;height:100%;object-fit:cover;opacity:.7;}
+.art-hero-bg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:120px;opacity:.15;}
+.art-hero-gradient{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.9) 0%,rgba(0,0,0,.3) 60%,transparent 100%);}
+.art-hero-content{position:absolute;bottom:0;left:0;right:0;padding:20px;}
+.art-district-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);color:white;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:10px;}
+.art-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:white;line-height:1.1;margin-bottom:6px;}
+.art-intro{font-size:13px;line-height:1.6;color:rgba(255,255,255,.8);}
+
+/* VENUE STRIP */
+.art-header{padding:16px 16px 4px;display:flex;align-items:baseline;justify-content:space-between;}
+.art-section-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.art-count{font-size:12px;color:var(--warm);font-weight:600;}
+
+.venue-strip{display:flex;gap:12px;padding:12px 16px 16px;overflow-x:auto;scrollbar-width:none;}
+.venue-strip::-webkit-scrollbar{display:none;}
+
+.vcard{flex-shrink:0;width:160px;background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.08);cursor:pointer;transition:transform .15s;}
+.vcard:hover{transform:translateY(-3px);}
+.vcard-img{height:110px;background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;overflow:hidden;}
+.vcard-img img{width:100%;height:100%;object-fit:cover;}
+.vcard-rating{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);color:white;font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;}
+.vcard-body{padding:10px;}
+.vcard-name{font-size:13px;font-weight:700;line-height:1.3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vcard-meta{font-size:11px;color:var(--muted);}
+
+/* LOADING */
+.strip-loading{padding:20px;color:var(--muted);font-size:13px;}
+
+/* BIG FEATURE */
+.feature-card{margin:0 16px 16px;background:var(--card);border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.09);cursor:pointer;}
+.feature-img{height:180px;background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:80px;position:relative;overflow:hidden;}
+.feature-img img{width:100%;height:100%;object-fit:cover;}
+.feature-body{padding:14px;}
+.feature-tag{display:inline-block;background:#F3F4F6;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:8px;margin-bottom:8px;}
+.feature-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:5px;}
+.feature-desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:10px;}
+.feature-footer{display:flex;align-items:center;justify-content:space-between;}
+.feature-score{font-size:13px;font-weight:700;color:var(--dark);}
+.feature-cta{font-size:12px;font-weight:700;color:var(--warm);}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border);display:flex;z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0;font-size:10px;color:var(--muted);cursor:pointer;}
+.nav-item.active{color:var(--dark);font-weight:700;}
+.nav-item span:first-child{font-size:20px;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
-  <div class="logo">Mekan Keşfet</div>
-  <div class="header-right">
-    <div class="icon-btn">🔍</div>
-    <div class="icon-btn">↗️</div>
+  <div>
+    <div class="logo">Mekan Keşfet</div>
+    <div class="header-sub">İstanbul Yeme İçme Rehberi</div>
   </div>
 </div>
 
-<!-- COVER -->
-<!-- HABERLER -->
-<div style="padding: 16px 16px 4px;" id="articleSection">
-  <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">📰 Rehberler</div>
-
-  <div onclick="window.location.href='venue.html?slug=white-burger'" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
-    <div style="width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,#1a1a2e,#16213e);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🍔</div>
-    <div style="flex:1;min-width:0;">
-      <div style="font-size:14px;font-weight:700;margin-bottom:3px;line-height:1.3;">Kadıköy'ün En İyi Burgerleri</div>
-      <div style="font-size:11px;color:var(--muted);">8 mekan · Gurme rehberi · 12.4K okuma</div>
-    </div>
-    <div style="font-size:18px;color:var(--muted);flex-shrink:0;">›</div>
-  </div>
-
-  <div onclick="window.location.href='kahve.html'" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
-    <div style="width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,#0f1117,#1a1f2e);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">☕</div>
-    <div style="flex:1;min-width:0;">
-      <div style="font-size:14px;font-weight:700;margin-bottom:3px;line-height:1.3;">Moda'nın Gizli Kahve Noktaları</div>
-      <div style="font-size:11px;color:var(--muted);">6 mekan · Specialty coffee · 8.7K okuma</div>
-    </div>
-    <div style="font-size:18px;color:var(--muted);flex-shrink:0;">›</div>
-  </div>
-
-  <div onclick="window.location.href='vegan.html'" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
-    <div style="width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,#0a1f28,#0d2a3c);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🥗</div>
-    <div style="flex:1;min-width:0;">
-      <div style="font-size:14px;font-weight:700;margin-bottom:3px;line-height:1.3;">Kadıköy'de Vegan Ne Yenir?</div>
-      <div style="font-size:11px;color:var(--muted);">5 mekan · Vegan rehberi · 6.2K okuma</div>
-    </div>
-    <div style="font-size:18px;color:var(--muted);flex-shrink:0;">›</div>
-  </div>
-
-  <div onclick="window.location.href='kahvalti.html'" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
-    <div style="width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,#111520,#1a2030);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🌅</div>
-    <div style="flex:1;min-width:0;">
-      <div style="font-size:14px;font-weight:700;margin-bottom:3px;line-height:1.3;">Hafta Sonu Kahvaltı Rehberi</div>
-      <div style="font-size:11px;color:var(--muted);">7 mekan · Brunch & kahvaltı · 9.1K okuma</div>
-    </div>
-    <div style="font-size:18px;color:var(--muted);flex-shrink:0;">›</div>
-  </div>
-
-  <div onclick="window.location.href='pizza.html'" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
-    <div style="width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,#120a1a,#1e1030);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🍕</div>
-    <div style="flex:1;min-width:0;">
-      <div style="font-size:14px;font-weight:700;margin-bottom:3px;line-height:1.3;">Pizzaseverler İçin Kadıköy Turu</div>
-      <div style="font-size:11px;color:var(--muted);">5 mekan · Pizza rehberi · 5.4K okuma</div>
-    </div>
-    <div style="font-size:18px;color:var(--muted);flex-shrink:0;">›</div>
-  </div>
-
-  <div onclick="window.location.href='arama-sonuc.html?q=akşam yemeği'" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
-    <div style="width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,#0a0a1a,#1a1a3d);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🌙</div>
-    <div style="flex:1;min-width:0;">
-      <div style="font-size:14px;font-weight:700;margin-bottom:3px;line-height:1.3;">Gece Geç Saatte Nerede Yenir?</div>
-      <div style="font-size:11px;color:var(--muted);">6 mekan · Gece rehberi · 4.1K okuma</div>
-    </div>
-    <div style="font-size:18px;color:var(--muted);flex-shrink:0;">›</div>
-  </div>
-
-  <div onclick="window.location.href='arama-sonuc.html?q=çocukla'" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
-    <div style="width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,#1a1008,#2d1a08);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">👨‍👩‍👧</div>
-    <div style="flex:1;min-width:0;">
-      <div style="font-size:14px;font-weight:700;margin-bottom:3px;line-height:1.3;">Çocukla Gidilecek En İyi Yerler</div>
-      <div style="font-size:11px;color:var(--muted);">8 mekan · Aile rehberi · 7.3K okuma</div>
-    </div>
-    <div style="font-size:18px;color:var(--muted);flex-shrink:0;">›</div>
-  </div>
+<div class="district-tabs" id="districtTabs">
+  <button class="dtab active" data-id="all">Tümü</button>
+  <button class="dtab" data-id="kadikoy">Kadıköy</button>
+  <button class="dtab" data-id="besiktas">Beşiktaş</button>
+  <button class="dtab" data-id="beyoglu">Beyoğlu</button>
+  <button class="dtab" data-id="uskudar">Üsküdar</button>
+  <button class="dtab" data-id="sisli">Şişli</button>
+  <button class="dtab" data-id="bakirkoy">Bakırköy</button>
+  <button class="dtab" data-id="atasehir">Ataşehir</button>
 </div>
 
-<!-- TRENDING — Supabase'den dinamik -->
-<div style="padding:16px 16px 4px;" id="trendingSection">
-  <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#536471;margin-bottom:12px;">🔥 Bu Hafta Trend</div>
-  <div id="trendingList" style="display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;">
-    <div style="color:#999;font-size:13px;padding:8px;">Yükleniyor...</div>
-  </div>
-</div>
+<main id="articlesContainer"></main>
 
-<div style="padding:16px 16px 8px;">
-  <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">🎬 Öne Çıkan Koleksiyon</div>
-</div>
-
-<div class="cover" id="collectionSection" style="background:linear-gradient(160deg,#0f0f0f,#1a1a2e,#050505);">
-  <div class="cover-bg">🍔</div>
-  <div class="cover-gradient"></div>
-  <div class="cover-content">
-    <div class="cover-tag">🍔 Rehber · Kadıköy</div>
-    <h1 class="cover-title">Kadıköy'ün En İyi Burgerleri</h1>
-    <p class="cover-desc">Smash'ten klasiğe, sokak lezzetinden fine casual'a — 8 mekan, gurme gözüyle.</p>
-    <div class="cover-meta">
-      <div class="cover-author">
-        <div class="author-dot">✍️</div>
-        <div class="author-text">
-          <div class="author-name">Mekan Keşfet Editörü</div>
-          <div>24 Şubat 2026</div>
-        </div>
-      </div>
-      <div class="cover-stats">
-        <div class="cstat">👁️ 12.4K</div>
-        <div class="cstat">❤️ 847</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- TABS -->
-<div class="tabs-bar">
-  <div class="tab active">Tümü</div>
-  <div class="tab">🎬 Videolar</div>
-  <div class="tab">🍽️ Gurme</div>
-  <div class="tab">📱 Influencer</div>
-  <div class="tab">📍 Mahalle</div>
-</div>
-
-<!-- MAGAZİN -->
-<div class="magazine" id="magazineSection">
-
-  <div class="editor-note" style="margin-top:4px;">
-    <div class="editor-label">✍️ Editörden</div>
-    <div class="editor-text">"Kadıköy'de burger deyince tek bir isim öne çıkmıyor — ama bu listedeki 8 mekanın her biri kendi kategorisinde gerçekten iyi. Gurme yorumları, influencer önerileri ve yıllarca bu mahalleyi tanıyan müdavimlerin sesini bir araya getirdik. Veriler gerçek, puanlar bizim."</div>
-  </div>
-
-  <div class="mag-label">Öne Çıkan Video</div>
-
-  <div class="featured-card" onclick="window.location.href='venue.html?slug=white-burger'">
-    <div class="featured-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">
-      🍔
-      <div class="featured-play">▶</div>
-      <div class="featured-seg">🍽️ Gurme · YouTube</div>
-      <div class="platform-tag" style="background:#FF0000;color:white;font-size:10px;">▶</div>
-      <div class="featured-dur">4:32</div>
-    </div>
-    <div class="featured-body">
-      <div class="featured-venue">White Burger</div>
-      <div class="featured-sub">Ahmet Öz · Kadıköy · 48K izlenme</div>
-      <div class="featured-quote">"Kadıköy'ün en otantik smash burger'ı burada. Et kalitesi gerçekten fark yaratıyor — dışı crispy, içi sulu."</div>
-      <div class="featured-footer">
-        <div class="score-chip" onclick="event.stopPropagation();window.location.href='venue.html?slug=white-burger'" style="cursor:pointer;"><span>★</span> 4.4 · Mekanı Gör →</div>
-        <div class="seg-pills">
-          <span class="spill">🍽️ Gurme</span>
-          <span class="spill">📱 Influencer</span>
-          <span class="spill">📍 Mahalle</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="divider"></div>
-
-  <div class="mag-label">Bu Haftanın Favorileri</div>
-  <div class="two-col">
-    <div class="small-card" onclick="window.location.href='venue.html?slug=burger-lab'">
-      <div class="small-thumb" style="background:linear-gradient(135deg,#120a1a,#1e1030);">
-        🍔
-        <div class="small-play">▶</div>
-        <div class="small-seg">📱 Instagram</div>
-        <div class="small-dur">0:58</div>
-      </div>
-      <div class="small-body">
-        <div class="small-venue">Burger Lab</div>
-        <div class="small-meta">@yemekgezgini · 4.6 ★</div>
-      </div>
-    </div>
-
-    <div class="small-card" onclick="window.location.href='venue.html?slug=carsi-burger'">
-      <div class="small-thumb" style="background:linear-gradient(135deg,#050810,#0a1628);">
-        🍔
-        <div class="small-play">▶</div>
-        <div class="small-seg">📍 TikTok</div>
-        <div class="small-dur">1:14</div>
-      </div>
-      <div class="small-body">
-        <div class="small-venue">Çarşı Burger</div>
-        <div class="small-meta">@kadikoyluler · 4.2 ★</div>
-      </div>
-    </div>
-
-    <div class="small-card" onclick="window.location.href='venue.html?slug=green-smash'">
-      <div class="small-thumb" style="background:linear-gradient(135deg,#0a1117,#0f1f2e);">
-        🥗
-        <div class="small-play">▶</div>
-        <div class="small-seg">🍽️ YouTube</div>
-        <div class="small-dur">6:18</div>
-      </div>
-      <div class="small-body">
-        <div class="small-venue">Green Smash</div>
-        <div class="small-meta">Foodie TR · 4.3 ★</div>
-      </div>
-    </div>
-
-    <div class="small-card" onclick="window.location.href='venue.html?slug=smash-bros'">
-      <div class="small-thumb" style="background:linear-gradient(135deg,#0f1117,#3d2d08);">
-        🍟
-        <div class="small-play">▶</div>
-        <div class="small-seg">📱 Instagram</div>
-        <div class="small-dur">0:45</div>
-      </div>
-      <div class="small-body">
-        <div class="small-venue">Smash Bros</div>
-        <div class="small-meta">@lezzetduragi · 4.1 ★</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="divider"></div>
-
-  <div class="mag-label">Mahalle Sesleri</div>
-  <div class="strip-wrap">
-    <div class="strip-card" onclick="window.location.href='venue.html?slug=usta-burger'">
-      <div class="strip-thumb" style="background:linear-gradient(160deg,#120a1a,#1e1030);">
-        🍔
-        <div class="strip-play">▶</div>
-        <div class="strip-seg">📍 Mahalle</div>
-      </div>
-      <div class="strip-body">
-        <div class="strip-venue">Usta Burger</div>
-        <div class="strip-meta">@modagezgini</div>
-      </div>
-    </div>
-
-    <div class="strip-card" onclick="window.location.href='venue.html?slug=carsi-burger'">
-      <div class="strip-thumb" style="background:linear-gradient(160deg,#050810,#0a1628);">
-        🍔
-        <div class="strip-play">▶</div>
-        <div class="strip-seg">📍 Mahalle</div>
-      </div>
-      <div class="strip-body">
-        <div class="strip-venue">Çarşı Burger</div>
-        <div class="strip-meta">@kadikoyluler</div>
-      </div>
-    </div>
-
-    <div class="strip-card" onclick="window.location.href='venue.html?slug=kose-burger'">
-      <div class="strip-thumb" style="background:linear-gradient(160deg,#1a1508,#3d3010);">
-        🍟
-        <div class="strip-play">▶</div>
-        <div class="strip-seg">📍 Mahalle</div>
-      </div>
-      <div class="strip-body">
-        <div class="strip-venue">Köşe Burger</div>
-        <div class="strip-meta">@burgerci</div>
-      </div>
-    </div>
-
-    <div class="strip-card" onclick="window.location.href='venue.html?slug=vegan-corner'">
-      <div class="strip-thumb" style="background:linear-gradient(160deg,#0a180a,#1a3a1a);">
-        🥗
-        <div class="strip-play">▶</div>
-        <div class="strip-seg">📍 Mahalle</div>
-      </div>
-      <div class="strip-body">
-        <div class="strip-venue">Vegan Corner</div>
-        <div class="strip-meta">@veganistanbul</div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- ALT NAV -->
 <div class="bottom-nav">
-  <div class="nav-item" onclick="window.location.href='anasayfa.html'">
-    <span>🗺️</span><span>Keşfet</span>
-  </div>
-  <div class="nav-item" onclick="window.location.href='arama.html'">
-    <span>🔍</span><span>Ara</span>
-  </div>
-  <div class="nav-item active">
-    <span>📰</span><span>Blog</span>
-  </div>
-  <div class="nav-item" onclick="window.location.href='profil.html'">
-    <span>👤</span><span>Profil</span>
-  </div>
-</div>
-
-<!-- VİDEO MODAL -->
-<div class="video-modal" id="videoModal">
-  <div class="modal-top">
-    <button class="modal-close" onclick="closeVideo()">✕</button>
-    <div class="modal-title">Kadıköy Burgerleri</div>
-  </div>
-  <div class="video-feed" id="videoFeed">
-
-    <div class="video-slide" style="background:linear-gradient(160deg,#0f0f0f,#1a1a2e);" data-slug="white-burger">
-      <div class="slide-emoji">🍔</div>
-      <div class="slide-actions">
-        <div class="slide-btn"><span>❤️</span><span>2.4K</span></div>
-        <div class="slide-btn"><span>💬</span><span>84</span></div>
-        <div class="slide-btn"><span>↗️</span><span>Paylaş</span></div>
-        <div class="slide-btn"><span>🔖</span><span>Kaydet</span></div>
-      </div>
-      <div class="slide-content">
-        <div class="slide-seg">🍽️ Gurme · YouTube</div>
-        <div class="slide-user">Ahmet Öz — Yemek Yazarı</div>
-        <div class="slide-venue">📍 White Burger, Kadıköy</div>
-        <div class="slide-desc">Kadıköy'ün en otantik smash burger'ı burada. Et kalitesi gerçekten fark yaratıyor. Dışı crispy, içi sulu.</div>
-      </div>
-      <div class="swipe-hint"><span>↑</span><span>Kaydır</span></div>
-    </div>
-
-    <div class="video-slide" style="background:linear-gradient(160deg,#0a0a14,#141428);">
-      <div class="slide-emoji">🍔</div>
-      <div class="slide-actions">
-        <div class="slide-btn"><span>❤️</span><span>1.1K</span></div>
-        <div class="slide-btn"><span>💬</span><span>47</span></div>
-        <div class="slide-btn"><span>↗️</span><span>Paylaş</span></div>
-        <div class="slide-btn"><span>🔖</span><span>Kaydet</span></div>
-      </div>
-      <div class="slide-content">
-        <div class="slide-seg">📱 Influencer · Instagram</div>
-        <div class="slide-user">@yemekgezgini</div>
-        <div class="slide-venue">📍 Burger Lab, Moda</div>
-        <div class="slide-desc">Fiyat/performans şampiyonu! Double menü şiddetle tavsiye. Hafta sonu kalabalık, erken gidin.</div>
-      </div>
-    </div>
-
-    <div class="video-slide" style="background:linear-gradient(160deg,#050810,#0a1628);">
-      <div class="slide-emoji">🍔</div>
-      <div class="slide-actions">
-        <div class="slide-btn"><span>❤️</span><span>632</span></div>
-        <div class="slide-btn"><span>💬</span><span>29</span></div>
-        <div class="slide-btn"><span>↗️</span><span>Paylaş</span></div>
-        <div class="slide-btn"><span>🔖</span><span>Kaydet</span></div>
-      </div>
-      <div class="slide-content">
-        <div class="slide-seg">📍 Mahalle · TikTok</div>
-        <div class="slide-user">@kadikoyluler</div>
-        <div class="slide-venue">📍 Çarşı Burger, Kadıköy</div>
-        <div class="slide-desc">Yıllardır biliyoruz bu yeri. Kalite düşmedi, fiyat mantıklı kaldı. Onion rings mutlaka alın!</div>
-      </div>
-    </div>
-
-  </div>
+  <div class="nav-item" onclick="window.location.href='anasayfa.html'"><span>🗺️</span><span>Keşfet</span></div>
+  <div class="nav-item" onclick="window.location.href='arama.html'"><span>🔍</span><span>Ara</span></div>
+  <div class="nav-item active"><span>📰</span><span>Blog</span></div>
+  <div class="nav-item" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
 </div>
 
 <script src="js/db.js"></script>
 <script>
-// Tabs
-var TAB_SECTIONS = {
-  'Tümü':       ['magazineSection','articleSection','trendingSection','collectionSection'],
-  '🎬 Videolar':['magazineSection','collectionSection'],
-  '🍽️ Gurme':  ['magazineSection','articleSection'],
-  '📱 Influencer':['magazineSection'],
-  '📍 Mahalle': ['articleSection','trendingSection']
-};
-document.querySelectorAll('.tab').forEach(function(tab){
-  tab.addEventListener('click', function(){
-    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
-    this.classList.add('active');
-    var show = TAB_SECTIONS[this.textContent] || TAB_SECTIONS['Tümü'];
-    ['magazineSection','articleSection','trendingSection','collectionSection'].forEach(function(id){
-      var el = document.getElementById(id);
-      if(el) el.style.display = show.includes(id) ? '' : 'none';
-    });
-  });
-});
-
-// Video modal
-function openVideo(index){
-  var v = VENUE_SLUGS && VENUE_SLUGS[index];
-  if(v) { window.location.href='venue.html?slug='+v; return; }
-  var modal=document.getElementById('videoModal');
-  modal.classList.add('open');
-  document.body.style.overflow='hidden';
-  var slides=document.querySelectorAll('.video-slide');
-  var i=Math.min(index,slides.length-1);
-  document.getElementById('videoFeed').scrollTo({top:slides[i].offsetTop,behavior:'instant'});
-}
-function closeVideo(){
-  document.getElementById('videoModal').classList.remove('open');
-  document.body.style.overflow='';
-}
-
-// Video slide onclick → venue
-document.querySelectorAll('.video-slide').forEach(function(slide){
-  slide.style.cursor='pointer';
-  // "Mekanı Gör" butonu ekle
-  var slug=slide.dataset.slug;
-  if(slug){
-    var btn=document.createElement('button');
-    btn.textContent='Mekanı Gör →';
-    btn.style.cssText='position:absolute;bottom:80px;left:50%;transform:translateX(-50%);background:white;color:#0f0f0f;border:none;padding:10px 20px;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;z-index:10;';
-    btn.onclick=function(e){e.stopPropagation();window.location.href='venue.html?slug='+slug;};
-    slide.style.position='relative';
-    slide.appendChild(btn);
+// ——————————————————————————
+// İLÇE TANIMI
+// ——————————————————————————
+var DISTRICTS = [
+  {
+    id: 'kadikoy',
+    name: 'Kadıköy',
+    emoji: '🐟',
+    tag: '📍 Kadıköy · Anadolu Yakası',
+    title: 'Anadolu Yakasının Kalbi',
+    intro: 'Balık pazarının taze kokusu, Moda'nın specialty kahveleri, gece Barlar Sokağı'nın enerjisi — Kadıköy İstanbul'un en besleyici mahallesi. Çarşı'da midye dolmasından Rasimpaşa'nın küçük meyhane tavernalarına, Caddebostan sahilinin deniz manzaralı kafelerine kadar her tat burada.',
+    angle: 'En Yüksek Puanlı Mekanlar',
+    filter: 'Kadıköy',
+    slugs: ['moda-da-nata','paitan-ramen-and-gyoza-house','anka-lounge','kadikoy-sofrasi','kadikoy-semtin-koftecisi','forchetta-plus-kadikoy'],
+    heroGradient: 'linear-gradient(135deg,#0a1628,#1a2e4a)'
+  },
+  {
+    id: 'besiktas',
+    name: 'Beşiktaş',
+    emoji: '⚓',
+    tag: '📍 Beşiktaş · Boğaz Kıyısı',
+    title: 'Boğaz\'ın İki Yakasında Lezzet',
+    intro: 'Ortaköy\'de camilerin gölgesinde tüten kumpir, Etiler\'in sınır tanımaz kahvaltı mekânları, Arnavutköy\'ün Boğaz manzaralı balık tavernaları. Beşiktaş hem geleneksel hem modern yüzünü bu sokaklarda buluyorsunuz — gündüz brunch, gece Çırağan sarayı ışıkları altında akşam yemeği.',
+    angle: 'Kahvaltı ve Kafe Rotası',
+    filter: 'Beşiktaş',
+    slugs: ['caynik-breakfast-cafe-ortakoy-kahvalti-cay-ve-tatli','grandma-etiler','sekerci-cafer-erol-ortakoy','bakery-box','citra','raffles-istanbul'],
+    heroGradient: 'linear-gradient(135deg,#0f1f2e,#1a3a2e)'
+  },
+  {
+    id: 'beyoglu',
+    name: 'Beyoğlu',
+    emoji: '🥂',
+    tag: '📍 Beyoğlu · Karaköy · Galata',
+    title: 'Karaköy\'den Galata\'ya Gece',
+    intro: 'Kemankeş Caddesi\'nde meze kültürü fine dining\'e dönüşüyor, Galata kulesinin altında çatı restoran ışıkları Boğaz\'ı aydınlatıyor. İstiklal\'den sıyrılıp Asmalımescit\'e inin — burada her kapıyı açtığınızda başka bir dünya, başka bir mutfak sizi karşılıyor.',
+    angle: 'Galata ve Karaköy\'ün Gurme Noktaları',
+    filter: 'Beyoğlu',
+    slugs: ['galata-sunset-restaurant','hafiz-mustafa-1864-galataport','loi-bosphorus','celtic-irish-pub-istanbul'],
+    heroGradient: 'linear-gradient(135deg,#1a0a28,#2a1a3e)'
+  },
+  {
+    id: 'uskudar',
+    name: 'Üsküdar',
+    emoji: '🕌',
+    tag: '📍 Üsküdar · Geleneksel İstanbul',
+    title: 'Osmanlı Sofralarının İzinde',
+    intro: 'Üsküdar iskelesi çıkışında, vapur seslerinin eşliğinde Osmanlı mutfağı zamanla donmuş gibi duruyor. Çamlıca tepesinde çay, sahilde balık, tarihi lokantalarda zeytinyağlı — İstanbul\'un en samimi yüzüne Üsküdar\'da rastlıyorsunuz.',
+    angle: 'Tarihi Mekanlar ve Geleneksel Tatlar',
+    filter: 'Üsküdar',
+    slugs: ['timas-kitap-cafe','koma-tekin','pirpir-izgara'],
+    heroGradient: 'linear-gradient(135deg,#1a1208,#2e2210)'
+  },
+  {
+    id: 'sisli',
+    name: 'Şişli',
+    emoji: '☕',
+    tag: '📍 Şişli · Nişantaşı · Teşvikiye',
+    title: 'Nişantaşı\'nın Şık Sokaklarında',
+    intro: 'Teşvikiye Camii çevresinde tasarımcı dükkanların arasında saklı kahvaltı mekânları, Nişantaşı\'nın markaplı kafelerinde öğlen ikisine kadar süren brunch saatleri. Şişli, İstanbul\'un en kozmopolit ve en bilinçli yeme içme kültürünü barındırıyor.',
+    angle: 'Brunch ve Specialty Kafe Rotası',
+    filter: 'Şişli',
+    slugs: [],
+    heroGradient: 'linear-gradient(135deg,#0a1a28,#1a2838)'
+  },
+  {
+    id: 'bakirkoy',
+    name: 'Bakırköy',
+    emoji: '🌊',
+    tag: '📍 Bakırköy · Sahil',
+    title: 'Marmara Kıyısında Akşam Yemeği',
+    intro: 'Florya ve Ataköy sahil şeridinde deniz manzaralı restoranlar, aile buluşmalarının adresi Bağcılar meydanı ve Bakırköy çarşısının kalabalık sokak lezzetleri. Marmara\'ya bakan bu ilçede her mevsim farklı bir deniz yemeği tadı sizi bekliyor.',
+    angle: 'Sahil Restoranları ve Deniz Ürünleri',
+    filter: 'Bakırköy',
+    slugs: [],
+    heroGradient: 'linear-gradient(135deg,#082838,#0a1a28)'
+  },
+  {
+    id: 'atasehir',
+    name: 'Ataşehir',
+    emoji: '🌆',
+    tag: '📍 Ataşehir · Modern Anadolu Yakası',
+    title: 'Anadolu Yakasının Modern Yüzü',
+    intro: 'İstanbul Park çevresinde gelişen şehir hayatı, Nida Kültür Merkezi\'nin çevresinde kümelenen specialty kafeler ve uluslararası mutfaklar. Ataşehir, modern çalışan İstanbul\'unun yeni yeme içme merkezi olma yolunda hızla büyüyor.',
+    angle: 'Modern Mutfaklar ve Kafe Kültürü',
+    filter: 'Ataşehir',
+    slugs: [],
+    heroGradient: 'linear-gradient(135deg,#101828,#1c2a3a)'
   }
-  slide.addEventListener('click',function(){
-    var s=this.dataset.slug;
-    if(s){window.location.href='venue.html?slug='+s;}
+];
+
+// ——————————————————————————
+// SUPABASE YARDIMCILARI
+// ——————————————————————————
+var SB_URL = window.SUPABASE_URL;
+var SB_KEY = window.SUPABASE_ANON_KEY;
+
+function sbHeaders() {
+  return { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY };
+}
+
+async function fetchBySlug(slugs) {
+  if (!slugs || !slugs.length) return [];
+  var url = SB_URL + '/rest/v1/venues?select=data,menu_url&slug=in.(' + slugs.map(encodeURIComponent).join(',') + ')&limit=' + slugs.length;
+  var r = await fetch(url, { headers: sbHeaders() });
+  if (!r.ok) return [];
+  var rows = await r.json();
+  return rows.map(function(row) { var v = row.data; if (row.menu_url) v.menu_url = row.menu_url; return v; });
+}
+
+async function fetchByDistrict(filter, limit) {
+  if (!filter) return [];
+  var url = SB_URL + '/rest/v1/venues?select=data,slug&limit=' + (limit || 8) + '&order=rating.desc';
+  // filter by address ILIKE
+  url += '&data->>address=ilike.*' + encodeURIComponent(filter) + '*';
+  var r = await fetch(url, { headers: sbHeaders() });
+  if (!r.ok) return [];
+  var rows = await r.json();
+  return rows.map(function(row) { return row.data || row; });
+}
+
+// Supabase REST JSONB filter — use RPC-style or flat column
+// Since address is nested in JSONB, we use the `data->location->>address` approach:
+async function fetchByDistrictAddress(filter, limit) {
+  // Use flat columns: lat/lng bounding boxes per district
+  var boxes = {
+    'Kadıköy':  { latMin:40.960, latMax:41.020, lngMin:29.010, lngMax:29.100 },
+    'Beşiktaş': { latMin:41.025, latMax:41.090, lngMin:28.980, lngMax:29.070 },
+    'Beyoğlu':  { latMin:41.015, latMax:41.050, lngMin:28.960, lngMax:29.010 },
+    'Üsküdar':  { latMin:41.010, latMax:41.060, lngMin:29.010, lngMax:29.080 },
+    'Şişli':    { latMin:41.045, latMax:41.080, lngMin:28.960, lngMax:29.020 },
+    'Bakırköy': { latMin:40.960, latMax:41.010, lngMin:28.820, lngMax:28.900 },
+    'Ataşehir': { latMin:40.980, latMax:41.030, lngMin:29.080, lngMax:29.160 }
+  };
+  var box = boxes[filter];
+  if (!box) return [];
+  var url = SB_URL + '/rest/v1/venues?select=data,menu_url'
+    + '&lat=gte.' + box.latMin + '&lat=lte.' + box.latMax
+    + '&lng=gte.' + box.lngMin + '&lng=lte.' + box.lngMax
+    + '&order=rating.desc&limit=' + (limit || 8);
+  var r = await fetch(url, { headers: sbHeaders() });
+  if (!r.ok) return [];
+  var rows = await r.json();
+  return rows.map(function(row) { var v = row.data; if (v && row.menu_url) v.menu_url = row.menu_url; return v; }).filter(Boolean);
+}
+
+// ——————————————————————————
+// KART RENDER
+// ——————————————————————————
+function emojiFor(cat) {
+  if (!cat) return '🍽️';
+  var c = cat.toLowerCase();
+  if (c.includes('cafe')||c.includes('kafeterya')||c.includes('coffee')) return '☕';
+  if (c.includes('kahvaltı')||c.includes('breakfast')) return '🥐';
+  if (c.includes('pastane')||c.includes('bakery')||c.includes('tatlı')) return '🍰';
+  if (c.includes('bar')) return '🍺';
+  if (c.includes('pizza')) return '🍕';
+  if (c.includes('burger')||c.includes('fast')) return '🍔';
+  if (c.includes('deniz')||c.includes('balık')||c.includes('seafood')) return '🐟';
+  return '🍽️';
+}
+
+function renderVenueCard(venue) {
+  var name = venue.name || 'Mekan';
+  var slug = venue.slug || '';
+  var cat = venue.category || 'Restoran';
+  var rating = venue.rating ? (venue.rating.overall || venue.rating) : null;
+  var ratingNum = typeof rating === 'object' ? rating.overall : parseFloat(rating);
+  var img = venue.media && (venue.media.coverImage || (venue.media.gallery && venue.media.gallery[0]));
+  var neighborhood = (venue.location && (venue.location.neighborhood || venue.location.city)) || '';
+
+  var card = document.createElement('div');
+  card.className = 'vcard';
+  card.onclick = function() { window.location.href = 'venue.html#' + encodeURIComponent(slug); };
+
+  var imgHTML = img
+    ? '<img src="' + img + '" alt="' + name + '" onerror="this.parentNode.innerHTML=\'<span style=font-size:44px>' + emojiFor(cat) + '</span>\'">'
+    : '<span style="font-size:44px;">' + emojiFor(cat) + '</span>';
+
+  card.innerHTML =
+    '<div class="vcard-img">' + imgHTML +
+    (ratingNum ? '<div class="vcard-rating">★ ' + ratingNum.toFixed(1) + '</div>' : '') +
+    '</div>' +
+    '<div class="vcard-body">' +
+    '<div class="vcard-name">' + name + '</div>' +
+    '<div class="vcard-meta">' + (neighborhood ? neighborhood + ' · ' : '') + cat + '</div>' +
+    '</div>';
+
+  return card;
+}
+
+// ——————————————————————————
+// ARTİKEL RENDER
+// ——————————————————————————
+function buildArticle(d) {
+  var article = document.createElement('div');
+  article.className = 'article';
+  article.dataset.district = d.id;
+
+  article.innerHTML =
+    '<div class="art-hero" style="background:' + d.heroGradient + ';">' +
+    '<div class="art-hero-bg">' + d.emoji + '</div>' +
+    '<div class="art-hero-gradient"></div>' +
+    '<div class="art-hero-content">' +
+    '<div class="art-district-tag">' + d.tag + '</div>' +
+    '<div class="art-title">' + d.title + '</div>' +
+    '<div class="art-intro">' + d.intro + '</div>' +
+    '</div></div>' +
+    '<div class="art-header">' +
+    '<div class="art-section-label">🏆 ' + d.angle + '</div>' +
+    '<div class="art-count" id="cnt-' + d.id + '"></div>' +
+    '</div>' +
+    '<div class="venue-strip" id="strip-' + d.id + '">' +
+    '<div class="strip-loading">Yükleniyor…</div>' +
+    '</div>';
+
+  return article;
+}
+
+async function loadArticleVenues(d) {
+  var strip = document.getElementById('strip-' + d.id);
+  var cntEl = document.getElementById('cnt-' + d.id);
+  if (!strip) return;
+
+  try {
+    var venues = [];
+    if (d.slugs && d.slugs.length) {
+      venues = await fetchBySlug(d.slugs);
+      // Slug'lardan gelmeyenleri bounding box ile tamamla
+      if (venues.length < 4) {
+        var extra = await fetchByDistrictAddress(d.filter, 8);
+        extra.forEach(function(v) {
+          if (!venues.find(function(x) { return x && v && x.slug === v.slug; })) venues.push(v);
+        });
+      }
+    } else {
+      venues = await fetchByDistrictAddress(d.filter, 8);
+    }
+
+    venues = venues.filter(Boolean).slice(0, 8);
+    strip.innerHTML = '';
+
+    if (!venues.length) {
+      strip.innerHTML = '<div class="strip-loading">Bu ilçe için yakında içerik geliyor…</div>';
+      return;
+    }
+
+    if (cntEl) cntEl.textContent = venues.length + ' mekan';
+
+    venues.forEach(function(v) {
+      var card = renderVenueCard(v);
+      if (card) strip.appendChild(card);
+    });
+  } catch(e) {
+    strip.innerHTML = '<div class="strip-loading">Yüklenemedi.</div>';
+  }
+}
+
+// ——————————————————————————
+// SAYFA OLUŞTUR
+// ——————————————————————————
+var activeFilter = 'all';
+
+function renderAll() {
+  var container = document.getElementById('articlesContainer');
+  container.innerHTML = '';
+  DISTRICTS.forEach(function(d) {
+    if (activeFilter !== 'all' && activeFilter !== d.id) return;
+    var article = buildArticle(d);
+    container.appendChild(article);
+    loadArticleVenues(d);
+  });
+}
+
+// Tab tıklama
+document.querySelectorAll('.dtab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.dtab').forEach(function(t) { t.classList.remove('active'); });
+    this.classList.add('active');
+    activeFilter = this.dataset.id;
+    renderAll();
   });
 });
 
-// Trending — Supabase'den en yüksek puanlı 8 mekan
-var VENUE_SLUGS = [];
-(async function(){
-  try{
-    if(!window.DB||!window.DB._ready())return;
-    var r=await fetch(window.SUPABASE_URL+'/rest/v1/venues?select=name,slug,category,rating,review_count,data&order=rating.desc&limit=8',
-      {headers:{'apikey':window.SUPABASE_ANON_KEY,'Authorization':'Bearer '+window.SUPABASE_ANON_KEY}});
-    if(!r.ok)return;
-    var venues=await r.json();
-    VENUE_SLUGS=venues.map(function(v){return v.slug;});
-    var emojiMap={Restoran:'🍽️',Kafeterya:'☕',Bar:'🍺',Pastane:'🥐',Bakery:'🥐','Fast Food':'🍔',Pizza:'🍕'};
-    var colors=['#1a1a2e','#0a1628','#120a1a','#1a1a08','#0a1f28','#1a0808','#0f1117','#0a0a14'];
-    var html=venues.map(function(v,i){
-      var em=emojiMap[v.category]||'🍽️';
-      var rating=(v.rating||0).toFixed(1);
-      var hood=(v.data&&v.data.location&&v.data.location.neighborhood)||'İstanbul';
-      return '<div style="flex-shrink:0;width:130px;cursor:pointer;" onclick="window.location.href=\'venue.html?slug='+v.slug+'\'">'
-        +'<div style="height:100px;border-radius:14px;background:linear-gradient(135deg,'+colors[i%colors.length]+','+colors[(i+1)%colors.length]+');display:flex;align-items:center;justify-content:center;font-size:38px;margin-bottom:7px;">'+em+'</div>'
-        +'<div style="font-size:13px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+v.name+'</div>'
-        +'<div style="font-size:11px;color:#536471;">★'+rating+' · '+hood+'</div>'
-        +'</div>';
-    }).join('');
-    document.getElementById('trendingList').innerHTML=html||'<div style="color:#999;font-size:13px;">Veri yok</div>';
-  }catch(e){console.warn('trending hata:',e);}
-})();
-</script>
+// Hero görselini ilk yüklenen mekan fotoğrafından al
+async function upgradeHeroes() {
+  DISTRICTS.forEach(async function(d) {
+    var hero = document.querySelector('[data-district="' + d.id + '"] .art-hero');
+    if (!hero) return;
+    try {
+      var venues = d.slugs && d.slugs.length
+        ? await fetchBySlug([d.slugs[0]])
+        : await fetchByDistrictAddress(d.filter, 1);
+      if (!venues[0]) return;
+      var img = venues[0].media && (venues[0].media.coverImage || (venues[0].media.gallery && venues[0].media.gallery[0]));
+      if (!img) return;
+      var bg = document.createElement('img');
+      bg.className = 'art-hero-img';
+      bg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45;';
+      bg.src = img;
+      bg.onerror = function() { this.remove(); };
+      hero.insertBefore(bg, hero.firstChild);
+    } catch(e) {}
+  });
+}
 
+// Başlat
+document.addEventListener('DOMContentLoaded', function() {
+  renderAll();
+  setTimeout(upgradeHeroes, 800);
+});
+</script>
 </body>
 </html>
