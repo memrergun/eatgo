@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
 <title>Mekan Detayı - EatGo</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -91,6 +92,14 @@ function escapeHtml(str){
   });
 }
 
+function proxyPhoto(url) {
+  if (!url) return url;
+  var m = url.match(/photoreference=([^&]+)/);
+  if (!m) return url;
+  var w = (url.match(/maxwidth=(\d+)/) || [])[1] || '1200';
+  return '/api/photo?ref=' + encodeURIComponent(m[1]) + '&maxwidth=' + w;
+}
+
 function getStars(rating){
   var full = Math.floor(rating);
   var stars = '';
@@ -125,7 +134,7 @@ function renderVenue(venue){
   var rating = venue.rating?.overall || 4.0;
   var reviewCount = venue.rating?.reviewCount || 0;
   var priceRange = escapeHtml(venue.pricing?.range || '₺₺');
-  var coverImage = venue.media?.coverImage || (venue.media?.gallery && venue.media.gallery[0]) || '';
+  var coverImage = proxyPhoto(venue.media?.coverImage || (venue.media?.gallery && venue.media.gallery[0]) || '');
   var gallery = venue.media?.gallery || [];
   var hours = venue.hours || {};
   var contact = venue.contact || {};
@@ -164,7 +173,7 @@ function renderVenue(venue){
   html += '<div class="rating-big">' + rating.toFixed(1) + '</div>';
   html += '<div class="rating-info">';
   html += '<div class="rating-stars">' + getStars(rating) + '</div>';
-  html += '<div class="rating-count">' + reviewCount.toLocaleString('tr-TR') + ' Google yorumu</div>';
+  html += '<div class="rating-count">' + reviewCount.toLocaleString('tr-TR') + ' Google yorumu <span style="font-size:11px;color:var(--muted);">(7 Mart 2026 itibarıyla)</span></div>';
   html += '</div>';
   html += '<div class="price-pill">' + priceRange + '</div>';
   html += '</div>';
@@ -175,7 +184,7 @@ function renderVenue(venue){
     html += '<div class="section-title">📸 Fotoğraflar</div>';
     html += '<div class="gallery">';
     gallery.slice(0, 6).forEach(function(img){
-      html += '<img src="' + img + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
+      html += '<img src="' + proxyPhoto(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">';
     });
     html += '</div>';
     html += '</div>';
@@ -236,8 +245,12 @@ function renderVenue(venue){
 
   // Reviews
   if(reviews.length > 0){
+    var googleReviewsUrl = contact.googleMapsUrl || ('https://www.google.com/maps/place/?q=place_id:' + (venue.id || ''));
     html += '<div class="section">';
-    html += '<div class="section-title">💬 Google Yorumları</div>';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">';
+    html += '<div class="section-title" style="margin-bottom:0;">💬 Google Yorumları</div>';
+    html += '<a href="' + googleReviewsUrl + '" target="_blank" rel="noopener" style="font-size:13px;font-weight:600;color:#1D9BF0;text-decoration:none;white-space:nowrap;">Tümünü gör →</a>';
+    html += '</div>';
     reviews.slice(0, 5).forEach(function(rev, idx){
       var initial = (rev.author || '?').charAt(0).toUpperCase();
       var revText = rev.text || '';
@@ -265,6 +278,7 @@ function renderVenue(venue){
       }
       html += '</div>';
     });
+    html += '<a href="' + googleReviewsUrl + '" target="_blank" rel="noopener" style="display:block;text-align:center;padding:12px;margin-top:8px;border-radius:12px;border:1.5px solid var(--border);font-size:13px;font-weight:700;color:var(--dark);text-decoration:none;">Google\'da tüm yorumları gör →</a>';
     html += '</div>';
   }
 
