@@ -3,138 +3,330 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mekan — Mekan Keşfet</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Mekan Detayı - EatGo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--cream:#F7F7F7;--dark:#0F0F0F;--warm:#1D9BF0;--muted:#536471;--border:#EFF3F4;}
+:root{--cream:#F7F7F7;--dark:#0F0F0F;--warm:#1D9BF0;--muted:#536471;--border:#EFF3F4;--card:#FFFFFF;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--cream);color:var(--dark);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:80px;}
-.top-bar{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,0.55),transparent);transition:background 0.3s;}
-.top-bar.scrolled{background:white;box-shadow:0 1px 0 var(--border);}
-.top-bar.scrolled .tb-btn{background:var(--cream);color:var(--dark);}
-.top-bar.scrolled .tb-logo{color:var(--dark);}
-.tb-left{display:flex;align-items:center;gap:10px;}
-.tb-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.18);backdrop-filter:blur(8px);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;transition:all 0.2s;}
-.tb-right{display:flex;gap:8px;}
-.tb-logo{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:white;opacity:.9;transition:color 0.3s;}
-.hero{height:400px;position:relative;overflow:hidden;background:var(--dark);}
-.hero-bg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:160px;opacity:0.18;background:linear-gradient(135deg,#1a1a2e,#16213e);}
-.hero.has-photo .hero-bg{opacity:0.25;}
-.hero-photo{position:absolute;inset:0;background-size:cover;background-position:center;}
-.hero-overlay{position:absolute;bottom:0;left:0;right:0;height:220px;background:linear-gradient(to top,var(--cream),transparent);}
-.content{padding:0 20px;}
-.loading{text-align:center;padding:60px 20px;color:var(--muted);font-size:14px;}
-.venue-head{padding:22px 0 18px;border-bottom:1px solid var(--border);}
-.venue-cat{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--warm);margin-bottom:5px;}
-.venue-name{font-family:'Playfair Display',serif;font-size:34px;font-weight:900;line-height:1.1;margin-bottom:12px;}
-.venue-meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
-.score-badge{display:flex;align-items:center;gap:6px;background:white;border:1px solid var(--border);padding:5px 12px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;}
-.stars{color:#F5A623;font-size:12px;}
-.actions{display:flex;gap:8px;padding:14px 0;border-bottom:1px solid var(--border);}
-.btn-action-primary{flex:1;background:var(--dark);color:white;border:none;height:44px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
-.btn-action-primary:active{opacity:.85;}
-.btn-action-sec{width:44px;height:44px;background:white;border:1px solid var(--border);border-radius:12px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
-.btn-action-sec.saved{background:#FFF0F0;border-color:#FFB3B3;}
-.btn-action-sec:active{transform:scale(.92);}
-.sec-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin:22px 0 14px;}
-.info-box{background:white;border-radius:16px;margin-bottom:14px;overflow:hidden;border:1px solid var(--border);}
-.info-row{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);}
-.info-row:last-child{border-bottom:none;}
-.info-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0;margin-top:1px;}
-.info-label{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:2px;}
-.info-val{font-size:14px;font-weight:500;line-height:1.5;}
-.info-link{color:var(--warm);font-weight:600;cursor:pointer;text-decoration:none;}
-.review-card{background:white;border-radius:16px;padding:16px;margin-bottom:10px;border:1px solid var(--border);}
-.reviewer-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.reviewer-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:white;flex-shrink:0;background:linear-gradient(135deg,#1a1a2e,#16213e);}
-.reviewer-info{flex:1;min-width:0;}
-.reviewer-name{font-size:14px;font-weight:600;margin-bottom:1px;}
-.reviewer-badge{font-size:11px;color:var(--muted);}
-.review-text{font-size:14px;line-height:1.6;color:#2D3748;margin-bottom:10px;}
-.review-footer{display:flex;align-items:center;justify-content:space-between;}
-.review-likes{font-size:12px;color:var(--muted);}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:white;border-top:1px solid var(--border);display:flex;padding:8px 0 24px;}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;color:var(--muted);cursor:pointer;}
-.nav-item span:first-child{font-size:22px;}
-#toast{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--dark);color:white;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap;}
-.error-box{background:#FEE;border:1px solid #FCC;border-radius:16px;padding:20px;margin:20px;text-align:center;}
-.error-title{font-size:18px;font-weight:700;color:#C00;margin-bottom:8px;}
-.error-text{font-size:14px;color:#666;}
+body{font-family:'DM Sans',sans-serif;background:#F7F7F7;color:var(--dark);padding-bottom:80px;}
+.back-bar{position:sticky;top:0;z-index:50;background:white;border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;}
+.back-btn{width:40px;height:40px;border:none;background:var(--cream);border-radius:12px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.back-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;}
+.cover{width:100%;height:280px;background:#ddd;background-size:cover;background-position:center;position:relative;}
+.cover-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,0.4));}
+.featured-badge{position:absolute;top:16px;left:16px;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);color:white;font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;}
+.content{max-width:800px;margin:0 auto;padding:24px 16px;}
+.venue-name{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;line-height:1.1;margin-bottom:8px;}
+.venue-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px;color:var(--muted);margin-bottom:16px;}
+.venue-meta span{display:inline-flex;align-items:center;gap:4px;}
+.dot{width:3px;height:3px;background:var(--muted);border-radius:50%;display:inline-block;}
+.rating-row{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding:16px;background:white;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,0.04);}
+.rating-big{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--dark);line-height:1;}
+.rating-info{flex:1;}
+.rating-stars{color:#F5A623;font-size:16px;margin-bottom:2px;}
+.rating-count{font-size:13px;color:var(--muted);}
+.price-pill{background:var(--cream);padding:8px 14px;border-radius:12px;font-weight:600;font-size:14px;}
+.section{background:white;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,0.04);}
+.section-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:16px;}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.gallery img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;cursor:pointer;transition:transform 0.2s;}
+.gallery img:hover{transform:scale(1.02);}
+.hours-list{display:flex;flex-direction:column;gap:8px;}
+.hour-row{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;}
+.hour-row.today{font-weight:700;color:var(--dark);background:var(--cream);padding:8px 12px;border-radius:8px;}
+.hour-day{color:var(--muted);}
+.hour-row.today .hour-day{color:var(--dark);}
+.hour-time{font-weight:600;}
+.contact-list{display:flex;flex-direction:column;gap:12px;}
+.contact-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--cream);border-radius:12px;text-decoration:none;color:var(--dark);font-size:14px;font-weight:500;transition:background 0.2s;}
+.contact-item:hover{background:#EFF3F4;}
+.contact-icon{font-size:18px;width:28px;text-align:center;}
+.contact-text{flex:1;}
+.review-item{padding:16px 0;border-bottom:1px solid var(--border);}
+.review-item:last-child{border-bottom:none;}
+.review-header{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.review-avatar{width:40px;height:40px;border-radius:50%;background:var(--cream);object-fit:cover;}
+.review-avatar-fallback{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1D9BF0,#0a6cb8);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;}
+.review-author{font-weight:600;font-size:14px;}
+.review-meta{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center;}
+.review-stars{color:#F5A623;font-size:13px;}
+.review-text{font-size:14px;line-height:1.6;color:var(--dark);white-space:pre-wrap;}
+.review-text.collapsed{max-height:120px;overflow:hidden;position:relative;}
+.review-text.collapsed::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(to bottom,transparent,white);}
+.read-more{background:none;border:none;color:var(--warm);font-weight:600;font-size:13px;cursor:pointer;padding:8px 0 0;font-family:'DM Sans',sans-serif;}
+.cta-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;}
+.cta-btn{padding:14px;border:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;}
+.cta-primary{background:var(--dark);color:white;}
+.cta-secondary{background:white;color:var(--dark);border:1.5px solid var(--dark);}
+.error-state{padding:60px 20px;text-align:center;}
+.error-state h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:12px;}
+.error-state p{color:var(--muted);margin-bottom:24px;}
+.error-state a{display:inline-block;padding:12px 24px;background:var(--dark);color:white;text-decoration:none;border-radius:12px;font-weight:600;}
+.loading{padding:60px 20px;text-align:center;color:var(--muted);}
 </style>
 </head>
 <body>
-<div class="top-bar" id="topBar">
-<div class="tb-left">
-<button class="tb-btn" onclick="history.back()">←</button>
-<span class="tb-logo">Mekan Keşfet</span>
+<div class="back-bar">
+<button class="back-btn" onclick="window.location.href='anasayfa.html'">←</button>
+<div class="back-title">Mekan Detayı</div>
 </div>
-<div class="tb-right">
-<button class="tb-btn" onclick="shareVenue()">↗️</button>
-<button class="tb-btn" id="saveBtn" onclick="toggleSave()">🔖</button>
+<div id="content">
+<div class="loading">🔄 Yükleniyor...</div>
 </div>
-</div>
-<div class="hero" id="hero">
-<div class="hero-photo" id="heroPhoto"></div>
-<div class="hero-bg" id="heroEmoji"></div>
-<div class="hero-overlay"></div>
-</div>
-<div class="content" id="content">
-<div class="loading">🔄 Mekan yükleniyor...</div>
-</div>
-<div class="bottom-nav">
-<div class="nav-item" onclick="window.location.href='./anasayfa.html'"><span>🗺️</span><span>Keşfet</span></div>
-<div class="nav-item" onclick="window.location.href='arama.html'"><span>🔍</span><span>Ara</span></div>
-<div class="nav-item" onclick="window.location.href='blog.html'"><span>📰</span><span>Blog</span></div>
-<div class="nav-item" onclick="window.location.href='profil.html'"><span>👤</span><span>Profil</span></div>
-</div>
-<div id="toast"></div>
 <script>
-console.log('🔍 Mekan detay sayfası yükleniyor...');
-var currentVenue=null,saved=false;
-function getCategoryEmoji(category){var emojiMap={'Cafe':'☕','Restaurant':'🍽️','Bar':'🍺','Fast Food':'🍔','Pizza':'🍕','Dessert':'🍰','Asian':'🍜','Turkish':'🥙','Breakfast':'🥐','Mediterranean':'🫒','Seafood':'🐟','Italian':'🍝'};return emojiMap[category]||'🍽️';}
-async function loadVenue(){
-  // Hash (#slug) formatından slug al
-  var slug = window.location.hash.substring(1);
-  if(!slug){
-    // Eğer hash yoksa query string dene (?slug=...)
-    var params=new URLSearchParams(window.location.search);
-    slug=params.get('slug');
+console.log('🚀 venue.html yükleniyor...');
+
+function getSlugFromUrl(){
+  var hash = window.location.hash.slice(1);
+  if(hash) return decodeURIComponent(hash);
+  var params = new URLSearchParams(window.location.search);
+  var slug = params.get('slug');
+  return slug ? decodeURIComponent(slug) : null;
+}
+
+function escapeHtml(str){
+  if(!str) return '';
+  return String(str).replace(/[&<>"']/g, function(m){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+  });
+}
+
+function getStars(rating){
+  var full = Math.floor(rating);
+  var stars = '';
+  for(var i=0;i<5;i++){
+    stars += i<full ? '★' : '☆';
   }
-  
-  if(!slug){
-    showError('Mekan bulunamadı','URL\'de slug parametresi eksik.');
+  return stars;
+}
+
+function getTodayKey(){
+  var days = ['pazar','pazartesi','salı','çarşamba','perşembe','cuma','cumartesi'];
+  return days[new Date().getDay()];
+}
+
+function renderVenue(venue){
+  if(!venue){
+    document.getElementById('content').innerHTML =
+      '<div class="error-state">' +
+      '<h2>Mekan bulunamadı</h2>' +
+      '<p>Aradığınız mekan veritabanında yok.</p>' +
+      '<a href="anasayfa.html">← Anasayfaya dön</a>' +
+      '</div>';
     return;
   }
-  
-  console.log('📍 Slug:',slug);
-  
+
+  console.log('✅ Mekan render ediliyor:', venue.name);
+
+  var name = escapeHtml(venue.name || 'İsimsiz Mekan');
+  var category = escapeHtml(venue.category || 'Restoran');
+  var neighborhood = escapeHtml(venue.location?.neighborhood || venue.location?.city || 'İstanbul');
+  var address = escapeHtml(venue.location?.address || '');
+  var rating = venue.rating?.overall || 4.0;
+  var reviewCount = venue.rating?.reviewCount || 0;
+  var priceRange = escapeHtml(venue.pricing?.range || '₺₺');
+  var coverImage = venue.media?.coverImage || (venue.media?.gallery && venue.media.gallery[0]) || '';
+  var gallery = venue.media?.gallery || [];
+  var hours = venue.hours || {};
+  var contact = venue.contact || {};
+  var reviews = venue.reviews || [];
+  var featured = venue.featured;
+  var openNow = venue.openNow;
+
+  var html = '';
+
+  // Cover
+  html += '<div class="cover" style="background-image:url(\'' + coverImage + '\');">';
+  html += '<div class="cover-overlay"></div>';
+  if(featured){
+    html += '<div class="featured-badge">⭐ Öne Çıkan</div>';
+  }
+  html += '</div>';
+
+  html += '<div class="content">';
+
+  // Name + meta
+  html += '<h1 class="venue-name">' + name + '</h1>';
+  html += '<div class="venue-meta">';
+  html += '<span>📍 ' + neighborhood + '</span>';
+  html += '<span class="dot"></span>';
+  html += '<span>🍽️ ' + category + '</span>';
+  if(openNow !== undefined){
+    html += '<span class="dot"></span>';
+    html += '<span style="color:' + (openNow ? '#16a34a' : '#dc2626') + ';font-weight:600;">';
+    html += openNow ? '● Açık' : '● Kapalı';
+    html += '</span>';
+  }
+  html += '</div>';
+
+  // Rating row
+  html += '<div class="rating-row">';
+  html += '<div class="rating-big">' + rating.toFixed(1) + '</div>';
+  html += '<div class="rating-info">';
+  html += '<div class="rating-stars">' + getStars(rating) + '</div>';
+  html += '<div class="rating-count">' + reviewCount.toLocaleString('tr-TR') + ' Google yorumu</div>';
+  html += '</div>';
+  html += '<div class="price-pill">' + priceRange + '</div>';
+  html += '</div>';
+
+  // Gallery
+  if(gallery.length > 0){
+    html += '<div class="section">';
+    html += '<div class="section-title">📸 Fotoğraflar</div>';
+    html += '<div class="gallery">';
+    gallery.slice(0, 6).forEach(function(img){
+      html += '<img src="' + img + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
+    });
+    html += '</div>';
+    html += '</div>';
+  }
+
+  // Hours
+  if(Object.keys(hours).length > 0){
+    var todayKey = getTodayKey();
+    html += '<div class="section">';
+    html += '<div class="section-title">🕐 Çalışma Saatleri</div>';
+    html += '<div class="hours-list">';
+    var dayLabels = {
+      'pazartesi':'Pazartesi','salı':'Salı','çarşamba':'Çarşamba',
+      'perşembe':'Perşembe','cuma':'Cuma','cumartesi':'Cumartesi','pazar':'Pazar'
+    };
+    var dayOrder = ['pazartesi','salı','çarşamba','perşembe','cuma','cumartesi','pazar'];
+    dayOrder.forEach(function(key){
+      if(hours[key]){
+        var isToday = key === todayKey;
+        html += '<div class="hour-row' + (isToday ? ' today' : '') + '">';
+        html += '<span class="hour-day">' + dayLabels[key] + (isToday ? ' (Bugün)' : '') + '</span>';
+        html += '<span class="hour-time">' + escapeHtml(hours[key]) + '</span>';
+        html += '</div>';
+      }
+    });
+    html += '</div>';
+    html += '</div>';
+  }
+
+  // Contact
+  var hasContact = contact.phone || contact.website || address;
+  if(hasContact){
+    html += '<div class="section">';
+    html += '<div class="section-title">📞 İletişim</div>';
+    html += '<div class="contact-list">';
+    if(contact.phone){
+      html += '<a class="contact-item" href="tel:' + escapeHtml(contact.phone) + '">';
+      html += '<span class="contact-icon">📞</span>';
+      html += '<span class="contact-text">' + escapeHtml(contact.phone) + '</span>';
+      html += '</a>';
+    }
+    if(address){
+      var mapsUrl = contact.googleMapsUrl || ('https://maps.google.com/?q=' + encodeURIComponent(address));
+      html += '<a class="contact-item" href="' + mapsUrl + '" target="_blank" rel="noopener">';
+      html += '<span class="contact-icon">📍</span>';
+      html += '<span class="contact-text">' + address + '</span>';
+      html += '</a>';
+    }
+    if(contact.website){
+      html += '<a class="contact-item" href="' + escapeHtml(contact.website) + '" target="_blank" rel="noopener">';
+      html += '<span class="contact-icon">🌐</span>';
+      html += '<span class="contact-text">Web sitesi</span>';
+      html += '</a>';
+    }
+    html += '</div>';
+    html += '</div>';
+  }
+
+  // Reviews
+  if(reviews.length > 0){
+    html += '<div class="section">';
+    html += '<div class="section-title">💬 Google Yorumları</div>';
+    reviews.slice(0, 5).forEach(function(rev, idx){
+      var initial = (rev.author || '?').charAt(0).toUpperCase();
+      var revText = rev.text || '';
+      var isLong = revText.length > 200;
+      html += '<div class="review-item">';
+      html += '<div class="review-header">';
+      if(rev.profilePhoto){
+        html += '<img class="review-avatar" src="' + rev.profilePhoto + '" alt="" onerror="this.outerHTML=\'<div class=&quot;review-avatar-fallback&quot;>' + initial + '</div>\'">';
+      } else {
+        html += '<div class="review-avatar-fallback">' + initial + '</div>';
+      }
+      html += '<div>';
+      html += '<div class="review-author">' + escapeHtml(rev.author || 'Anonim') + '</div>';
+      html += '<div class="review-meta">';
+      html += '<span class="review-stars">' + getStars(rev.rating || 5) + '</span>';
+      if(rev.time){
+        html += '<span>' + escapeHtml(rev.time) + '</span>';
+      }
+      html += '</div>';
+      html += '</div>';
+      html += '</div>';
+      html += '<div class="review-text' + (isLong ? ' collapsed' : '') + '" id="rev-' + idx + '">' + escapeHtml(revText) + '</div>';
+      if(isLong){
+        html += '<button class="read-more" onclick="document.getElementById(\'rev-' + idx + '\').classList.toggle(\'collapsed\');this.textContent=this.textContent===\'Devamını oku\'?\'Daha az göster\':\'Devamını oku\';">Devamını oku</button>';
+      }
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // CTA buttons
+  html += '<div class="cta-row">';
+  if(contact.phone){
+    html += '<a class="cta-btn cta-primary" href="tel:' + escapeHtml(contact.phone) + '">📞 Ara</a>';
+  }
+  var mapsUrl = contact.googleMapsUrl || (address ? ('https://maps.google.com/?q=' + encodeURIComponent(address)) : '');
+  if(mapsUrl){
+    html += '<a class="cta-btn cta-secondary" href="' + mapsUrl + '" target="_blank" rel="noopener">🗺️ Yol Tarifi</a>';
+  }
+  html += '</div>';
+
+  html += '</div>';
+
+  document.getElementById('content').innerHTML = html;
+}
+
+async function init(){
+  var slug = getSlugFromUrl();
+  console.log('🔍 Aranan slug:', slug);
+
+  if(!slug){
+    document.getElementById('content').innerHTML =
+      '<div class="error-state">' +
+      '<h2>Mekan seçilmedi</h2>' +
+      '<p>URL\'de slug parametresi bulunamadı.</p>' +
+      '<a href="anasayfa.html">← Anasayfaya dön</a>' +
+      '</div>';
+    return;
+  }
+
   try{
-    var response=await fetch('./data/venues.json');
-    if(!response.ok){throw new Error('venues.json yüklenemedi');}
-    var data=await response.json();
-    var venues=data.venues||[];
-    console.log('📦 Toplam mekan:',venues.length);
-    var venue=venues.find(function(v){return v.slug===slug;});
-    if(!venue){showError('Mekan bulunamadı','Bu slug için mekan verisi bulunamadı: '+slug);return;}
-    console.log('✅ Mekan bulundu:',venue.name);
-    currentVenue=venue;
+    var response = await fetch('./data/venues.json');
+    if(!response.ok) throw new Error('HTTP ' + response.status);
+    var data = await response.json();
+    var venues = data.venues || data;
+
+    var venue = venues.find(function(v){ return v.slug === slug; });
+    console.log('🎯 Bulunan mekan:', venue ? venue.name : 'YOK');
+
     renderVenue(venue);
-  }catch(error){
-    console.error('❌ Hata:',error);
-    showError('Veri yüklenemedi',error.message);
+
+    if(venue){
+      document.title = venue.name + ' - EatGo';
+    }
+  } catch(err){
+    console.error('❌ Yükleme hatası:', err);
+    document.getElementById('content').innerHTML =
+      '<div class="error-state">' +
+      '<h2>Bir şeyler ters gitti</h2>' +
+      '<p>' + err.message + '</p>' +
+      '<a href="anasayfa.html">← Anasayfaya dön</a>' +
+      '</div>';
   }
 }
-function renderVenue(venue){var emoji=getCategoryEmoji(venue.category);document.getElementById('heroEmoji').textContent=emoji;if(venue.media&&venue.media.coverImage){var heroPhoto=document.getElementById('heroPhoto');heroPhoto.style.backgroundImage='url('+venue.media.coverImage+')';document.getElementById('hero').classList.add('has-photo');}document.title=venue.name+' — Mekan Keşfet';var content=document.getElementById('content');var rating=venue.rating?.overall||4.0;var reviewCount=venue.rating?.reviewCount||0;var category=venue.category||'Restoran';var neighborhood=venue.location?.neighborhood||venue.location?.city||'İstanbul';var priceRange=venue.pricing?.range||'₺₺';var address=venue.location?.address||'Adres bilgisi yok';var phone=venue.contact?.phone||'';var website=venue.contact?.website||'';var fullStars=Math.floor(rating);var hasHalfStar=(rating%1)>=0.5;var starsHtml='';for(var i=0;i<fullStars;i++){starsHtml+='★';}if(hasHalfStar){starsHtml+='☆';}while(starsHtml.length<5){starsHtml+='☆';}var html='';html+='<div class="venue-head">';html+='<div class="venue-cat">'+emoji+' '+category+'</div>';html+='<div class="venue-name">'+venue.name+'</div>';html+='<div class="venue-meta">';html+='<div class="score-badge" onclick="openGoogleMaps()">';html+='<span class="stars">'+starsHtml+'</span>';html+='<strong>'+rating.toFixed(1)+'</strong>';html+='<span style="color:var(--muted);font-size:11px;">· '+reviewCount+' yorum</span>';html+='</div>';html+='<div style="font-size:12px;color:var(--muted);">📍 '+neighborhood+'</div>';html+='<div style="font-size:12px;color:var(--muted);">'+priceRange+'</div>';html+='</div>';html+='</div>';html+='<div class="actions">';html+='<button class="btn-action-primary" onclick="openGoogleMaps()">🗺️ Yol Tarifi</button>';html+='<button class="btn-action-primary" style="background:white;color:var(--dark);border:1px solid var(--border);" onclick="openGoogleMaps()">📍 Haritada Gör</button>';if(phone){html+='<button class="btn-action-primary" style="background:white;color:var(--dark);border:1px solid var(--border);" onclick="callVenue()">📞 Ara</button>';}html+='<button class="btn-action-sec" id="bookmarkBtn" onclick="toggleSave()">🔖</button>';html+='<button class="btn-action-sec" onclick="shareVenue()">↗️</button>';html+='</div>';html+='<div class="sec-title">Google Yorumları</div>';html+='<div class="review-card">';html+='<div class="reviewer-row">';html+='<div class="reviewer-av">G</div>';html+='<div class="reviewer-info">';html+='<div class="reviewer-name">Google Kullanıcısı</div>';html+='<div class="reviewer-badge">★★★★★ · Yerel Rehber</div>';html+='</div>';html+='</div>';html+='<p class="review-text">Bu mekan hakkında Google Maps\'te '+reviewCount+' yorum var. Tüm yorumları görmek için Google Maps\'i açın.</p>';html+='<div class="review-footer">';html+='<button class="btn-action-primary" onclick="openGoogleMaps()" style="margin-top:10px;width:100%;">Google Maps\'te Aç →</button>';html+='</div>';html+='</div>';html+='<div class="sec-title">Bilgiler</div>';html+='<div class="info-box">';html+='<div class="info-row">';html+='<div class="info-icon">📍</div>';html+='<div>';html+='<div class="info-label">ADRES</div>';html+='<div class="info-val">'+address+'</div>';html+='</div>';html+='</div>';if(phone){html+='<div class="info-row">';html+='<div class="info-icon">📞</div>';html+='<div>';html+='<div class="info-label">TELEFON</div>';html+='<div class="info-val"><a href="tel:'+phone+'" class="info-link">'+phone+'</a></div>';html+='</div>';html+='</div>';}if(website){html+='<div class="info-row">';html+='<div class="info-icon">🌐</div>';html+='<div>';html+='<div class="info-label">WEB SİTESİ</div>';html+='<div class="info-val"><a href="'+website+'" target="_blank" class="info-link">'+website+'</a></div>';html+='</div>';html+='</div>';}html+='<div class="info-row">';html+='<div class="info-icon">💰</div>';html+='<div>';html+='<div class="info-label">FİYAT ARALIĞI</div>';html+='<div class="info-val">'+priceRange+'</div>';html+='</div>';html+='</div>';html+='</div>';html+='<div style="margin:20px 0;">';html+='<button class="btn-action-primary" onclick="openGoogleMaps()" style="width:100%;height:50px;font-size:15px;">🗺️ Google Maps\'te Aç</button>';html+='</div>';content.innerHTML=html;console.log('🎉 Mekan render tamamlandı');}
-function showError(title,message){var content=document.getElementById('content');content.innerHTML='<div class="error-box"><div class="error-title">'+title+'</div><div class="error-text">'+message+'</div><button class="btn-action-primary" onclick="history.back()" style="margin-top:20px;width:200px;">← Geri Dön</button></div>';}
-function toggleSave(){saved=!saved;document.getElementById('saveBtn').textContent=saved?'🔖':'🔖';var bookmarkBtn=document.getElementById('bookmarkBtn');if(bookmarkBtn){bookmarkBtn.classList.toggle('saved',saved);}showToast(saved?'✓ Kaydedildi!':'Kaydedilenlerden çıkarıldı');}
-function openGoogleMaps(){if(!currentVenue){showToast('Mekan bilgisi yok');return;}var lat=currentVenue.location?.coordinates?.lat;var lng=currentVenue.location?.coordinates?.lng;if(lat&&lng){var url='https://www.google.com/maps/search/?api=1&query='+lat+','+lng;window.open(url,'_blank');}else if(currentVenue.id){var url='https://www.google.com/maps/place/?q=place_id:'+currentVenue.id;window.open(url,'_blank');}else{showToast('Konum bilgisi yok');}}
-function callVenue(){if(currentVenue&&currentVenue.contact?.phone){window.location.href='tel:'+currentVenue.contact.phone;}else{showToast('Telefon bilgisi yok');}}
-function shareVenue(){if(navigator.share&&currentVenue){navigator.share({title:currentVenue.name,text:currentVenue.name+' - '+(currentVenue.location?.neighborhood||''),url:window.location.href}).catch(function(){copyToClipboard();});}else{copyToClipboard();}}
-function copyToClipboard(){var url=window.location.href;navigator.clipboard.writeText(url).then(function(){showToast('✓ Link kopyalandı!');}).catch(function(){showToast('Link: '+url);});}
-var toastTimer;
-function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.style.display='none';},2200);}
-window.addEventListener('scroll',function(){document.getElementById('topBar').classList.toggle('scrolled',window.scrollY>320);});
-document.addEventListener('DOMContentLoaded',function(){console.log('🚀 DOM yüklendi, mekan verisi çekiliyor...');loadVenue();});
+
+window.addEventListener('hashchange', init);
+init();
+
+console.log('✅ venue.html hazır');
 </script>
 </body>
 </html>

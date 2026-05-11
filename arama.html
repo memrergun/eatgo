@@ -303,7 +303,7 @@
     </div>
     <div class="result-score">4.4<div class="result-score-sub">★ Google</div></div>
   </div>
-  <div class="result-item">
+  <div class="result-item" onclick="window.location.href='venue.html?slug=burger-lab'">
     <div class="result-thumb" style="background:linear-gradient(135deg,#120a1a,#1e1030);">🍔</div>
     <div class="result-info">
       <div class="result-name">Burger Lab</div>
@@ -311,7 +311,7 @@
     </div>
     <div class="result-score">4.6<div class="result-score-sub">★ Google</div></div>
   </div>
-  <div class="result-item">
+  <div class="result-item" onclick="window.location.href='venue.html?slug=smash-bros'">
     <div class="result-thumb" style="background:linear-gradient(135deg,#0f1117,#3d2d08);">🍟</div>
     <div class="result-info">
       <div class="result-name">Smash Bros</div>
@@ -319,7 +319,7 @@
     </div>
     <div class="result-score">4.1<div class="result-score-sub">★ Google</div></div>
   </div>
-  <div class="result-item">
+  <div class="result-item" onclick="window.location.href='venue.html?slug=green-smash'">
     <div class="result-thumb" style="background:linear-gradient(135deg,#0a1f28,#0d2a3c);">🥗</div>
     <div class="result-info">
       <div class="result-name">Green Smash</div>
@@ -327,7 +327,7 @@
     </div>
     <div class="result-score">4.3<div class="result-score-sub">★ Google</div></div>
   </div>
-  <div class="result-item">
+  <div class="result-item" onclick="window.location.href='venue.html?slug=usta-burger'">
     <div class="result-thumb" style="background:linear-gradient(135deg,#120a1a,#1e1030);">🍔</div>
     <div class="result-info">
       <div class="result-name">Usta Burger</div>
@@ -385,23 +385,5 @@
   }
 </script>
 
-<script>
-// Trending eklentisi
-(function(){
-  var trending = document.getElementById('trending-venues');
-  if(!trending) return;
-  var venues = [
-    {e:'🥖',n:'Zapata Bakery',s:'4.8',h:'Caferağa',u:'mekan.html?name=Zapata+Bakery&score=4.8&emoji=🥖&hood=Caferağa'},
-    {e:'🍕',n:'Il Pellicano',s:'4.8',h:'Moda',u:'mekan.html?name=Il+Pellicano&score=4.8&emoji=🍕&hood=Moda'},
-    {e:'🥗',n:'Veganarsist',s:'4.8',h:'Osmanağa',u:'mekan.html?name=Veganarsist&score=4.8&emoji=🥗&hood=Osmanağa'},
-  ];
-  trending.innerHTML = venues.map(function(v){
-    return '<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #EFF3F4;cursor:pointer;" onclick="window.location.href=''+v.u+''">'+
-      '<div style="width:40px;height:40px;background:#F7F7F7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">'+v.e+'</div>'+
-      '<div style="flex:1;"><div style="font-size:13px;font-weight:700;">'+v.n+'</div><div style="font-size:11px;color:#536471;">'+v.h+' · ★'+v.s+'</div></div>'+
-      '<div style="font-size:14px;color:#536471;">›</div></div>';
-  }).join('');
-})();
-</script>
 </body>
 </html>

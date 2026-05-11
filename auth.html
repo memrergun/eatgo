@@ -331,7 +331,7 @@ function selectMethod(form,m){
 
 function socialGo(provider,mode){
   showToast((provider==='google'?'Google':'Apple')+' ile '+(mode==='giris'?'giriş':'kayıt')+' yapılıyor…');
-  setTimeout(function(){window.location.href=mode==='giris'?'anasayfa.html':'index.html';},1400);
+  setTimeout(function(){window.location.href=mode==='giris'?'anasayfa.html':'onboarding.html';},1400);
 }
 
 function togglePass(id,btn){
@@ -393,7 +393,7 @@ function doRegister(){
   if(!kvk.e){showToast('Lütfen koşulları kabul edin.');ok=false;}
   if(!ok)return;
   setLoad('bke',true);
-  setTimeout(function(){window.location.href='index.html';},1500);
+  setTimeout(function(){window.location.href='onboarding.html';},1500);
 }
 
 function handleSms(mode){
@@ -434,7 +434,7 @@ function handleSms(mode){
     inputs.forEach(function(i){code+=i.value;});
     if(code.length<6){showToast('6 haneli kodu tam girin.');return;}
     setLoad(prefix,true);
-    setTimeout(function(){window.location.href=isKayit?'index.html':'anasayfa.html';},1300);
+    setTimeout(function(){window.location.href=isKayit?'onboarding.html':'anasayfa.html';},1300);
   }
 }
 

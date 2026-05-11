@@ -367,10 +367,23 @@ function detectCategory(q) {
 // ── RENDER ──
 var pillLabels = { gurme:'🍽️ Gurme', influencer:'📱 Influencer', mudavim:'📍 Müdavim', trend:'🔥 Trend' };
 
+function makeSlug(name){
+  return name.toLowerCase()
+    .replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ı/g,'i').replace(/ç/g,'c')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+
+function resolveUrl(v){
+  if(!v.url || v.url.indexOf('mekan.html') === 0){
+    return 'venue.html?slug=' + makeSlug(v.name);
+  }
+  return v.url;
+}
+
 function renderVenues(list) {
   return list.map(function(v){
     var pills = v.pills.map(function(p){ return '<span class="rpill '+p+'">'+pillLabels[p]+'</span>'; }).join('');
-    return '<div class="result-card" onclick="window.location.href=\''+v.url+'\'">' +
+    return '<div class="result-card" onclick="window.location.href=\''+resolveUrl(v)+'\'">' +
       '<div class="result-card-inner">' +
         '<div class="result-thumb" style="background:'+v.bg+';">'+v.emoji+'</div>' +
         '<div class="result-body">' +
