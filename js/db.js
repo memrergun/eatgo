@@ -4,8 +4,8 @@
 //  Dashboard > Project Settings > API
 // ============================================================
 
-window.SUPABASE_URL      = 'https://PROJE_ID.supabase.co';   // Project URL
-window.SUPABASE_ANON_KEY = 'ANON_KEY_BURAYA';                // anon / public key
+window.SUPABASE_URL      = 'https://wbnkyogwmmrawjfwlnyt.supabase.co';
+window.SUPABASE_ANON_KEY = 'sb_publishable_pILF9yjENy1rSlxb8Fk8KA_G1jR0u9y';
 
 // ============================================================
 //  DB yardımcıları  (venue.html ve app.js tarafından kullanılır)
