@@ -37,6 +37,23 @@ window.DB = {
     return rows.map(function (r) { return r.data; });
   },
 
+  // Yakın mekanlar — bounding box ile Supabase filtresi (lat/lng düz kolonlar), tam veri döner
+  fetchVenuesNearby: async function (lat, lng, radiusKm) {
+    var r = radiusKm || 3;
+    var dLat = r / 111;
+    var dLng = r / (111 * Math.cos(lat * Math.PI / 180));
+    var q = 'select=data'
+      + '&lat=gte.' + (lat - dLat).toFixed(6)
+      + '&lat=lte.' + (lat + dLat).toFixed(6)
+      + '&lng=gte.' + (lng - dLng).toFixed(6)
+      + '&lng=lte.' + (lng + dLng).toFixed(6)
+      + '&order=rating.desc&limit=1000';
+    var resp = await fetch(window.SUPABASE_URL + '/rest/v1/venues?' + q, { headers: this._headers() });
+    if (!resp.ok) throw new Error('Supabase HTTP ' + resp.status);
+    var rows = await resp.json();
+    return rows.map(function (r) { return r.data; });
+  },
+
   // Harita için sadece düz kolonlar (lat/lng/name/slug/category/rating) — çok daha hafif
   fetchVenuesMap: async function (limit) {
     var lim = limit || 3000;
