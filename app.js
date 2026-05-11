@@ -174,63 +174,99 @@ function displayVenues(venues) {
 }
 
 // ========================================
-// VENUES.JSON YÜKLEME
+// VENUES YÜKLEME — sayfalama destekli
 // ========================================
+
+var _feedOffset = 0;
+var _feedPageSize = 200;
+var _feedLoading = false;
+var _allVenuesLoaded = false;
+
+function appendVenues(venues) {
+  var grid = document.getElementById('venues-grid');
+  if (!grid) return;
+
+  venues.forEach(function(venue) {
+    var card = createVenueCard(venue);
+    if (card) grid.appendChild(card);
+  });
+}
+
+function renderLoadMoreBtn() {
+  var existing = document.getElementById('load-more-btn');
+  if (existing) existing.remove();
+  if (_allVenuesLoaded) return;
+
+  var grid = document.getElementById('venues-grid');
+  if (!grid) return;
+
+  var btn = document.createElement('button');
+  btn.id = 'load-more-btn';
+  btn.textContent = 'Daha Fazla Yükle';
+  btn.style.cssText = 'display:block;width:calc(100% - 32px);margin:16px 16px 8px;padding:14px;background:#0F0F0F;color:white;border:none;border-radius:14px;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;';
+  btn.onclick = loadMoreVenues;
+  grid.parentNode.insertBefore(btn, grid.nextSibling);
+}
+
+async function loadMoreVenues() {
+  if (_feedLoading || _allVenuesLoaded) return;
+  _feedLoading = true;
+
+  var btn = document.getElementById('load-more-btn');
+  if (btn) btn.textContent = '🔄 Yükleniyor...';
+
+  try {
+    var venues = await window.DB.fetchVenues(_feedOffset, _feedPageSize);
+    if (venues.length < _feedPageSize) _allVenuesLoaded = true;
+    _feedOffset += venues.length;
+    appendVenues(venues);
+    renderLoadMoreBtn();
+  } catch(e) {
+    console.error('❌ Daha fazla yüklenemedi:', e);
+    if (btn) btn.textContent = 'Daha Fazla Yükle';
+  }
+
+  _feedLoading = false;
+}
 
 async function loadVenues() {
   var grid = document.getElementById('venues-grid');
+  if (!grid) return;
 
-  if (!grid) {
-    console.warn('⚠️ venues-grid elementi bulunamadı');
-    return;
-  }
-
+  _feedOffset = 0;
+  _allVenuesLoaded = false;
   grid.innerHTML = '<div class="loading">🔄 Mekanlar yükleniyor...</div>';
 
   try {
     var venues = [];
 
-    // Supabase varsa oradan, yoksa venues.json'dan
     if (window.DB && window.DB._ready()) {
-      console.log('📡 Supabase\'den yükleniyor...');
-      venues = await window.DB.fetchVenues();
-      console.log('✅ Supabase yüklendi');
+      venues = await window.DB.fetchVenues(0, _feedPageSize);
+      if (venues.length < _feedPageSize) _allVenuesLoaded = true;
+      _feedOffset = venues.length;
     } else {
-      console.log('📡 venues.json yükleniyor...');
       var response = await fetch('./data/venues.json');
-      if (!response.ok) throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+      if (!response.ok) throw new Error('HTTP ' + response.status);
       var data = await response.json();
       venues = (data.venues && Array.isArray(data.venues)) ? data.venues : (Array.isArray(data) ? data : []);
-      console.log('✅ venues.json yüklendi');
+      _allVenuesLoaded = true;
     }
 
-    console.log('📦 Toplam mekan sayısı:', venues.length);
-    
-    if (venues.length > 0) {
-      console.log('📍 İlk mekan:', venues[0].name);
-      console.log('📍 İlk slug:', venues[0].slug);
-    }
-    
-    displayVenues(venues);
-    
-    window.dispatchEvent(new CustomEvent('venuesLoaded', {
-      detail: { venues: venues }
-    }));
-    
-    console.log('🎉 Mekanlar başarıyla yüklendi');
-    
+    grid.innerHTML = '';
+    appendVenues(venues);
+    renderLoadMoreBtn();
+
+    window.dispatchEvent(new CustomEvent('venuesLoaded', { detail: { venues: venues } }));
+
   } catch (error) {
     console.error('❌ Veri yükleme hatası:', error);
-    
     grid.innerHTML = '<div class="loading" style="color:#e74c3c;">' +
       '⚠️ Mekanlar yüklenemedi<br>' +
       '<small style="font-size:12px;opacity:0.7;">' + error.message + '</small><br>' +
       '<button onclick="window.location.reload()" ' +
       'style="margin-top:12px;padding:8px 16px;background:#1D9BF0;color:white;border:none;' +
       'border-radius:8px;cursor:pointer;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;">' +
-      '🔄 Yeniden Dene' +
-      '</button>' +
-      '</div>';
+      '🔄 Yeniden Dene</button></div>';
   }
 }
 

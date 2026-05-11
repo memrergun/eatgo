@@ -25,9 +25,11 @@ window.DB = {
   },
 
   // Tüm mekanları getir (harita + feed için)
-  fetchVenues: async function () {
+  fetchVenues: async function (offset, limit) {
+    var lim = limit || 200;
+    var off = offset || 0;
     var resp = await fetch(
-      window.SUPABASE_URL + '/rest/v1/venues?select=data&order=rating.desc&limit=200',
+      window.SUPABASE_URL + '/rest/v1/venues?select=data&order=rating.desc&limit=' + lim + '&offset=' + off,
       { headers: this._headers() }
     );
     if (!resp.ok) throw new Error('Supabase HTTP ' + resp.status);
