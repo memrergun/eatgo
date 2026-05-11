@@ -44,6 +44,25 @@ function getCategoryEmoji(category) {
 }
 
 // ========================================
+// FLAT VENUE → CARD STRUCTURE
+// ========================================
+
+function flatToVenue(v) {
+  return {
+    name: v.name,
+    slug: v.slug,
+    category: v.category,
+    rating: { overall: parseFloat(v.rating) || 4.0, reviewCount: v.review_count || 0 },
+    location: {
+      neighborhood: 'İstanbul',
+      coordinates: { lat: parseFloat(v.lat), lng: parseFloat(v.lng) }
+    },
+    pricing: { range: '₺₺' },
+    media: {}
+  };
+}
+
+// ========================================
 // MEKAN KARTI OLUŞTUR
 // ========================================
 
@@ -105,6 +124,7 @@ var _feedOffset = 0;
 var _feedPageSize = 200;
 var _feedLoading = false;
 var _allLoaded = false;
+var _sortedVenues = []; // GPS modunda tüm mekanlar bellekte tutulur
 
 function appendVenues(venues) {
   var grid = document.getElementById('venues-grid');
@@ -128,10 +148,19 @@ async function loadMoreVenues() {
   if (_feedLoading || _allLoaded) return;
   _feedLoading = true;
   try {
-    var venues = await window.DB.fetchVenues(_feedOffset, _feedPageSize);
-    if (venues.length < _feedPageSize) _allLoaded = true;
-    _feedOffset += venues.length;
-    appendVenues(venues);
+    if (_sortedVenues.length > 0) {
+      // GPS modu: bellekteki sıralı listeden sonraki batch
+      var batch = _sortedVenues.slice(_feedOffset, _feedOffset + _feedPageSize);
+      _feedOffset += batch.length;
+      if (_feedOffset >= _sortedVenues.length) _allLoaded = true;
+      appendVenues(batch);
+    } else {
+      // Rating modu: Supabase'den çek
+      var venues = await window.DB.fetchVenues(_feedOffset, _feedPageSize);
+      if (venues.length < _feedPageSize) _allLoaded = true;
+      _feedOffset += venues.length;
+      appendVenues(venues);
+    }
   } catch(e) {}
   _feedLoading = false;
 }
@@ -142,6 +171,7 @@ async function loadVenues() {
 
   _feedOffset = 0;
   _allLoaded = false;
+  _sortedVenues = [];
   grid.innerHTML = '<div class="loading">📍 Konum alınıyor…</div>';
 
   try {
@@ -153,17 +183,24 @@ async function loadVenues() {
       if (gps) {
         userLat = gps.lat;
         userLng = gps.lng;
-        grid.innerHTML = '<div class="loading">🔄 Yakın mekanlar yükleniyor…</div>';
-        var nearby = await window.DB.fetchVenuesNearby(gps.lat, gps.lng, 15);
-        venues = nearby.filter(Boolean);
-        venues.sort(function(a, b) {
-          var aLat = a.location?.coordinates?.lat, aLng = a.location?.coordinates?.lng;
-          var bLat = b.location?.coordinates?.lat, bLng = b.location?.coordinates?.lng;
-          if (!aLat || !aLng) return 1;
-          if (!bLat || !bLng) return -1;
-          return haversineKm(gps.lat, gps.lng, aLat, aLng) - haversineKm(gps.lat, gps.lng, bLat, bLng);
+        grid.innerHTML = '<div class="loading">🔄 Mekanlar yükleniyor…</div>';
+
+        // Tüm mekanları harita cache'inden çek (6.243 mekan, flat columns)
+        var flat = await window.DB.fetchVenuesMap();
+        flat = flat.filter(function(v) { return v.lat && v.lng; });
+
+        // Gerçek mesafeye göre sırala
+        flat.sort(function(a, b) {
+          return haversineKm(gps.lat, gps.lng, parseFloat(a.lat), parseFloat(a.lng))
+               - haversineKm(gps.lat, gps.lng, parseFloat(b.lat), parseFloat(b.lng));
         });
-        _allLoaded = true;
+
+        // Bellekte tut, 200'er göster
+        _sortedVenues = flat.map(flatToVenue);
+        venues = _sortedVenues.slice(0, _feedPageSize);
+        _feedOffset = venues.length;
+        if (_feedOffset >= _sortedVenues.length) _allLoaded = true;
+
       } else {
         grid.innerHTML = '<div class="loading">🔄 Mekanlar yükleniyor…</div>';
         venues = await window.DB.fetchVenues(0, _feedPageSize);
