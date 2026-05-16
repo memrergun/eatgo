@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>EatGo — Mekan Keşfet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #0d0d0d;
+  --red: #E8431A;
+  --green: #22c55e;
+  --ig: #E4405F;
+  --text: #111;
+  --muted: #6b7280;
+}
+html, body {
+  height: 100%; background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  overflow: hidden; user-select: none; -webkit-user-select: none;
+}
+
+/* ─── LAYOUT ─── */
+.app { height: 100dvh; display: flex; flex-direction: column; max-width: 440px; margin: 0 auto; }
+
+/* ─── HEADER ─── */
+header {
+  padding: 14px 20px 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.logo { font-size: 24px; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+.logo em { color: var(--red); font-style: normal; }
+.saved-pill {
+  background: rgba(255,255,255,0.08); color: #fff;
+  font-size: 13px; font-weight: 600;
+  padding: 5px 14px; border-radius: 40px;
+  border: none; cursor: pointer; font-family: inherit;
+  display: none; transition: background 0.2s;
+}
+.saved-pill:hover { background: rgba(255,255,255,0.15); }
+.saved-pill.on { display: block; }
+
+/* ─── STACK ─── */
+.stack {
+  flex: 1; position: relative;
+  padding: 0 14px; min-height: 0;
+}
+
+.card {
+  position: absolute; inset: 0;
+  background: #fff; border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  transition: transform 0.32s cubic-bezier(.25,.46,.45,.94);
+  will-change: transform;
+}
+
+/* stack depth via nth-child */
+.card:first-child { z-index: 10; cursor: grab; }
+.card:first-child:active { cursor: grabbing; }
+.card:nth-child(2) { transform: scale(0.95) translateY(18px); z-index: 9; }
+.card:nth-child(3) { transform: scale(0.905) translateY(36px); z-index: 8; }
+
+/* ─── EMBED ─── */
+.media {
+  position: absolute; inset: 0; bottom: 110px;
+  background: #1a1a1a; overflow: hidden;
+}
+.media iframe {
+  width: 100%; height: 100%; border: none;
+  /* pointer-events off so drag works over iframe */
+  pointer-events: none;
+}
+.media-fallback {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px;
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+.media-fallback .emoji { font-size: 80px; }
+.media-fallback .hint {
+  color: rgba(255,255,255,0.35); font-size: 13px; font-weight: 500;
+}
+
+/* ─── INDICATORS ─── */
+.ind {
+  position: absolute; top: 24px;
+  font-size: 18px; font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase; padding: 7px 14px; border-radius: 10px;
+  border: 3.5px solid; opacity: 0; pointer-events: none; z-index: 20;
+}
+.ind-like { left: 20px; color: var(--green); border-color: var(--green); transform: rotate(-20deg); }
+.ind-skip { right: 20px; color: var(--red); border-color: var(--red); transform: rotate(20deg); }
+
+/* ─── INFO ─── */
+.info {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 110px; background: #fff;
+  padding: 12px 16px 14px;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.info-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.venue-name {
+  font-size: 17px; font-weight: 700; color: var(--text);
+  line-height: 1.25; flex: 1;
+}
+.venue-rating {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  background: #f4f4f4; padding: 3px 9px; border-radius: 8px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.star { color: #f59e0b; }
+.info-bottom { display: flex; justify-content: space-between; align-items: center; }
+.venue-meta { font-size: 12px; color: var(--muted); }
+.ig-link {
+  display: flex; align-items: center; gap: 5px;
+  color: var(--ig); font-size: 12px; font-weight: 600;
+  text-decoration: none;
+}
+.ig-link svg { flex-shrink: 0; }
+
+/* ─── ACTIONS ─── */
+.actions {
+  padding: 10px 24px 18px;
+  display: flex; justify-content: center; gap: 36px;
+  flex-shrink: 0;
+}
+.btn {
+  width: 66px; height: 66px; border-radius: 50%; border: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  transition: transform 0.13s, box-shadow 0.13s;
+}
+.btn:active { transform: scale(0.88); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.btn-skip { background: #fff; }
+.btn-like { background: var(--red); }
+
+/* ─── EMPTY ─── */
+.empty {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: #fff; text-align: center; padding: 32px;
+}
+.empty.on { display: flex; }
+.empty-icon { font-size: 72px; margin-bottom: 20px; }
+.empty h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+.empty p { color: rgba(255,255,255,0.5); font-size: 15px; margin-bottom: 28px; }
+.btn-reset {
+  background: var(--red); color: #fff; border: none;
+  padding: 13px 32px; border-radius: 40px;
+  font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+}
+
+/* ─── SAVED PANEL ─── */
+.panel-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px); z-index: 200;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.panel-backdrop.on { opacity: 1; pointer-events: all; }
+.panel {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
+  width: 100%; max-width: 440px;
+  background: #1a1a1a; border-radius: 24px 24px 0 0;
+  padding: 20px 20px 32px; z-index: 201;
+  max-height: 70dvh; overflow-y: auto;
+  transition: transform 0.35s cubic-bezier(.25,.46,.45,.94);
+}
+.panel.on { transform: translateX(-50%) translateY(0); }
+.panel-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 20px; }
+.panel-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+}
+.panel-title { color: #fff; font-size: 18px; font-weight: 700; }
+.btn-close { background: none; border: none; color: rgba(255,255,255,0.4); font-size: 22px; cursor: pointer; }
+.saved-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.saved-item:last-child { border-bottom: none; }
+.saved-name { color: #fff; font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+.saved-sub { color: rgba(255,255,255,0.4); font-size: 12px; }
+.saved-go {
+  color: var(--ig); font-size: 12px; font-weight: 700;
+  text-decoration: none; white-space: nowrap; padding-left: 12px;
+}
+.empty-saved { color: rgba(255,255,255,0.35); font-size: 14px; padding: 12px 0; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="logo">eat<em>go</em></div>
+    <button class="saved-pill" id="pill" onclick="openPanel()">❤️ <span id="pill-count">0</span> kaydedildi</button>
+  </header>
+
+  <div class="stack" id="stack">
+    <div class="empty" id="empty">
+      <div class="empty-icon">🎉</div>
+      <h2>Hepsi bu kadardı!</h2>
+      <p>Tüm mekanları gördünüz.<br>Kaydettiklerinizi inceleyebilirsiniz.</p>
+      <button class="btn-reset" onclick="resetAll()">Yeniden Başla</button>
+    </div>
+  </div>
+
+  <div class="actions" id="actions">
+    <button class="btn btn-skip" onclick="swipe('left')" title="Geç (←)">❌</button>
+    <button class="btn btn-like" onclick="swipe('right')" title="Kaydet (→)">❤️</button>
+  </div>
+</div>
+
+<div class="panel-backdrop" id="backdrop" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <div class="panel-handle"></div>
+  <div class="panel-header">
+    <div class="panel-title">Kaydettiklerim</div>
+    <button class="btn-close" onclick="closePanel()">✕</button>
+  </div>
+  <div id="panel-list"></div>
+</div>
+
+<script>
+const VENUES = [
+  { name:"Kadıköy Midyecisi",  cat:"Deniz Ürünleri",   r:4.8, n:7726, area:"Kadıköy",    ig:"kadikoymidyecisi",      post:"p/DRhZO0NCrbO",    emoji:"🦪" },
+  { name:"Forchetta Plus",     cat:"İtalyan",           r:4.8, n:1115, area:"Kadıköy",    ig:"forchettapls",          post:null,               emoji:"🍝" },
+  { name:"FABESCO",            cat:"Restoran & Kafe",   r:4.8, n:499,  area:"Kadıköy",    ig:"fabescoffe",            post:"p/DSFFgHZDM8B",    emoji:"🍽️" },
+  { name:"The Townhouse",      cat:"Bar & Restoran",    r:4.7, n:3398, area:"Suadiye",    ig:"thetownhouseistanbul",  post:"p/CwaUTsvopVC",    emoji:"🍸" },
+  { name:"Hane Kadıköy",       cat:"Meyhane",           r:4.7, n:2504, area:"Kadıköy",    ig:"hanekadikoy",           post:"reel/C27V3Seok_2", emoji:"🥘" },
+  { name:"Deniz Yıldızı",      cat:"Restoran",          r:4.7, n:1921, area:"Kadıköy",    ig:"kadikoydenizyildizi",   post:"reel/C6BeuYUL6JQ", emoji:"🐟" },
+  { name:"Ethique",            cat:"Patisserie & Kafe", r:4.7, n:1107, area:"Kadıköy",    ig:"ethique.pb",            post:"p/DE9p8H6MYDv",    emoji:"🥐" },
+  { name:"Balıkçı Lokantası",  cat:"Balık",             r:4.6, n:2065, area:"Kadıköy",    ig:"balikci_lokantasi",     post:"p/DT0cMZfkzWw",    emoji:"🐠" },
+  { name:"Ala Kadıköy Meyhane",cat:"Meyhane",           r:4.5, n:1747, area:"Kadıköy",    ig:"alakadikoy",            post:"reel/C1HP_-oLVdt", emoji:"🥂" },
+  { name:"Ayık",               cat:"Çorba & Kebap",     r:4.4, n:3867, area:"Kadıköy",    ig:"ayikkadikoy",           post:"reel/C6_gdGgoUwV", emoji:"🥙" },
+  { name:"Kimyon",             cat:"Türk Mutfağı",      r:4.4, n:3362, area:"Kadıköy",    ig:"kimyonkadikoy",         post:"reel/B63jTt7AVou", emoji:"🍖" },
+  { name:"Aida Vino e Cucina", cat:"İtalyan",           r:4.4, n:1711, area:"Moda",       ig:"aidavinoecucina",       post:"p/C5_Pe2oITR_",    emoji:"🍷" },
+  { name:"Ouzo Roof",          cat:"Roof Bar",          r:4.2, n:940,  area:"Fenerbahçe", ig:"ouzokalamis",           post:"reel/C3p90-3MJhQ", emoji:"🌅" },
+  { name:"Çalakaşık",          cat:"Türk Mutfağı",      r:4.2, n:878,  area:"Kadıköy",    ig:"calakasik",             post:null,               emoji:"🍛" },
+  { name:"PALEGG",             cat:"Skandinav",         r:4.2, n:2126, area:"Kadıköy",    ig:"palegg_kadikoy",        post:"p/C84aJoAoUvm",    emoji:"🥪" },
+  { name:"Yanyalı Fehmi",      cat:"Türk Mutfağı",      r:4.1, n:2636, area:"Kadıköy",    ig:"yanyalifehmi",          post:"p/Cih4sMsq39C",    emoji:"🍲" },
+];
+
+const IG_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`;
+
+let idx = 0;
+let saved = JSON.parse(localStorage.getItem('eatgo_saved') || '[]');
+
+function fmt(n) { return n >= 1000 ? (n/1000).toFixed(1) + 'B' : n; }
+
+function makeCard(v) {
+  const d = document.createElement('div');
+  d.className = 'card';
+
+  const mediaHTML = v.post
+    ? `<iframe src="https://www.instagram.com/${v.post}/embed/" loading="lazy" allowtransparency="true"></iframe>`
+    : `<div class="media-fallback"><div class="emoji">${v.emoji}</div><div class="hint">@${v.ig}</div></div>`;
+
+  d.innerHTML = `
+    <div class="media">${mediaHTML}</div>
+    <div class="ind ind-like">❤️ Kaydet</div>
+    <div class="ind ind-skip">Geç ❌</div>
+    <div class="info">
+      <div class="info-top">
+        <div class="venue-name">${v.name}</div>
+        <div class="venue-rating"><span class="star">★</span> ${v.r} · ${fmt(v.n)}</div>
+      </div>
+      <div class="info-bottom">
+        <div class="venue-meta">${v.area} · ${v.cat}</div>
+        <a class="ig-link" href="https://www.instagram.com/${v.ig}/" target="_blank" rel="noopener"
+           onclick="event.stopPropagation()">
+          ${IG_SVG} @${v.ig}
+        </a>
+      </div>
+    </div>`;
+  return d;
+}
+
+/* ─── DRAG / SWIPE ─── */
+let dragging = false, startX = 0, dx = 0;
+
+function attachDrag(card) {
+  const likeEl = card.querySelector('.ind-like');
+  const skipEl = card.querySelector('.ind-skip');
+
+  function begin(x) {
+    dragging = true; startX = x; dx = 0;
+    card.style.transition = 'none';
+  }
+  function move(x) {
+    if (!dragging) return;
+    dx = x - startX;
+    const rot = dx * 0.07;
+    card.style.transform = `translateX(${dx}px) rotate(${rot}deg)`;
+    const t = Math.min(Math.abs(dx) / 80, 1);
+    likeEl.style.opacity = dx > 0 ? t : 0;
+    skipEl.style.opacity = dx < 0 ? t : 0;
+  }
+  function end() {
+    if (!dragging) return;
+    dragging = false;
+    likeEl.style.opacity = 0; skipEl.style.opacity = 0;
+    if (dx > 90) { swipe('right'); }
+    else if (dx < -90) { swipe('left'); }
+    else {
+      card.style.transition = 'transform 0.35s cubic-bezier(.25,.46,.45,.94)';
+      card.style.transform = '';
+    }
+  }
+
+  card.addEventListener('mousedown',  e => begin(e.clientX));
+  window.addEventListener('mousemove', e => { if (dragging) move(e.clientX); });
+  window.addEventListener('mouseup',   end);
+  card.addEventListener('touchstart', e => begin(e.touches[0].clientX), { passive:true });
+  card.addEventListener('touchmove',  e => move(e.touches[0].clientX),  { passive:true });
+  card.addEventListener('touchend',   end);
+}
+
+function swipe(dir) {
+  const stack = document.getElementById('stack');
+  const top = stack.querySelector('.card');
+  if (!top) return;
+
+  const v = VENUES[idx];
+  if (dir === 'right') {
+    if (!saved.find(s => s.ig === v.ig)) {
+      saved.push(v);
+      localStorage.setItem('eatgo_saved', JSON.stringify(saved));
+    }
+    updatePill();
+  }
+
+  top.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+  top.style.opacity = '0';
+  top.style.transform = dir === 'right'
+    ? 'translateX(130%) rotate(22deg)'
+    : 'translateX(-130%) rotate(-22deg)';
+
+  setTimeout(() => {
+    top.remove();
+    idx++;
+
+    // Promote the new first card (css :first-child handles positioning)
+    const newFirst = stack.querySelector('.card');
+    if (newFirst) attachDrag(newFirst);
+
+    // Append next card at the back
+    const nextIdx = idx + 2;
+    if (nextIdx < VENUES.length) {
+      stack.appendChild(makeCard(VENUES[nextIdx]));
+    }
+
+    if (idx >= VENUES.length) {
+      document.getElementById('empty').classList.add('on');
+      document.getElementById('actions').style.display = 'none';
+    }
+  }, 400);
+}
+
+function initStack() {
+  const stack = document.getElementById('stack');
+  const count = Math.min(3, VENUES.length - idx);
+  for (let i = count - 1; i >= 0; i--) {
+    stack.insertBefore(makeCard(VENUES[idx + i]), stack.firstChild);
+  }
+  const first = stack.querySelector('.card');
+  if (first) attachDrag(first);
+}
+
+function resetAll() {
+  idx = 0;
+  document.querySelectorAll('.card').forEach(c => c.remove());
+  document.getElementById('empty').classList.remove('on');
+  document.getElementById('actions').style.display = 'flex';
+  initStack();
+}
+
+/* ─── SAVED PANEL ─── */
+function updatePill() {
+  const pill = document.getElementById('pill');
+  document.getElementById('pill-count').textContent = saved.length;
+  pill.classList.toggle('on', saved.length > 0);
+}
+
+function openPanel() {
+  const list = document.getElementById('panel-list');
+  list.innerHTML = saved.length
+    ? saved.map(v => `
+        <div class="saved-item">
+          <div>
+            <div class="saved-name">${v.name}</div>
+            <div class="saved-sub">${v.area} · ${v.cat}</div>
+          </div>
+          <a class="saved-go" href="https://www.instagram.com/${v.ig}/" target="_blank" rel="noopener">
+            Instagram'da Gör →
+          </a>
+        </div>`).join('')
+    : '<div class="empty-saved">Henüz bir yer kaydetmediniz.</div>';
+
+  document.getElementById('backdrop').classList.add('on');
+  document.getElementById('panel').classList.add('on');
+}
+
+function closePanel() {
+  document.getElementById('backdrop').classList.remove('on');
+  document.getElementById('panel').classList.remove('on');
+}
+
+/* ─── KEYBOARD ─── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft')  swipe('left');
+  if (e.key === 'ArrowRight') swipe('right');
+});
+
+updatePill();
+initStack();
+</script>
+</body>
+</html>
